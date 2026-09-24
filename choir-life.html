@@ -1321,6 +1321,132 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
+  { id: 'grp_karaoke', requires: ['nico','carlos','yuki'], minAffinity: 15, time: [2],
+    label: '🎤 Nico拉大家去KTV',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_karaoke = true;
+      ['nico','carlos','yuki'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('energy', -10); adjustStat('mood', 15); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Nico在群里发了一个链接："这座城市居然有KTV！！！今晚去！！！"Carlos回："什么是KTV。"你回："一种让人在小房间里对着屏幕唱歌然后怀疑人生的活动。"Nico说："你把它说得好像很惨。"你说："因为我唱过。"' },
+        { text: '到了以后发现这个KTV只有两首中文歌——《月亮代表我的心》和《甜蜜蜜》。你崩溃了。苏迟面无表情。你说："你想唱哪首？"他说："我不想唱。"你说："那你来干嘛。"他想了三秒："看你们丢人。"' },
+        { text: 'Carlos选了一首拉丁歌。他一开口全场沉默——因为太好听了。他唱完自己鼓掌："是不是很厉害！"Nico说："你在KTV唱这么好是犯规的。KTV的意义就在于唱得难听。"' },
+        { text: 'Yuki弹了一段前奏然后唱了一首日文歌。她平时话不多，但唱起歌来完全是另一个人——声音里有一种亮闪闪的东西。你看到苏迟不动声色地在手机上搜那首歌的歌词。' },
+        { text: 'Nico一个人霸麦唱了三首。第二首的时候她站到桌子上了。你和Carlos疯狂鼓掌。苏迟掏出耳塞——你不知道他为什么随身带耳塞。Nico冲他喊"苏迟你给我把耳塞拿出来！"他把耳塞收了回去。你觉得他嘴角在抖。' },
+        { text: '最后你们合唱了《月亮代表我的心》。没有一个人会完整的歌词。Carlos唱的是西班牙语发音的中文，Nico的节奏完全是自由的，Yuki的调很准但歌词全靠拼音。苏迟终于开口了——他唱得很小声，但你站在他旁边，你听到了。他的声音在所有人的声音下面，像一条安静的河。' },
+        { type: 'stat-up', text: '心情 +15 · 社交 +8 · Nico、Carlos、Yuki好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_football', requires: ['ibrahim','carlos','aoife'], minAffinity: 12, time: [0,1],
+    label: '⚽ Ibrahim组织足球赛',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_football = true;
+      ['ibrahim','carlos','aoife'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('energy', -15); adjustStat('mood', 12); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Ibrahim在群里说公园的草坪空了，问有没有人想踢球。你回了个"我不会踢球"。Ibrahim说"没关系"。你到的时候发现来了八个人。Aoife穿了一双钉鞋。你问她："你还有钉鞋？"她说："我在都柏林打过校队。"你开始感到不安。' },
+        { text: 'Carlos自封队长。分队。你被分到了Carlos这边。对面有Aoife。你的不安变成了恐惧。' },
+        { text: '开场三分钟你就被球砸到了脸。Carlos跑过来："你没事吧？"你捂着鼻子说"没事"。他说"那好"然后转身继续踢了。你觉得你对Carlos的好感度应该减五。' },
+        { text: 'Aoife踢进了四个球。四个。Ibrahim踢进了两个。Carlos踢进了一个——进完以后他脱了上衣绕场跑。Marta在场边喊"穿上！穿上！"。你全场唯一的贡献是把球从场外捡回来了三次。' },
+        { text: 'Nico不踢球但来了——她坐在旁边当解说员。"Aoife带球过人！漂亮！Carlos摔倒了！很不漂亮！哦——我们的中国朋友又被球砸到了！"你从地上爬起来冲她喊"你能不能不解说！"她说"不能！这是我的使命！"' },
+        { text: '赛后所有人瘫在草坪上。Ibrahim递给你一瓶水。你喝了半瓶然后把剩下的倒在了自己头上。Carlos说"最佳球员Aoife"。Aoife说"最佳观众Nico"。Nico说"最佳人肉靶子——"你在她说完之前把水瓶扔过去了。' },
+        { type: 'stat-up', text: '心情 +12 · 社交 +8 · Ibrahim、Carlos、Aoife好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_lost_cat', requires: ['lena','sofia','suchi'], minAffinity: 20, time: [0,1],
+    label: '🐱 Lena说有只猫跑进了排练厅',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_lost_cat = true;
+      ['lena','sofia','suchi'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('energy', -5); adjustStat('mood', 15); adjustStat('social', 5); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Lena到排练厅开门的时候发来一条消息，只有两个字加一个感叹号："有猫！"' },
+        { text: '你赶到的时候Sofia已经蹲在钢琴下面了。一只橘猫缩在角落里，毛蓬松得像个橘子。Sofia在用温柔的西班牙语跟它说话。你说："它听得懂西班牙语吗？"Sofia说："猫听得懂语气。"' },
+        { text: '苏迟到了。他看了一眼猫，然后从包里掏出一个饭团——你不知道他为什么包里有饭团。他把饭团掰了一小块放在地上。猫看了他三秒，然后走过去吃了。Lena说："你跟猫一样安静所以它信任你。"苏迟说："谢谢？"他不确定这是夸奖。' },
+        { text: '猫吃完了饭团，跳上了钢琴键盘。一串不协和音。Lena说："它弹得比Dietrich有创意。"你笑到蹲下来。Sofia拍了一段视频——橘猫在琴键上走来走去，像一个非常认真的先锋派作曲家。' },
+        { text: 'Dietrich到了。他看了猫一眼。猫看了他一眼。全场安静。Dietrich说："它音准不行。但节奏感还可以。"然后他去泡咖啡了。你和Lena对视——你们都不确定他是不是在开玩笑。跟Dietrich在一起你永远分不清。' },
+        { text: 'Sofia最后把猫带回了家——"临时收留，找到主人就还。"三周后猫还在她家。它的名字叫Naranja——橘子。你说："你就是这样收养了所有流浪动物的对吧。"她说："你说得好像这是一个坏习惯。"' },
+        { type: 'stat-up', text: '心情 +15 · 社交 +5 · Lena、Sofia、苏迟好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_lost_way', requires: ['nico','ibrahim','marta'], minAffinity: 18, time: [0,1],
+    label: '🗺️ 集体迷路了',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_lost_way = true;
+      ['nico','ibrahim','marta'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('energy', -10); adjustStat('mood', 12); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Nico说她知道一条去海边的捷径。你现在知道了——Nico说"捷径"的时候你应该转身跑。' },
+        { text: '你、Nico、Ibrahim和Marta走了四十分钟。你已经看到同一棵橄榄树三次了。你说："Nico，我们是不是在绕圈。"Nico说："不是。"你说："那为什么我能认出这棵树。"她说："因为橄榄树长得都一样。"Ibrahim轻声说："不一样的。"' },
+        { text: 'Marta的手机没电了。你的手机有信号但地图在转圈。Nico的手机有电有信号但她拒绝用地图。"用地图就输了！"你说："输给谁？？"她说："输给这条路！"Ibrahim说："我觉得我们可以问人。"Nico说："问人也是输。"' },
+        { text: '你们站在一个岔路口。Nico指左边。你指右边。Ibrahim看了看太阳说应该往右。Marta说她记得来的时候经过一个蓝色的门。你们四个人往四个方向各看了一眼。你说："我们现在算正式迷路了吧。"Nico说："我更喜欢叫它冒险。"' },
+        { text: '最后Ibrahim靠太阳的方向带你们走了出来——多花了二十分钟。到了海边Nico一点愧疚感都没有："你看！我们到了！"你说："走了一个小时才到的。"她说："但是我们到了！过程不重要！"Marta说："过程非常重要。"你买了一瓶水一口气喝完了。Ibrahim坐在石头上，安静地笑了。' },
+        { type: 'stat-up', text: '心情 +12 · 社交 +8 · Nico、Ibrahim、Marta好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_power_out', requires: ['dietrich','carlos','nico'], minAffinity: 15, time: [1,2],
+    label: '🕯️ 排练到一半停电了',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_power_out = true;
+      ['dietrich','carlos','nico'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('mood', 12); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: '排练到第三首的时候灯灭了。全场尖叫——主要是Nico的尖叫。你什么都看不见。你旁边有人踩了你的脚。你说"哎"。Carlos的声音："对不起。"' },
+        { text: 'Dietrich的声音从黑暗中传来，异常平静："不要动。"全场瞬间安静了。你想：这个人的声音在任何情况下都像一把定音叉。' },
+        { text: 'Carlos掏出打火机——他居然随身带打火机。Nico说"你抽烟？"Carlos说"我不抽。我喜欢火。"你觉得这个回答比停电本身更让人不安。' },
+        { text: 'Dietrich说："既然没有电，那我们用嘴打拍子。"他开始打响指——一二三四，一二三四。然后他开始唱起音，不用钢琴。Yuki在黑暗里说了一句"准的"——她有绝对音感。' },
+        { text: '你们在黑暗里唱了二十分钟。没有谱子，没有灯，没有钢琴伴奏。你什么都看不见。但你听得见——左边是Sofia的女高音，右边是Ibrahim深沉的男中音，后面是苏迟克制但准确的声音。你从来没有这么认真地听过旁边的人。' },
+        { text: '唱完一首的时候没有人说话。Dietrich在黑暗里说了一句话——你第一次听到他的声音有一点点抖："这才是合唱。不需要看见彼此。只需要听见。"' },
+        { text: '灯亮了。所有人眨着眼睛适应光线。Nico说："我觉得我们应该以后都关灯排练。"Dietrich说："不行。你跑调了。"Nico大喊："你在黑暗里还能听出来谁跑调的吗！！"Dietrich说："当然。你的跑调有签名。"全场爆笑。' },
+        { type: 'stat-up', text: '心情 +12 · 社交 +8 · Dietrich、Carlos、Nico好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_ikea', requires: ['carlos','marta','aoife'], minAffinity: 18, time: [0,1],
+    label: '🛋️ 陪Carlos去宜家买家具',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_ikea = true;
+      ['carlos','marta','aoife'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('energy', -10); adjustStat('mood', 12); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Carlos说他要去宜家买一个书架。"很快，半小时就出来。"你信了。你现在已经在宜家里走了两个半小时了。' },
+        { text: 'Marta在卧室区试了每一张床。每一张。她在第四张床上躺了五分钟说"这个不行腰疼"。Aoife说"你是来买床的吗"。Marta说"不是但万一呢"。' },
+        { text: 'Carlos在厨房区迷失了自我。他拿着一个蒜泥器说"这个设计太巧妙了"。你说"你不是来买书架的吗"。他说"书架可以等。蒜泥器不行。"他买了蒜泥器、一套量杯、一个沥水篮和四个相框。书架还没看。' },
+        { text: '你在客厅区坐在一张假沙发上假装住在这里。Aoife也坐下来了。你们两个人坐在假客厅里假装看假电视。路过的人看你们。你说"你觉得他们信吗"。Aoife说"信什么"。你说"信我们住在宜家"。她想了一下说"这个灯不错"。' },
+        { text: '终于到了书架区。Carlos站在三个书架前面犹豫了半小时。白色的？原木色的？黑色的？Marta说"白色"。Aoife说"原木"。你说"黑色"。Carlos看了你们三个人。然后买了白色的。你问他为什么问我们的意见。他说"我需要确定你们是错的然后做自己的决定"。你无话可说。' },
+        { text: '回去拼书架。四个人看说明书看了十五分钟没看懂。最后Aoife把说明书拿过去——她会六种语言，瑞典语不在其中，但她硬是看懂了。书架拼好的时候天都黑了。Carlos往上面放了一本书。书架歪了一点。你们四个人看着它，沉默了三秒。Carlos说"有个性"。' },
+        { type: 'stat-up', text: '心情 +12 · 社交 +8 · Carlos、Marta、Aoife好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_boardgame', requires: ['suchi','lena','yuki'], minAffinity: 22, time: [2],
+    label: '🎲 苏迟居然会打麻将',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_boardgame = true;
+      ['suchi','lena','yuki'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('energy', -5); adjustStat('mood', 15); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: '你在公共厨房吃晚饭的时候Lena拿出一盒桌游。"有人要玩吗？"Yuki说好。你也加入了。苏迟路过厨房的时候被Lena叫住——"我们缺一个人。"他犹豫了。你说："你难道有别的事要做？"他说："我打算看书。"你说："你每天都在看书。"他想了一下坐下了。' },
+        { text: '打了三局以后Lena赢了两次。她赢的时候表情完全不变——你开始怀疑她是职业的。苏迟输了以后很安静地研究了五分钟规则书。你说"你在干嘛"。他说"在找漏洞"。你说"这是桌游不是论文"。' },
+        { text: '你提议换个游戏。你翻箱子的时候发现了一副麻将——不知道是谁留下的。你拿出来的时候苏迟的眼睛亮了。你说："你会打？"他说："我外婆教的。"你说你也会——虽然水平停留在"知道规则但从来没赢过"的阶段。' },
+        { text: '你花了十五分钟教Lena和Yuki规则。Lena学得很快。Yuki学得更快——她说"这个跟将棋有点像，都是读对手"。你说"你太高估我了，我连自己的牌都读不懂"。' },
+        { text: '苏迟打麻将的样子跟平时完全不一样。他出牌很快、很准，眼睛一直在看别人的牌河。你第一次看到他做一件事情不犹豫。他连胡了三把。你说："你外婆是什么来头。"他说："退休数学老师。"你说："难怪。"' },
+        { text: 'Lena第四把的时候胡了——自摸。她放下牌的时候嘴角终于动了。苏迟看着她的牌说了一句"漂亮"。Lena说"我找到漏洞了"。苏迟抬头看她，然后笑了——不是他平时那种礼貌的微笑，是真的笑了。Yuki在旁边说"我觉得你们两个都很可怕"。你深有同感。' },
+        { type: 'stat-up', text: '心情 +15 · 社交 +8 · 苏迟、Lena、Yuki好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
 ];
 
 function getAvailableGroupEvents() {
