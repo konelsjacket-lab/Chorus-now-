@@ -287,6 +287,8 @@ const S = {
   metStreetArtist: false, metTomás: false,
   artSkill: 0, paintingLessons: 0,
   calledParents: 0, lastParentCall: 0,
+  composingPhase: 0, composingDay: 0, composingSongShared: false,
+  shelterVisits: 0, museumVisits: 0,
   rehearsalCount: 0,
   choirPhase: 0,
   metAtRehearsal: {},
@@ -1287,7 +1289,7 @@ function sceneDailyMenu() {
     if (time < 2)
       choices.push({ text: '找工作', cost: '体力-15', action: sceneFindJob });
 
-    choices.push({ text: '出门走走', cost: '体力-5，心情+5', action: sceneWalk });
+    choices.push({ text: '出门走走', cost: '体力-5，心情+5', action: sceneWalkMenu });
     if (S.hasDog)
       choices.push({ text: `🐕 带${S.dogName}去散步`, cost: '体力-5，心情+8', action: () => {
         adjustStat('energy',-5); adjustStat('mood',8); adjustStat('social',2); advanceTime(); renderStatus();
@@ -1314,6 +1316,10 @@ function sceneDailyMenu() {
         showChoices([{ text: '继续', action: sceneDailyMenu }]);
       }});
     choices.push({ text: '在家练唱歌', cost: '体力-10，声乐+2', action: scenePractice });
+    if (S.composingPhase >= 1 && S.composingPhase < 5)
+      choices.push({ text: '✍ 继续创作', cost: '体力-10，心情+5', action: sceneCompose });
+    if (S.composingPhase === 5 && !S.composingSongShared)
+      choices.push({ text: '✍ 关于你写的那首歌…', action: sceneComposeShare });
 
     // Phone calls & friends
     if (time <= 2 && (S.day - S.lastParentCall >= 3 || !S.calledParents))
@@ -1782,65 +1788,366 @@ function scenePractice() {
     '你试着唱上周排练的曲子。有些地方音准不确定——你翻出苏迟在群里分享的声部分析笔记。他标注了每个声部的入声点和呼吸节奏。你照着练了几遍，确实有进步。你想发消息谢谢他，打了字又删了。太正式了。最后你发了一个"有用"。他回了一个句号。你已经学会读他的句号了。',
     '你把手机架在窗台上对着视频练发声。练了半小时嗓子有点累了。你喝了口水，听到隔壁Sofia开始哼同一首歌的旋律。她听到了你在练。你笑了——隔着一面墙的二重唱。你没有停，她也没有。',
   ];
+  if (S.vocal >= 35 && S.composingPhase === 0 && Math.random() < 0.35) {
+    S.composingPhase = 1;
+    showNarrative([
+      { text: pick(texts) },
+      { type: 'stat-up', text: '声乐 +2' },
+      { text: '你练完准备收拾的时候，脑子里忽然冒出一段旋律。不是你刚才唱的那首——是从没听过的东西。只有几个音，但它赖在脑子里不走。' },
+      { text: '你停下来哼了一遍。又哼了一遍。第三遍的时候你觉得它像一条很短的河——你能听到它要流向哪里，但你还没走到那里。' },
+      { text: '你翻出一张纸，用歪歪扭扭的简谱记下来。你的记谱法很不专业——几个数字和箭头。但你怕忘了。写完你盯着那几个音看了一会儿。你想：这是你自己的东西。' },
+      { type: 'system', text: '解锁个人支线：创作' },
+    ]);
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    return;
+  }
   showNarrative([{ text: pick(texts) }, { type: 'stat-up', text: '声乐 +2' }]);
   showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
-// --- Walk (expanded with random encounters) ---
-function sceneWalk() {
+// --- Walk (destination choice) ---
+function sceneWalkMenu() {
   adjustStat('energy', -5); adjustStat('mood', 5); advanceTime(); renderStatus();
-  
-  // Check for special encounters first
+
   const r = Math.random();
-  
-  // Su Chi random encounter (20% if met him)
-  if (r < 0.20 && S.metSuChi) {
-    return sceneSuChiBump();
+  if (r < 0.10 && S.metSuChi) return sceneSuChiBump();
+  if (r < 0.18 && !S.hasDog && S.day > 5 && !S.dogEncounters) { S.dogEncounters = 1; return sceneStrayDog1(); }
+  if (r < 0.18 && !S.hasDog && S.dogEncounters === 1 && S.day > 10) return sceneStrayDog2();
+  if (r < 0.24 && !S.metStreetArtist && S.day > 4) { S.metStreetArtist = true; return sceneStreetArtist(); }
+  if (r < 0.30 && S.npcs.carlos && S.npcs.carlos.talked > 0 && !S.metTomás) { S.metTomás = true; return sceneCarlosNewNPC(); }
+
+  const allDests = [
+    { text: '🌊 去海边', action: sceneWalkSeaside },
+    { text: '🏛 去美术馆', action: sceneWalkMuseum },
+    { text: '🏐 去排球场', action: sceneWalkVolleyball },
+    { text: '📚 去图书馆', action: sceneWalkLibrary },
+    { text: '🏘 逛旧城区', action: sceneWalkOldTown },
+    { text: '🛒 逛集市', action: sceneWalkMarket },
+    { text: '⛰ 去山上观景台', action: sceneWalkViewpoint },
+  ];
+  if (S.day > 3) allDests.push({ text: '🐕 去流浪狗收容基地', action: sceneWalkShelter });
+
+  const dests = [];
+  const pool = [...allDests];
+  const count = 3 + (Math.random() < 0.5 ? 1 : 0);
+  while (dests.length < count && pool.length > 0) {
+    const i = Math.floor(Math.random() * pool.length);
+    dests.push(pool.splice(i, 1)[0]);
   }
-  // Stray dog encounter (15% if haven't adopted yet, after day 5)
-  if (r < 0.35 && !S.hasDog && S.day > 5 && !S.dogEncounters) {
-    S.dogEncounters = 1;
-    return sceneStrayDog1();
-  }
-  if (r < 0.35 && !S.hasDog && S.dogEncounters === 1 && S.day > 10) {
-    return sceneStrayDog2();
-  }
-  // Street artist encounter (10%, one-time)
-  if (r < 0.45 && !S.metStreetArtist && S.day > 4) {
-    S.metStreetArtist = true;
-    return sceneStreetArtist();
-  }
-  // Carlos restaurant encounter - meet new NPC (once, after knowing Carlos)
-  if (r < 0.60 && S.npcs.carlos.talked > 0 && !S.metTomás) {
-    S.metTomás = true;
-    return sceneCarlosNewNPC();
-  }
-  
-  // Regular walks
-  const walks = [
+  dests.push({ text: '随便走走', action: sceneWalkRandom });
+
+  showNarrative([{ text: '你决定出门走走。去哪呢？' }]);
+  showChoices(dests);
+}
+
+function walkEnd(extra) {
+  const parts = [{ type: 'stat-up', text: '心情 +5' + (extra || '') }];
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+  return parts;
+}
+
+function sceneWalkSeaside() {
+  const stories = [
     [{ type: 'deco', items: ['seagull','lemon'] },
-     { text: '你沿着海边走了一段。海水蓝到不真实——你拍了一张发给你妈，她回了一个"好看"，然后问你吃饭了没有。有人在防波堤上钓鱼。你站着看了一会儿。他什么都没钓到。你觉得你们有共鸣。' },
+     { text: '你沿着海边走了一段。海水蓝到不真实——你拍了一张发给你妈，她回了一个「好看」，然后问你吃饭了没有。有人在防波堤上钓鱼。你站着看了一会儿。他什么都没钓到。你觉得你们有共鸣。' },
      { text: '你在面朝大海的长椅上坐了一会儿。风很好。你什么也没想——这本身就是一种奢侈。' }],
+    [{ text: '你找到一块伸进海里的礁石，爬上去坐着。脚下海水很清，能看到海藻在水里慢慢摆动。一只小螃蟹从石缝里探出头看了你一眼又缩回去了。你觉得你理解它——有时候你也只想从缝里探出头看看。' },
+     { text: '远处有人在冲浪。大部分时间都在水里扑腾。你数了一下，平均每冲十次能站起来一次。但每次站起来他都会举拳欢呼。你想：这个人拥有一种你很羡慕的品质——失败九次但只记住那一次。' }],
+    [{ text: '你在海边捡了几块石头。有一块是完美的扁圆形，适合打水漂。你试了一下——弹了两下就沉了。旁边一个小孩看了你一眼，捡起一块石头甩出去，弹了六下。他冲你笑。你说："教教我？"他很认真地给你做了个示范。你学了十分钟，最高纪录三下。小孩走的时候拍了拍你的肩膀，像一个宽容的师父。' }],
+    [{ text: '你坐在沙滩上听海浪。你发现海浪的节奏不是均匀的——有大有小，有快有慢，像一首没写完的曲子。你闭上眼睛，试着在心里给海浪编一个旋律。' },
+     { text: '一只海鸥落在你旁边不到一米的地方，歪头看你。你没动。它也没动。你们对视了大概十秒。你说："你好。"它飞走了。你怀疑它在等你喂东西，发现你没有以后就走了。你想：你交朋友也是这样的——先观察，发现对方没什么利用价值也不介意。' }],
+    [{ text: '落日的时候你走到海边。天空是你没见过的颜色——不是橙红，是一种掺了紫和金的粉色，像打翻的颜料盘。你站在那里看了二十分钟。有一对老夫妻也在看。老太太靠在老先生肩上。你拍了一张照片，但你知道照片拍不出来。有些东西必须亲眼看到。' }],
+  ];
+  const w = pick(stories);
+  if (S.hasDog) { w.push({ text: S.dogName + '在沙滩上追海浪，每次浪退它就冲上去，浪来它就疯跑回来。你笑到蹲下。' }); adjustStat('social', 1); }
+  showNarrative([...w, ...walkEnd(S.hasDog ? ' · 社交 +1' : '')]);
+}
+
+function sceneWalkMuseum() {
+  S.museumVisits++;
+  const exhibits = [
+    [{ text: '今天的展览是本地画家的群展。大部分你看不懂，但有一幅画让你停下了——画的是一扇半开的窗户，窗外是海，窗台上有一杯已经凉了的咖啡。你盯着它看了很久。你觉得画这幅画的人也是一个经常独处的人。' },
+     { text: '你在留言本上用中文写了一句：「窗外的海比咖啡暖。」你不知道有没有人能看懂。' }],
+    [{ text: '美术馆在展一个关于地中海渔村的摄影展。黑白照片里的渔民在补网、在岸边抽烟、在狭窄的巷子里晒衣服。有一张照片是三个老人坐在门口一言不发。你想起排练后Carlos他们在门口聊天的样子——有些场景跨越了半个世纪也没变过。' }],
+    [{ text: '今天是当代艺术展。一个房间里什么都没有，只有一把椅子和一个耳机。你坐下戴上——耳机里是各种城市的环境音：雨声、地铁报站、远处的钟声、孩子的笑声。你闭着眼睛听了十五分钟。你想：这个艺术家和你的合唱指挥Dietrich做的其实是同一件事——把声音变成一种体验。' }],
+    [{ text: '美术馆角落有个很小的展厅在展中世纪手抄本。那些僧侣在羊皮纸上一笔一笔抄写的文字和花纹让你想到苏迟的笔记——那种一丝不苟到近乎偏执的精确。你拍了一张发给苏迟。他回：「E大调赋格。」你困惑了五秒钟才反应过来他在说手抄本上的乐谱部分。' }],
+    [{ text: '今天美术馆有免费的版画工作坊。你排队等了二十分钟。老师是一个满手油墨的女人，英语带着很重的口音。你刻了一块版——一只简陋的猫。印出来歪歪扭扭的。你觉得它很丑但很亲切。你把它夹在笔记本里了。' },
+     { text: '旁边一个男人刻了一棵树。他看了看你的猫说：「这只猫很有个性。」你说：「它有个性是因为我画不直。」他笑了。你们没再说话，但你觉得这种短暂的交集刚刚好。' }],
+  ];
+  if (S.metTomás && S.museumVisits >= 3 && Math.random() < 0.3) {
+    showNarrative([
+      { text: '你在美术馆里碰到了Tomás。他在一幅巨大的油画前面站着，手里拿着速写本但没有画。' },
+      { text: '你走过去站在他旁边。过了一会儿他说：「有时候看到太好的东西，手就不敢动了。」你说：「唱歌也是这样。听到太好的歌手，嘴就张不开了。」他看了你一眼笑了——那种「你懂」的笑。' },
+      { text: '你们一起逛了剩下的展厅。他给你讲每幅画的技法，你假装听得懂。其实你听懂了一半。但另一半你也觉得有意思——就像听一种你不会说的语言，也能感受到情绪。' },
+      { type: 'stat-up', text: '心情 +5 · 社交 +3' },
+    ]);
+    adjustStat('social', 3);
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    return;
+  }
+  showNarrative([...pick(exhibits), ...walkEnd('')]);
+}
+
+function sceneWalkVolleyball() {
+  const stories = [
+    [{ text: '海滩排球场上正在打比赛。你坐在旁边的矮墙上看。两边都不专业——有人垫球垫到自己脸上，有人发球发到场外三米远。但他们很开心。每一个好球都引发大喊大叫。' },
+     { text: '一个球飞到你脚边。你捡起来扔回去。扔得不太准。一个晒得很黑的男生跑过来接球，冲你喊：「要不要一起？」你摇摇头笑了。他说：「明天也在！随时来！」你觉得这种无条件的热情很治愈。' }],
+    [{ text: '你鼓起勇气加入了沙滩排球。你的水平大概是——能把球打过网就算成功。队友是三个本地大学生，英语不好但热情极高。每次你接到球他们都欢呼，不管你把球打到了哪。' },
+     { text: '你扑救了一个球。扑到了。人也扑到了沙子里。满嘴沙子。队友把你拉起来拍你的背——他们以为你做了一个很酷的鱼跃。你没纠正他们。' },
+     { text: '打完以后你瘫在沙滩上。全身酸疼但心情好得不行。一个队友递给你一瓶水，你们用混合着英语、手势和emoji的方式加了社交媒体。你觉得运动果然是最好的社交破冰方式。' }],
+    [{ text: '排球场今天没人。你对着网子练了一会儿发球。十个里有三个过网。你在心里给自己打了三十分——及格线六十，差得远。' },
+     { text: '一个遛狗的老爷爷路过，停下来看你练了一会儿。然后他把狗拴在柱子上，走过来说了一句你听不懂的话。他比划了一下——是要教你发球。他示范了一遍：抛球、挥臂、击球。动作流畅得像教程视频。你照着做了一遍。过网了。老爷爷竖起大拇指。然后他解开狗绳走了。你甚至不知道他的名字。' }],
+    [{ text: '今天排球场旁边有人在打沙滩足球。一群小孩在追着球跑，他们的笑声比海浪还大。你坐在那里看了半个小时。有个很小的小孩——大概四五岁——一直在球场边跑来跑去，跟不上哥哥姐姐的速度，但每次球滚到她面前她都会很认真地踢一脚。踢得方向完全不对，但她每次都很满意。' },
+     { text: '你想：你唱歌的时候大概也是这样的——方向不太对，但很认真。' }],
+  ];
+  const w = pick(stories);
+  adjustStat('social', 2);
+  showNarrative([...w, ...walkEnd(' · 社交 +2')]);
+}
+
+function sceneWalkLibrary() {
+  const stories = [
+    [{ text: '图书馆很安静。你找了个靠窗的位置坐下。阳光从高窗子照进来，空气里有旧书的味道。你翻了一本本地历史的画册——这座城市六百年前就长这样了。街道的名字都没变。你住的那条街以前是渔民晒网的地方。' },
+     { text: '你看了两小时的书。内容记住了大概百分之十。但你喜欢图书馆的安静——不是孤独的那种安静，是「周围都是人但谁也不打扰谁」的安静。你觉得这是你最理想的社交距离。' }],
+    [{ text: '你在外文书架上找到了一本中文小说——《活着》的西班牙语译本。你翻了翻，在扉页看到一行手写的中文：「2019年夏天，在这座城市读完。很想家。」你不知道写这句话的人是谁，他们现在在哪里。你在心里跟他们说了一句「我也是」。' }],
+    [{ text: '你发现图书馆二楼有一个音乐资料室。里面有很多老唱片和乐谱。你翻到一本合唱曲集，打开看了看——有些曲子你们排练过。你坐下来试着视读一首没见过的，在心里默唱。你发现你居然能读懂一大半了。你的视谱能力真的有进步。' },
+     { type: 'stat-up', text: '心情 +5 · 视谱 +1' }],
+    [{ text: '你在图书馆的自习区坐了两个小时。不是在学什么——就是在一个安静的地方让脑子放空。周围的人都在很认真地做自己的事：写论文的、看书的、对着电脑打字的。你觉得这种「各忙各的但在同一个空间里」的感觉很安全。你不需要说话，但你不孤独。' }],
+  ];
+  const w = pick(stories);
+  if (S.metSuChi && Math.random() < 0.25) {
+    showNarrative([
+      ...w,
+      { text: '你在书架间转弯的时候差点撞上苏迟。他的手里抱着四本书——两本乐理、一本建筑史、一本你看不清标题的。' },
+      { text: '「你也来图书馆？」你说。他看了看你，又看了看自己的书：「我每周三都来。」你回想了一下——你好像真的每次在图书馆都能碰到他。你以前只是没注意。' },
+      { text: '你们在阅览室坐了同一张桌子。整整一个小时谁也没说话。走的时候苏迟把他带的一包杏仁饼放在桌上，推了推——示意你吃。你拿了一块。他点了一下头就走了。你想：这大概是苏迟版本的「请你喝咖啡」。' },
+      { type: 'stat-up', text: '心情 +5 · 苏迟好感度 +3' },
+    ]);
+    S.npcs.suchi.affinity += 3;
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    return;
+  }
+  if (w.length > 0 && w[w.length-1].type === 'stat-up') {
+    adjustStat('sightRead', 1);
+    showNarrative(w);
+  } else {
+    showNarrative([...w, ...walkEnd('')]);
+  }
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneWalkOldTown() {
+  const stories = [
     [{ text: '你在旧城区的巷子里转，发现一家很小的二手书店。老板满脸胡子，听到你说英语后用流利的英语推荐了一本诗集。三欧。你买了——你也不知道为什么。' },
-     { text: pick(S.npcs.aoife.talked > 0 ? ['出来时在街角咖啡馆碰到Aoife，她在用笔记本工作。你问她忙吗。她说"忙到想把客户的稿子扔进海里"。你坐下来陪她吐槽了一会儿。你觉得有人跟你一起骂生活是一种很实在的安慰。'] : ['出来后你在咖啡馆坐了一会儿，翻了几页那本诗集。一个字看不懂，但排版很漂亮。你装作在看书其实在发呆。有时候发呆需要一个道具。']) }],
+     { text: pick(S.npcs.aoife && S.npcs.aoife.talked > 0 ? ['出来时在街角咖啡馆碰到Aoife，她在用笔记本工作。你问她忙吗。她说「忙到想把客户的稿子扔进海里」。你坐下来陪她吐槽了一会儿。你觉得有人跟你一起骂生活是一种很实在的安慰。'] : ['出来后你在咖啡馆坐了一会儿，翻了几页那本诗集。一个字看不懂，但排版很漂亮。你装作在看书其实在发呆。有时候发呆需要一个道具。']) }],
+    [{ text: '你无目的地走着，经过一面涂鸦墙。有一幅巨大的橘猫，旁边用各种语言写着「你好」。你找到了中文的——字写得歪歪扭扭的，但你还是觉得亲切。' },
+     { text: '你拍了照发给Sofia。她回了一个猫emoji和三个感叹号。你又发给苏迟。他回了一个句号。你盯着那个句号想了五秒钟——然后决定他的意思是「收到了」。' }],
+    [{ text: '你在旧城区发现了一条你没走过的巷子。很窄，两边的阳台几乎碰在一起。有人在阳台上晾被单，白色的布在风里鼓起来像帆。巷子尽头是一扇蓝色的门，门口蹲着一只橘猫。你蹲下来跟它对视。它打了个哈欠。你想：我们达成了一种默契——互相看不起但互相陪伴。' }],
+    [{ text: '你经过一家老理发店。门口坐着两个老头在下棋。你站着看了一局。完全看不懂——不是国际象棋，是本地的一种棋。但你看得出一个老头赢了因为他笑了，另一个老头把棋子全推乱然后说了一句很长的话。赢的那个老头还在笑。你觉得他们可能这样下了三十年了。' },
+     { text: '你走的时候输了的那个老头冲你招手，指着棋盘。你指了指自己——我？他点头。你坐下了。你不会下。他教你。你输了。他笑了。你也笑了。你走的时候他拍了拍你的手背。' }],
+    [{ text: '旧城区有一栋房子的外墙上爬满了三角梅。紫红色的花从三楼一直垂到地面。你站在对面看了一会儿。一扇窗户打开了，探出一个老太太的脑袋。她冲你喊了一句。你听不懂。你冲她挥手。她也挥了挥手，然后关上窗户。你不知道她说了什么，但你觉得这座城市的人挺好的——他们会跟陌生人打招呼。' }],
+  ];
+  adjustStat('money', Math.random() < 0.3 ? -3 : 0);
+  const w = pick(stories);
+  showNarrative([...w, ...walkEnd('')]);
+}
+
+function sceneWalkMarket() {
+  const stories = [
     [{ text: '你走到海边集市。手工肥皂、橄榄油、二手黑胶唱片。你翻了一堆唱片——不认识任何一个名字。你挑了一张封面最好看的，三欧。你没有唱片机。你也不知道为什么买。' },
      { text: '你花两欧买了一袋盐渍杏仁边走边吃。阳光把你的影子拉得很长。你踩着自己的影子走。小时候你也这么干过。' }],
-    [{ text: '你沿着铁轨旁边的小路走。蓝皮火车从身边过去的时候你冲窗户里挥了挥手。有人挥了回来。你不认识他们，他们不认识你，但你们互相挥了手。你觉得这很好。' },
-     { text: '路边有一片野生仙人掌，上面结了果。你不知道能不能吃。你看了看四周没人，摘了一个——刺扎了你的手。你把它放回去了。' }],
+    [{ text: '集市上有个卖蜂蜜的老头在大声吆喝。他的蜂蜜是装在酒瓶里的，上面贴着手写的标签。你买了一小瓶——他非要你当场试吃。你舔了一口，他双手比划问你好不好吃。你说好吃。他开心得像你夸了他的孩子。' },
+     { text: '你把蜂蜜揣回家的路上想：你来这里这么久了，行李箱里的东西在变少，但莫名其妙买的东西在变多。诗集、唱片、蜂蜜。你的生活在长出一些不在计划内的枝蔓。' }],
+    [{ text: '集市角落有个摊在卖手工陶器——碗、杯子、盘子，每一个上面画着不同的鱼。你拿起一个杯子翻过来看——底下刻着一行小字和一个笑脸。你问摊主这是什么意思。她笑了：「意思是『这个杯子的鱼会保佑你喝水不呛到』。」你买了一个。两欧。你觉得你需要一条鱼的保佑。' }],
+    [{ text: '有人在集市中央弹吉他唱歌。唱得一般。但他全情投入，闭着眼睛摇头晃脑。你站着听了两首。第二首的副歌部分你居然能跟着哼了——可能是一首当地的流行歌。旁边的人冲你笑了一下。你也笑了。你发现你已经不怕在公共场合发出声音了。排练改变了你。' }],
+  ];
+  adjustStat('money', -3);
+  const w = pick(stories);
+  showNarrative([...w, ...walkEnd('')]);
+}
+
+function sceneWalkViewpoint() {
+  const stories = [
     [{ text: '你走到老城区最高处的观景台。整座城市在脚下——红屋顶白墙壁蓝色的海。你深呼吸了一口气。空气里有海盐和花的味道。你想：我居然住在这里。' },
      { text: '一个老太太在长椅上织毛衣。她冲你笑了一下，说了一句你听不懂的话。你笑着点头。她又说了一句。你还是点头。她拍了拍旁边的位置，你坐下了。你们坐了五分钟，一句话没说。这可能是你今天最好的社交。' }],
-    [{ text: '你无目的地走着，经过一面涂鸦墙。有一幅巨大的橘猫，旁边用各种语言写着"你好"。你找到了中文的——字写得歪歪扭扭的，但你还是觉得亲切。' },
-     { text: '你拍了照发给Sofia。她回了一个猫emoji和三个感叹号。你又发给苏迟。他回了一个句号。你盯着那个句号想了五秒钟——然后决定他的意思是"收到了"。' }],
+    [{ text: '你爬到观景台的时候有点喘。但抬头一看就忘了累——整个海湾像一幅全景画铺在你面前。你能看到港口的渔船、远处的灯塔、山坡上彩色的房子。有一只老鹰在头顶盘旋。你站了很久。' },
+     { text: '你拍了一张全景照发到合唱团群里。Nico回：「你在我家楼上？？？」你这才想起来Nico住在这附近。你往下看了看——一个阳台上有人在挥手。你笑了。这座城市小到在山上拍照都能被邻居发现。' }],
+    [{ text: '观景台上只有你一个人。风很大，吹得你眯起眼睛。你把外套拉紧，坐在石墙上往下看。你能看到你住的街区——那个小阳台、楼下的面包房、转角的咖啡馆。从这里看你的日常生活，觉得它很小，也很完整。' },
+     { text: '你忽然想唱歌。在这里——只有你和风和整座城市。你小声唱了排练的那首曲子。声音被风吹散了，但你不在乎。你唱完以后风好像变温柔了一点。你觉得这可能是你这辈子唱过的最好的一次。因为没有人在听，所以你唱得最自由。' }],
+    [{ text: '你爬上观景台的时候太阳正在落山。天边的云被染成了橘红色。你坐在最高处的石阶上看落日。一架飞机从天空划过，留下一条白色的线。你想：飞机上的人在看什么？他们看得到这座城市吗？他们知不知道下面有一个人在看他们？' },
+     { text: '太阳落下去以后天空变成了深蓝色。你该回去了。但你坐了一会儿没动。有时候一个人待在一个很高的地方，什么都不做，就是一种很好的休息方式。' }],
+  ];
+  const w = pick(stories);
+  showNarrative([...w, ...walkEnd('')]);
+}
+
+function sceneWalkShelter() {
+  S.shelterVisits++;
+  const stories = [
+    [{ text: '流浪狗收容基地在城边一栋旧仓库改的房子里。你推开门的时候几十条狗同时看向你——大的小的胖的瘦的，有的摇尾巴有的在叫有的躲在角落。一个穿围裙的中年女人走过来：「来当志愿者的？还是来看看的？」你说来看看。她说「看看也好——它们需要被人看到」。' },
+     { text: '你蹲在围栏边上。一只瘸了一条腿的混血犬一瘸一拐地走过来，把鼻子伸过来闻你的手。你摸了摸它的头。它闭上眼睛。工作人员说它叫Luna，被车撞过，性格温顺。你摸了它十五分钟。你走的时候它站在围栏边看着你。你有一点不忍心。' }],
+    [{ text: '你去了流浪狗收容基地帮忙。今天的工作是给狗洗澡。一只黑色的大狗死活不肯进浴缸。你抱它，它挣扎。你放下它，它舔你的脸。你说：「你不想洗但你还舔我？」工作人员笑了：「它只是不喜欢水，不代表它不喜欢你。」' },
+     { text: '你洗了三只狗，浑身湿透，胳膊上被抓了两道。但每只洗完的狗都使劲甩水甩你一脸，然后对你摇尾巴。你觉得这是一种很原始的快乐——被需要，被信任，虽然你们语言不通。' }],
+    [{ text: '收容基地今天在做领养活动。几组家庭来看狗。一个小女孩趴在围栏上看了半天，最后指着一只又丑又老的短腿狗说：「我要这个。」她妈妈说：「这个不好看。」小女孩说：「它看着我笑了。」你看了一眼那只狗——它确实在笑。你鼻子有点酸。' },
+     { text: '工作人员递给你一杯咖啡。她说她在这里干了八年了。「每次有狗被领走我都高兴，每次有新的狗被送来我都难过。但高兴的次数还是比难过的多。」你觉得她做了一件了不起的事——用八年把「高兴比难过多」变成了一种日常。' }],
+  ];
+  if (S.hasDog) {
+    showNarrative([
+      { text: '你带着' + S.dogName + '去了收容基地。' + S.dogName + '一进门就兴奋地跑来跑去，跟围栏里的狗们打招呼。工作人员看到它说：「哎，这不是以前的那只小家伙吗！长胖了！」' + S.dogName + '摇着尾巴蹭她的腿。' },
+      { text: '你帮忙遛了几只狗。' + S.dogName + '走在最前面，像个小领队。有一只刚来的小狗怯生生的，' + S.dogName + '凑过去闻了闻它，然后舔了舔它的脸。小狗不抖了。你想：' + S.dogName + '比你更懂怎么安慰人。' },
+      { type: 'stat-up', text: '心情 +5 · 社交 +3' },
+    ]);
+    adjustStat('social', 3);
+  } else {
+    showNarrative([...pick(stories), ...walkEnd(' · 社交 +2')]);
+    adjustStat('social', 2);
+  }
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneWalkRandom() {
+  const walks = [
+    [{ text: '你沿着铁轨旁边的小路走。蓝皮火车从身边过去的时候你冲窗户里挥了挥手。有人挥了回来。你不认识他们，他们不认识你，但你们互相挥了手。你觉得这很好。' },
+     { text: '路边有一片野生仙人掌，上面结了果。你不知道能不能吃。你看了看四周没人，摘了一个——刺扎了你的手。你把它放回去了。' }],
+    [{ text: '你走到一个你没来过的小广场。中间有棵巨大的榕树，树冠像一把伞。树下有几张长椅，坐着看报纸的老人和吃冰淇淋的小孩。你买了一个柠檬冰淇淋坐下来。这棵树大概在你出生之前就在这了。你觉得它是这个广场的主人，所有人都是它的客人。' }],
+    [{ text: '你随便走了一条没走过的路。经过一个开着门的小教堂。里面很暗很凉。你走进去坐了一会儿。彩色玻璃窗把阳光变成了蓝色和红色落在石头地板上。你不信教，但你觉得这个空间让你安静下来了。有些地方不需要你相信什么，只需要你在那里坐一会儿。' }],
+    [{ text: '你在海边的步道上走。风把你的头发吹得很乱。一只猫从墙头上跳下来，走在你前面——它走几步停下来回头看你一眼，然后继续走，好像在给你带路。你跟着它走了一百多米。它最后跳上一个垃圾桶消失了。你被一只猫遛了。' },
+     { text: '你继续走。远处的海面上有一艘帆船。你想如果有一天你坐在那艘船上往岸上看，能不能看到你现在站的这个位置。' }],
+    [{ text: '你走到一条你没来过的小街。一家洗衣店的门口坐着一只很大的黄狗在晒太阳。旁边一家杂货店的招牌上画着一条龙。你抬头看——二楼阳台上有人在弹曼陀林琴，弹得断断续续的。你站了一会儿。这条街上每个东西都不搭配但放在一起莫名和谐。像合唱团。' }],
   ];
   const w = pick(walks);
-  // Dog walk bonus
   if (S.hasDog) {
-    w.push({ text: S.dogName + '在你脚边跑来跑去，尾巴摇得像个螺旋桨。有路人停下来摸了摸它，用本地语说了句"好可爱"。你觉得养狗以后社交能力被动提升了。' });
+    w.push({ text: S.dogName + '在你脚边跑来跑去，尾巴摇得像个螺旋桨。有路人停下来摸了摸它，用本地语说了句「好可爱」。你觉得养狗以后社交能力被动提升了。' });
     adjustStat('social', 1);
   }
-  adjustStat('money', Math.random()<0.4 ? -2 : 0);
-  showNarrative([...w, { type: 'stat-up', text: '心情 +5' + (S.hasDog ? ' · 社交 +1' : '') }]);
-  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+  showNarrative([...w, ...walkEnd(S.hasDog ? ' · 社交 +1' : '')]);
+}
+
+// --- Composing questline ---
+function sceneCompose() {
+  adjustStat('energy', -10); adjustStat('mood', 5); advanceTime(); renderStatus();
+  S.composingDay++;
+
+  if (S.composingPhase === 1) {
+    const p1 = [
+      [{ text: '你把那天记下来的几个音翻出来看。嗯，你的简谱字迹像一种失传的古文字。你对着纸哼了一遍——旋律还在，没丢。你试着往后续了几个音。有的对，有的不对。你把不对的划掉。纸上多了很多划痕。' },
+       { text: '你想：你到底想写一首什么样的歌？你闭上眼睛。脑子里冒出来的画面是——你到这座城市的第一天，拖着行李箱走在陌生的街上，不认识任何人。那种感觉。不是害怕，是一种安静的悬浮感。你还没落地。' }],
+      [{ text: '你坐在阳台上，把手机录音打开，哼了几段旋律。听回放的时候你觉得——第一段还行，第二段像卡拉OK，第三段像闹钟铃声。你删了第二和第三段。' },
+       { text: '你又哼了几遍第一段。它让你想到什么？你不知道。但你知道它让你觉得什么——像一个人站在车站等一班不知道几点到的车。不焦虑，但也没有确定感。你在纸上写了两个字：等待。' }],
+    ];
+    showNarrative([...pick(p1), { type: 'stat-up', text: '心情 +5' }]);
+    if (S.composingDay >= 2) {
+      S.composingPhase = 2; S.composingDay = 0;
+      showNarrative([{ type: 'system', text: '你决定给这首歌写歌词。' }]);
+    }
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    return;
+  }
+
+  if (S.composingPhase === 2) {
+    const p2 = [
+      [{ text: '你试着写歌词。第一行写了删删了写写了又删。你总觉得每一句都太假了——太像「歌词」了。你想要的不是那种东西。你想要的是说话的感觉。但说话谁会唱呢？' },
+       { text: '你想起Dietrich说过的一句话：「合唱不是表演，是对话。」也许歌词也是这样。不是写给别人听的，是你跟自己的对话。你重新拿起笔。这次你没有想「怎么写」，你只是想「你到底想说什么」。' }],
+      [{ text: '你写了半页歌词。关于到一个陌生城市的感觉——不认识路，不会说当地语言，走进一家咖啡馆不知道怎么点单，但窗外的阳光是好的，街上的声音是好的，有人在远处唱歌。' },
+       { text: '你念了一遍。有些地方太啰嗦了。你画了几个叉。歌词不能像散文一样长——它要短，要有节奏，要让人想跟着唱。你重新改了一遍。好了一点。但还差得远。你把纸折起来放进抽屉。明天再看。' }],
+      [{ text: '你把昨天写的歌词拿出来看。过了一夜，有些句子你觉得还不错，有些你想掐死昨天的自己。你在空白处又写了一个段落——关于第一次走进排练室听到所有人一起唱的感觉。那个瞬间你的鸡皮疙瘩起来了。你想把那个鸡皮疙瘩写进歌词里。' }],
+    ];
+    showNarrative([...pick(p2), { type: 'stat-up', text: '心情 +5' }]);
+    if (S.composingDay >= 3) {
+      S.composingPhase = 3; S.composingDay = 0;
+      showNarrative([
+        { text: '你看着写好的歌词——两段加一个副歌。不长，但每一句你都改了至少五遍。你小声念了一遍。它像你自己的声音。不是在模仿谁，不是在写「歌词应该有的样子」。就是你想说的话。' },
+        { type: 'system', text: '歌词初稿完成。现在需要给它配上旋律。' },
+      ]);
+    }
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    return;
+  }
+
+  if (S.composingPhase === 3) {
+    const p3 = [
+      [{ text: '你对着歌词试着配旋律。用你最初记下的那段做种子，往外生长。你哼了一段——不对，太高了。降下来——不对，太平了。你在阳台上来回走，嘴里反复哼着同一句歌词，每次旋律都不一样。' },
+       { text: '隔壁Sofia探出头：「你在写歌？」你吓了一跳：「你听到了？」她笑了：「我听了半小时了。第三个版本最好。」你愣了——你已经不记得第三个版本是什么了。Sofia哼了一遍。你听完——她是对的。' }],
+      [{ text: '你把歌词和旋律的片段拼在一起。有些地方词和曲自然地吻合——那种感觉像拼图的两块咔一声合上。有些地方怎么都不对——词的重音和曲的重音打架。你改了词。又改了曲。改到第四遍的时候你趴在桌上想：为什么有人能写出一整张专辑？他们是怎么活过来的？' }],
+    ];
+    showNarrative([...pick(p3), { type: 'stat-up', text: '心情 +5' }]);
+    if (S.composingDay >= 3) {
+      if (S.metSuChi) {
+        S.composingPhase = 4; S.composingDay = 0;
+        showNarrative([
+          { text: '你犹豫了很久，最后把歌词和旋律的录音发给了苏迟。发完以后你把手机扣在桌上不敢看——像交了一份你没把握的作业。' },
+          { text: '二十分钟后苏迟回了一条很长的语音。你戴上耳机听——他把你的旋律在钢琴上弹了一遍，中间加了和声。然后他说：「副歌第三小节的转调可以试试降半音。整体结构没问题。歌词……」他停了两秒，「歌词很好。」' },
+          { text: '你盯着手机。苏迟说了「很好」。苏迟从来不说「很好」。他对排练曲目的最高评价是「还行」。你在心里尖叫了一下。然后你打字：「谢谢。降半音我试试。」你删掉了后面想加的十个感叹号。' },
+          { type: 'system', text: '苏迟帮你完善了编曲。进入打磨阶段。' },
+        ]);
+        S.npcs.suchi.affinity += 5;
+      } else {
+        S.composingPhase = 4; S.composingDay = 0;
+        showNarrative([
+          { text: '你把旋律反复修改，用手机录了十几个版本。最后一个版本你听了三遍——嗯，这个。就是这个感觉。不完美，但对了。' },
+          { type: 'system', text: '旋律基本成型。进入打磨阶段。' },
+        ]);
+      }
+    }
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    return;
+  }
+
+  if (S.composingPhase === 4) {
+    const p4 = [
+      [{ text: '你从头到尾把整首歌唱了一遍。录下来听——嗯，有些地方换气不自然，有些地方旋律的走向可以再流畅一点。但整体上……它是一首歌了。你的歌。你写的。你从来没有拥有过一首自己的歌。' },
+       { text: '你改了几个小地方。一个词换成了另一个——意思差不多但唱起来更顺。一个音降了半度——Lena说过不要强撑高音，你听进去了。你又唱了一遍。好了。好了吗？你不确定。但你觉得，如果不停下来，你会永远改下去。' }],
+      [{ text: '你坐在阳台上把歌唱给海听。海没有反应。你又唱了一遍。这一遍你唱得比较放松——因为没有观众（海不算）。你闭上眼睛，让歌自己从你身体里出来。唱完的时候你睁开眼。海还是那个海。但你觉得你和它之间多了一层什么。' }],
+    ];
+    showNarrative([...pick(p4), { type: 'stat-up', text: '心情 +5 · 声乐 +2' }]);
+    adjustStat('vocal', 2);
+    if (S.composingDay >= 2) {
+      S.composingPhase = 5; S.composingDay = 0;
+      S.composingSongShared = false;
+      showNarrative([
+        { text: '你把歌从头到尾唱了最后一遍。这一遍你没有在想哪个音对不对、哪个词好不好。你只是在唱。唱完以后你坐了一会儿。窗外的天在变暗。你觉得你做了一件了不起的事——不是因为这首歌有多好，而是因为你把它从脑子里的几个模糊的音变成了一首完整的歌。从无到有。你以前从来没做过这种事。' },
+        { type: 'system', text: '你的第一首原创歌曲完成了。你可以选择跟谁分享它。' },
+      ]);
+    }
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+  }
+}
+
+function sceneComposeShare() {
+  const choices = [
+    { text: '在排练后唱给大家听', action: () => {
+      S.composingSongShared = true;
+      adjustStat('social', 5); adjustStat('mood', 15); adjustStat('vocal', 3); renderStatus();
+      const paras = [
+        { text: '排练结束后你跟Dietrich说你写了一首歌。他看了你一眼——那种看了你三秒钟比说一百句话都重的看法。然后他说：「唱。」' },
+        { text: '所有人都坐下来了。你站在指挥台旁边——平时这个位置是Dietrich的。你的手在抖。你开口了。' },
+        { text: '唱到第二句的时候你的声音不抖了。你看到Sofia的眼睛亮了。你看到苏迟在认真听——真的认真听，不是礼貌性的那种。Marta的手不知道什么时候捂住了嘴。你继续唱。你唱到了副歌——关于一群陌生人在一个房间里一起发出声音的感觉。你写这首歌的时候想的就是这个排练室。' },
+        { text: '唱完以后安静了大概三秒。你觉得这三秒像三年。然后Nico带头鼓掌。Carlos吹了口哨。Ibrahim点了头——他那种极其节制的点头在你看来比站立鼓掌还重。' },
+        { text: 'Dietrich走过来。他没有鼓掌——他拍了拍你的肩膀。「这是一首诚实的歌，」他说，「诚实比技巧难多了。」' },
+      ];
+      if (S.metSuChi) {
+        paras.push({ text: '散场的时候苏迟走到你旁边。他犹豫了一下说：「副歌降半音的建议你用了。」你说：「用了。」他点了一下头：「效果不错。」然后他走了。你站在原地笑了——这是苏迟版本的「我很感动」。' });
+        S.npcs.suchi.affinity += 3;
+      }
+      paras.push({ type: 'stat-up', text: '社交 +5 · 心情 +15 · 声乐 +3' });
+      showNarrative(paras);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+    { text: '先录一段发给家里听', action: () => {
+      S.composingSongShared = true;
+      adjustStat('mood', 12); adjustStat('vocal', 2); renderStatus();
+      showNarrative([
+        { text: '你用手机录了一遍。第一遍不满意——有个地方破音了。第二遍好一些。第三遍你觉得够了——不完美但真实。你发给了你妈。' },
+        { text: '她五分钟后回了一条语音。你点开——先是沉默，然后是你妈的声音：「你写的？」你说是。她又沉默了一会儿。你听到她在笑：「我儿子/女儿会写歌了。」然后她说了一句让你没想到的话：「你爸听哭了。他不让我告诉你。」' },
+        { text: '你坐在阳台上听了两遍这条语音。你爸听哭了。你爸是那种你练琴练了十年只说过一次「还行」的人。你把手机放下，看着远处的海。你的眼睛有点酸。你想：也许你写这首歌不是为了证明什么，只是为了让他们知道你在这里过得好。你在长出新的自己。' },
+        { type: 'stat-up', text: '心情 +12 · 声乐 +2' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+    { text: '先放着，还没准备好', action: sceneDailyMenu },
+  ];
+  showNarrative([{ text: '你的第一首原创歌曲就在你手机的录音里和笔记本的涂涂改改里。你可以选择跟谁分享它——或者先不分享。' }]);
+  showChoices(choices);
 }
 
 // --- Su Chi random encounters ---
