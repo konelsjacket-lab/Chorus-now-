@@ -289,6 +289,7 @@ const S = {
   calledParents: 0, lastParentCall: 0,
   composingPhase: 0, composingDay: 0, composingSongShared: false,
   shelterVisits: 0, museumVisits: 0,
+  choirDrama: {}, npcRomances: { ibukiYuki: 0, lenaAoife: 0, carlosMarta: 0 },
   ownedInstruments: [], lastInstrumentPractice: 0,
   giftsGiven: {}, vacationsTaken: 0, soloDatesDone: {},
   rehearsalCount: 0,
@@ -1453,6 +1454,119 @@ function sceneRehearsal() {
     S.npcs.aoife.talked++; S.npcs.aoife.affinity += 8;
     S.metAtRehearsal.aoife = true;
     adjustStat('social', 5); adjustStat('vocal', 2);
+
+  // --- 乐团矛盾与温馨事件 ---
+  } else if (rc === 6 && !S.choirDrama.lenaNicoFight) {
+    S.choirDrama.lenaNicoFight = true;
+    paras.push({ text: '今天排练气氛不太对。你一到就感觉到了——Lena站在角落，表情比平时更冷。Nico在另一边，没有像往常一样跟所有人打招呼。你问Aoife怎么了，她低声说："别问。"' });
+    paras.push({ text: '排练开始后Dietrich让大家从头过一遍上周的曲子。唱到第二段的时候Lena突然停下来："Nico，你又抢拍了。第八小节。我上周就说过了。"' });
+    paras.push({ text: 'Nico的脸一下子红了："我没抢拍！是你太慢了！"Lena的声音更冷了："这不是快慢的问题。是你根本不看谱。"全场安静了。你感觉空气在结冰。' });
+    paras.push({ text: 'Nico站起来了。你从来没见过她不笑的样子——她眼眶红了："你每次都这样！什么都要挑！我来唱歌是因为开心，不是来被你当学生骂的！"' });
+    paras.push({ text: 'Lena也站起来了："我挑你是因为你有潜力！你以为我想当坏人吗？但总得有人说真话！"她的声音在抖——你第一次发现Lena也会激动。' });
+    paras.push({ text: 'Dietrich拍了两下手："够了。都坐下。"他的声音不大但很稳。两个人都坐下了。排练室里的气氛像被揉皱的纸。' });
+    paras.push({ text: '剩下的排练大家都唱得小心翼翼的。Nico没有再开过一次玩笑。Lena的眼睛一直盯着谱子。你在中间，觉得喉咙紧紧的——不是因为唱歌。' });
+    paras.push({ text: '排练结束后Nico第一个走了。Lena坐在原地收谱子，动作很慢。Marta走过去坐在她旁边，什么也没说。你想过去但不知道该说什么。你站在门口犹豫了一会儿，最后也走了。你在回去的火车上一直在想——Lena说的「有潜力」是什么意思。她对你也说过类似的话。' });
+    paras.push({ type: 'system', text: 'Lena和Nico发生了激烈争吵。合唱团气氛变得微妙了。' });
+    adjustStat('mood', -8); adjustStat('social', 3);
+
+  } else if (rc === 7 && S.choirDrama.lenaNicoFight) {
+    paras.push({ text: '今天排练Lena和Nico坐得很远。Dietrich看了一眼但什么也没说。你在两个人中间，觉得自己像一块三明治里的芝士——被两片面包夹着，动弹不得。' });
+    paras.push({ text: '排练间隙你走到Nico旁边。她在喝水，眼圈还是红的。你说："你还好吗？"她笑了——但笑得不太对。"我没事。只是觉得……我是不是确实不够好。"' });
+    paras.push({ text: '你说："你是这里最有感染力的人。你唱歌的时候所有人都会跟着笑。"她看了你一眼："但Lena说得对。我确实不看谱。"你说："那你以后看谱就好了。这不影响你是一个很棒的人。"她用力吸了一下鼻子。' });
+    paras.push({ text: '排练结束后你看到Ibrahim走到Lena旁边说了几句话。Lena的表情从冰变成了水——不是融化，是一种很安静的柔软。Ibrahim说完就走了。你不知道他说了什么，但Lena把谱子收得更慢了，好像在想什么。' });
+    paras.push({ text: '你和Aoife走到火车站。她说："Lena其实上周回家哭了。Marta告诉我的。"你说："她？她也会哭？"Aoife说："当坏人是最累的。因为你知道自己是对的，但所有人都不喜欢你。"你沉默了。你想起你认识的一些人——包括你自己的某些时刻。' });
+    adjustStat('social', 4); adjustStat('mood', 3);
+    S.npcs.nico.affinity += 5;
+
+  } else if (rc === 8 && !S.choirDrama.terribleRehearsal) {
+    S.choirDrama.terribleRehearsal = true;
+    paras.push({ text: '今天的排练是一场灾难。' });
+    paras.push({ text: '首先Ibrahim迟到了二十分钟——他从来不迟到。来的时候脸色很差，什么也没解释。然后Nico开口就跑调，Lena瞪了她一眼但忍住没说话。你自己也不在状态——昨晚没睡好，高音区全是破音。' });
+    paras.push({ text: 'Dietrich排了三遍同一段，每一遍都在摇头。第三遍结束他说了一句你从没听过他说的话："今天不行。所有人都不在。"' });
+    paras.push({ text: '全场沉默。你低下头看谱子，但字都模糊了。你觉得喉咙发紧——不是因为唱太多，是因为觉得自己拖了后腿。你偷偷看了一眼苏迟——他也在皱眉，手指无意识地敲着笔记本。连他都没唱好。你想：完了。' });
+    paras.push({ text: 'Carlos试图活跃气氛："没事没事，大家都有不好的时候——"Dietrich打断他："不是「没事」。我们三个月后要站在巴塞罗那的舞台上。你们要么认真，要么别去。"' });
+    paras.push({ text: '你从没见过Dietrich这么严厉。他说完自己也愣了一下，揉了揉额头。然后说了一句更轻的话："对不起。我说过了。但……我很怕你们还没准备好。"' });
+    paras.push({ text: '你忽然明白了——他不是在骂你们。他是在怕。这个穿亚麻衬衫的安静男人，他怕让你们失望。你说不出话来。' });
+    paras.push({ text: '排练草草结束了。大家走的时候谁也没开口。你路过Dietrich的时候他在收音响线。你想说"今天对不起"但你觉得这话太轻了。你走了。坐在火车上的时候你打开手机，看到团群里一条消息都没有。你觉得这种安静比吵架更可怕。' });
+    paras.push({ type: 'system', text: '这是最糟糕的一次排练。但糟糕的排练也是排练的一部分。' });
+    adjustStat('mood', -12); adjustStat('vocal', -2);
+
+  } else if (rc === 9 && S.choirDrama.terribleRehearsal) {
+    paras.push({ text: '上周那次灾难之后，你出门前犹豫了很久要不要去排练。你躺在床上盯着天花板想了十五分钟。然后你起来了。因为你知道如果你不去，明天会更难去。' });
+    paras.push({ text: '到的时候你发现——所有人都来了。而且来得比平时早。Marta带了两种蛋糕。Carlos带了热巧克力。Nico穿了她最亮的黄色外套。你心想：大家都在用自己的方式说「上次的事过去了」。' });
+    paras.push({ text: '排练开始前Dietrich站在前面。他清了清嗓子："上周我说了一些太重的话。但我不收回。因为我相信你们值得被认真对待。"然后他笑了——不是礼貌的笑，是真的笑。你从来没见过他笑成这样。' });
+    paras.push({ text: '今天唱得出奇地好。也许是因为大家都憋着一口气。也许是因为那次灾难把某些东西震松了——你发现你的声音比以前放得更开了。不是技术变好了，是你不再怕犯错了。' });
+    paras.push({ text: '排练结束后Nico走到Lena面前。你屏住呼吸。Nico说："你上次说我不看谱——我这周把三首曲子的谱子全背下来了。你要考我吗？"Lena愣了一下。然后她做了一件你从没见过她做的事——她笑了，伸出手揉了一下Nico的头发。"不用考。我信你。"' });
+    paras.push({ text: 'Nico眼圈红了。你的眼圈也红了。你假装在翻谱子。Marta在旁边已经在擦眼泪了——但她永远在擦眼泪所以也分不清。' });
+    paras.push({ type: 'system', text: 'Lena和Nico和好了。合唱团的凝聚力变得更强了。' });
+    adjustStat('mood', 15); adjustStat('vocal', 3); adjustStat('social', 5);
+    S.npcs.nico.affinity += 3; S.npcs.lena.affinity += 3;
+
+  } else if (rc === 10 && !S.choirDrama.someoneQuit) {
+    S.choirDrama.someoneQuit = true;
+    paras.push({ text: '排练前你在广场上碰到了Aoife。她的表情不对——不是紧张，是那种下了决心的平静。你问她怎么了。' });
+    paras.push({ text: '她说："我可能要退团了。"' });
+    paras.push({ text: '你以为你听错了。"什么？"' });
+    paras.push({ text: '她叹了口气："翻译工作太多了。我这个月有三个截止日期，全部撞在一起。我连练习都没时间……每次来排练都觉得自己在拖后腿。Lena上次说的那些话——不是说我，但我觉得也是在说我。"' });
+    paras.push({ text: '你不知道说什么。你想说「不要走」但你知道这太自私了。你想说「你很重要」但你怕她觉得你在敷衍。你最后说了一句："你不走的话，我在排练里会更安心。"你说完觉得这话好笨。' });
+    paras.push({ text: '排练的时候你一直在偷看Aoife。她在唱，但眼神是空的。排练结束后Dietrich叫住了她——你不知道他怎么知道的，也许Marta告诉了他。你看到他们在角落里说了很久的话。你看不到Dietrich的表情，但你看到Aoife在擦眼睛。' });
+    paras.push({ text: '最后Aoife走过来对你说："我再想想。"你说："好。"你没有追问。你在心里给Dietrich加了一百分——一个好的指挥不只指挥音乐，也指挥人心。' });
+    paras.push({ type: 'system', text: 'Aoife考虑退团。Dietrich跟她谈了很久。事情还没有定论。' });
+    adjustStat('mood', -5); adjustStat('social', 4);
+    S.npcs.aoife.affinity += 5;
+
+  } else if (rc === 11 && S.choirDrama.someoneQuit && !S.choirDrama.aoifeStayed) {
+    S.choirDrama.aoifeStayed = true;
+    paras.push({ text: '你到排练的时候在门口看到了Aoife。她手里拿着一个纸袋，冲你笑了。你松了一口气——她来了。' });
+    paras.push({ text: '她把纸袋递给你："爱尔兰巧克力。我妈寄的。分给大家。"你说："所以你……"她说："我跟Dietrich商量了。他说可以让我暂时只参加一半排练——工作忙的时候就来声部分排，不来全团排练。等三个截止日期过了再说。"' });
+    paras.push({ text: '你说："那Europa Cantat呢？"她认真地看着你："我去。就算只唱一首我也去。Dietrich说了——他说，「这个团不是因为你唱得好才需要你。是因为你在这里。」"' });
+    paras.push({ text: '你低头咬了一口爱尔兰巧克力——很甜，有一点苦味。你说："Dietrich说话怎么都像歌词。"Aoife笑了："也许这就是为什么他是指挥。"' });
+    paras.push({ text: '排练的时候Nico凑过来偷偷跟你说："Aoife没走？"你点头。Nico深吸一口气："太好了。如果她走了我要辞职的。"你说："你在合唱团没有职务。"她说："那我就当场哭。效果一样。"' });
+    paras.push({ type: 'system', text: 'Aoife决定留下来了。Dietrich的话让她改变了主意。' });
+    adjustStat('mood', 10); adjustStat('social', 4);
+    S.npcs.aoife.affinity += 8;
+
+  } else if (rc === 12 && !S.choirDrama.dietrichSick) {
+    S.choirDrama.dietrichSick = true;
+    paras.push({ text: '你到排练场的时候觉得哪里不对。然后你发现了——Dietrich不在。' });
+    paras.push({ text: '从你加入以来，Dietrich一次都没缺席过。他是那种你觉得会一直在那里的人，像广场上的石头台阶和角落的那棵橘子树。' });
+    paras.push({ text: 'Marta说他发烧了。三十九度。"我让他不要来，他说「我可以指挥」。我说「你连站都站不稳」。他才答应不来的。"她叹了口气。"你知道他多久没生病了吗？六年。"' });
+    paras.push({ text: '大家面面相觑。没有指挥的排练……你们能行吗？你看了看周围——所有人的表情都是同一种迷茫。像一群没有牧羊人的羊。' });
+    paras.push({ text: 'Lena第一个站了出来。"我来。"所有人看着她。她说："我不是Dietrich。但我能带你们过一遍谱子。"你从来没见过Lena紧张——但今天你看到她的手在微微发抖。' });
+    paras.push({ text: '苏迟站起来走到Lena旁边。他什么也没说，只是把他的声部分析笔记打开放在谱架上。Lena看了他一眼，点了点头。你想：他用行动说的话比任何人用嘴说的都多。' });
+    paras.push({ text: '排练开始了。不太一样——Lena的指挥方式比Dietrich更直接、更严格，没有他那种温柔的留白。但她知道每个声部该在哪里进、哪里退。你跟着她的手势唱，发现其实没有想象中那么难。苏迟在旁边低声给男声部打节拍。Carlos跟着Ibrahim的呼吸走。Nico——Nico居然一次都没跑调。你偷偷看了她一眼，她在极其认真地看谱子。' });
+    paras.push({ text: '排练结束了。不完美，有些地方乱了。但你们唱完了。Lena放下手的时候深吸了一口气，好像一直在憋着。Marta开始鼓掌。然后所有人都在鼓掌——不是给表演鼓掌，是给"我们居然做到了"鼓掌。' });
+    paras.push({ text: '你在群里发了一条消息："@Dietrich 今天排练很顺利。Lena和苏迟带的。你安心休息。"Dietrich回了一个很长的消息，大意是"我就知道你们可以"。你觉得他在被窝里偷偷哭了但你没证据。' });
+    paras.push({ type: 'system', text: '没有Dietrich的一次排练。Lena和苏迟撑起了全场。你们比自己以为的更强。' });
+    adjustStat('mood', 8); adjustStat('vocal', 3); adjustStat('social', 5);
+    S.npcs.lena.affinity += 8; S.npcs.suchi.affinity += 5;
+
+  } else if (rc === 13) {
+    paras.push({ text: 'Dietrich回来了。看起来瘦了一点，但精神不错。你们鼓掌欢迎他——他不好意思地摆了摆手："就病了一次，不用这样。"Nico说："六年来第一次！这叫历史性事件！"' });
+    paras.push({ text: '他听说了上周Lena带排练的事。他走到Lena面前说了句什么——你听不到，但你看到Lena低下了头。你从来没见过Lena低头。然后她抬起来的时候眼睛亮了一下。' });
+    paras.push({ text: '排练中间Carlos忽然说："我有个提议——我们给Dietrich唱一首歌。就唱他教我们的第一首曲子。"Dietrich说："不用——"Carlos已经起了音。所有人自动站到了位置上。' });
+    paras.push({ text: '你们唱了《Think of Me》。就是你第一次排练唱的那首。这次你知道所有歌词了。Nico在你旁边唱得很大声——对了，全对了。Ibrahim的和声稳得像大地。苏迟闭着眼睛，嘴角有弧度。你在里面唱着。你的声音在所有人的声音里。' });
+    paras.push({ text: 'Dietrich站在前面听。他没有指挥——手放在身侧。你看到他嘴唇动了一下。他在跟着唱。唱完他说了一句"谢谢"。只有一个词。但够了。' });
+    paras.push({ type: 'system', text: 'Dietrich回来了。合唱团为他唱了一首歌。' });
+    adjustStat('mood', 12); adjustStat('vocal', 2); adjustStat('social', 4);
+    S.npcs.dietrich.affinity += 10;
+
+  } else if (rc === 14) {
+    // NPC恋爱暗线：Ibrahim和Yuki
+    const romPick = Math.random();
+    if (romPick < 0.5) {
+      paras.push({ text: '排练间隙你去倒水，路过琴房的时候看到Ibrahim站在Yuki旁边。Yuki在弹一段很轻的旋律，Ibrahim闭着眼睛听。' });
+      paras.push({ text: '你停下脚步——不是故意的，是那个画面让你不想动。两个最安静的人，一个在弹，一个在听。你觉得他们之间的沉默比大部分人的对话都丰富。' });
+      paras.push({ text: 'Yuki弹完了。Ibrahim说了一句很轻的话——你听不清，但Yuki笑了。那种笑不是礼貌的，是从眼睛开始的。你悄悄走了。你觉得自己不应该看到这个。但你很高兴你看到了。' });
+      S.npcRomances.ibukiYuki = Math.max(S.npcRomances.ibukiYuki, 1);
+    } else {
+      paras.push({ text: '排练结束后你看到Lena和Aoife在台阶上坐着聊天。Lena在说什么——你听到了"文化局"和"经费"几个词。Aoife在认真听，时不时点头。' });
+      paras.push({ text: '你走过去的时候Lena正好说完了。Aoife转头对你说："Lena刚才在教我怎么申请翻译项目的文化基金。"Lena说："不是教，是建议。"Aoife说："你的建议就是教。"' });
+      paras.push({ text: '你注意到Lena递给Aoife一杯咖啡——你从来没见过Lena主动给别人买过东西。Aoife接过去喝了一口，说："你记得我喝什么？"Lena说："上次你点的。不难记。"她说得很平淡。但你觉得「记住一个人喝什么」这件事本身就不平淡。' });
+      S.npcRomances.lenaAoife = Math.max(S.npcRomances.lenaAoife, 1);
+    }
+    adjustStat('social', 3); adjustStat('vocal', 2);
+
   } else if (rc === 15 && !S.competitionAnnounced) {
     paras.push({ text: '今天排练结束后Dietrich没有马上收东西。他站在前面，表情比平时多了一点什么——你第一次看到他有点激动。你心想：怎么了。' });
     paras.push({ text: '「大家留一下，」他说。所有人安静下来。你下意识看了一眼苏迟——他也在看Dietrich。' });
@@ -1475,6 +1589,43 @@ function sceneRehearsal() {
     paras.push({ text: '他看了一圈。没有人反对。你觉得空气里有一种安静的兴奋——不是紧张，是所有人都在认真对待同一件事。你看了一眼苏迟，他在笔记本上写了什么。你偷看了一眼——他在画声部走向图。你收回目光，觉得你应该更认真一点。' });
     S.repertoire = ['Ave Verum Corpus', 'El Cant dels Ocells', 'The Singularity'];
     adjustStat('vocal', 4); adjustStat('social', 3);
+  } else if (rc === 18 && S.choirPhase >= 2 && !S.choirDrama.fundingCrisis) {
+    S.choirDrama.fundingCrisis = true;
+    paras.push({ text: '排练开始前Dietrich把大家叫到一起。他的表情比平时严肃。你心跳加快了——上次他用这个表情是宣布Europa Cantat。' });
+    paras.push({ text: '「有个坏消息，」他说。「巴塞罗那的差旅费用比我们预期的高。原本文化局答应赞助一半，但今天Lena告诉我——预算被砍了。」' });
+    paras.push({ text: 'Lena站在旁边，嘴唇抿得很紧："市议会重新分配了文化预算。合唱团不是优先项目。"她说这话的时候声音是平的，但你听得出来她在忍着什么。这件事她一定争取过了。' });
+    paras.push({ text: '算了一笔账：机票、住宿、场地注册费——每个人需要自己承担至少两百欧。不是不可能，但对一些人来说……你看了一眼Ibrahim。他的表情没变，但你知道两百欧对他来说不是小数目。' });
+    paras.push({ text: 'Nico第一个说话："我们可以卖艺！在广场上唱歌卖票！"Carlos说："我可以在餐厅办一场募捐晚餐。"Marta说："我来做蛋糕义卖。"你说不出话——你被他们的反应速度震到了。没有一个人说"那算了吧"。' });
+    paras.push({ text: '苏迟一直没说话。你看了他一眼——他在笔记本上写字。你以为他在记录讨论，凑过去一看：他在算每个人的差旅成本，按最省的方案重新排了。最后一行写着："如果住青年旅舍，每人可以降到一百三十欧。"' });
+    paras.push({ text: '你小声对他说："你什么时候算的？"他说："Dietrich开口的时候就在算了。"你想：危机来的时候，有的人慌，有的人哭，苏迟算数。你觉得这种人很可靠。' });
+    paras.push({ type: 'system', text: 'Europa Cantat的资金出了问题。但没有人打算放弃。' });
+    adjustStat('mood', -5); adjustStat('social', 5);
+    S.npcs.suchi.affinity += 3;
+
+  } else if (rc === 20 && S.choirDrama.fundingCrisis && !S.choirDrama.fundraiserDone) {
+    S.choirDrama.fundraiserDone = true;
+    paras.push({ text: '周六下午，广场上搭了一个小舞台。Carlos借来的音响，Nico画的海报（用了太多荧光色，Lena说"看着像迪厅"），Marta的三层蛋糕摊。这是合唱团的募捐演出。' });
+    paras.push({ text: '你站在后台——所谓后台就是一棵橘子树后面——紧张得手心全是汗。这是你第一次在公共场合唱歌。你说："我觉得我要吐了。"Aoife说："吐完了再上台。"' });
+    paras.push({ text: '上台的时候你的腿在抖。你看到台下坐了大概五十个人——有邻居、有路人、有Carlos的食客、有Marta教堂的朋友。Sofia也来了，坐在第二排，冲你竖了个大拇指。你深吸一口气。' });
+    paras.push({ text: 'Dietrich举起了手。Yuki弹了起始和弦。你开口了。' });
+    paras.push({ text: '第一首唱完的时候台下鼓掌了。你不确定是因为唱得好还是因为他们是好人。第二首Ibrahim的独唱让前排一个老太太哭了。第三首《The Singularity》——你们在台上拍手跺脚弹舌，台下的人先是愣了，然后开始跟着打节奏。你看到一个小孩骑在他爸肩上拍手，完全不在拍上但笑得比谁都开心。' });
+    paras.push({ text: '演出结束后Carlos数了数捐款箱——"四百七十三欧！加上蛋糕义卖的一百二，快六百了！"Nico尖叫了。你也想尖叫。你忍住了——你改成了鼓掌。' });
+    paras.push({ text: '收拾东西的时候你看到Ibrahim在角落里打电话——他在笑。你第一次看到他打电话的时候在笑。Yuki走过去递给他一瓶水，等他打完才走。你假装没看见。' });
+    paras.push({ type: 'system', text: '募捐演出成功！差旅费有着落了。你第一次在公众面前唱歌。' });
+    adjustStat('mood', 15); adjustStat('vocal', 5); adjustStat('social', 5);
+    S.npcRomances.ibukiYuki = Math.max(S.npcRomances.ibukiYuki, 2);
+
+  } else if (rc === 22 && S.choirPhase >= 2 && !S.choirDrama.carlosMartaMoment) {
+    S.choirDrama.carlosMartaMoment = true;
+    paras.push({ text: '今天排练前Carlos比平时来得更早。你到的时候他已经在摆椅子了——摆得很整齐，不像他平时大大咧咧的样子。你还看到他在谱架上放了一个小纸袋。' });
+    paras.push({ text: '你问他纸袋是什么。他说："给Marta的。她过生日。"你说："你怎么知道？"他说："她上个月不小心说的。她以为没人听到。"你说："可是你听到了。"他看了你一眼，笑了——有点不好意思的那种。你第一次看到Carlos不好意思。' });
+    paras.push({ text: '排练前Marta来了。Carlos端了一个小蛋糕出来——他自己做的，你看得出来，因为奶油抹得不太均匀。上面用巧克力写了"生日快乐Marta"，字歪歪扭扭的。' });
+    paras.push({ text: 'Marta看到蛋糕的时候站在原地不动了。然后她的嘴唇开始抖。你想：Marta永远在给别人做蛋糕，什么时候有人给她做过？' });
+    paras.push({ text: '全场开始唱生日歌。走调得一塌糊涂——这大概是这个合唱团唱得最差的一首歌。但Marta哭了。Carlos站在她旁边，手足无措地拍她的背。Nico在旁边录像。你鼓掌，喉咙有点紧。' });
+    paras.push({ text: '排练后你看到Carlos和Marta在广场台阶上坐着，分一块蛋糕。Carlos在讲什么——你听到"里约"和"我妈"。Marta在笑。你从来没见过Carlos跟一个人说话的时候这么安静。' });
+    S.npcRomances.carlosMarta = Math.max(S.npcRomances.carlosMarta, 1);
+    adjustStat('mood', 8); adjustStat('social', 3);
+
   } else if (S.choirPhase >= 2) {
     const prepTexts = [
       `今天排的是《${pick(S.repertoire.filter(r => r !== '待定') || ['Ave Verum Corpus'])}》。Dietrich把同一段反复排了七遍。到第五遍的时候你觉得自己快疯了，到第七遍的时候你忽然觉得——对了。就是这个。声音融在一起的那一瞬间像一把锁咔嗒打开了。`,
@@ -1485,6 +1636,31 @@ function sceneRehearsal() {
       '今天来了一个新人——一个本地的退休教师，六十多岁，唱了一辈子教堂唱诗班。Dietrich让她站到女低音那边。她的声音像老教堂的木头——暗暗的，但很稳。你觉得这个团的魅力就在于什么人都收。',
       '苏迟今天带了一份他写的声部分析。三页纸，手写的，每个声部的入声点、呼吸记号和强弱标注都标得清清楚楚。Dietrich看了以后说"比我写的还细"。苏迟说"因为我比你闲"。全场笑了——苏迟居然会开玩笑。',
     ];
+    // NPC恋爱暗线推进（随机出现在备战期排练中）
+    if (S.npcRomances.ibukiYuki >= 1 && Math.random() < 0.25 && S.npcRomances.ibukiYuki < 3) {
+      S.npcRomances.ibukiYuki++;
+      if (S.npcRomances.ibukiYuki === 2) {
+        prepTexts.push('排练间隙你去上厕所，回来的时候看到Ibrahim在帮Yuki翻谱。他们站得很近——不是暧昧的近，是一种自然的近，像两个人已经习惯了彼此的距离。Yuki指着某个小节说了什么，Ibrahim点头。你从来没见过Ibrahim跟谁站得这么近过。你绕了一圈从另一个门进去了。');
+      } else {
+        prepTexts.push('今天排练结束后Ibrahim没有像平时一样第一个走。他在等Yuki收琴。Yuki把琴盖合上的时候Ibrahim伸手帮她拿了谱夹。Nico在你耳边说"你看到了吗"。你说"看到什么"。她说"装"。你确实看到了。你很难不看到——Ibrahim帮人拿东西这件事本身就是新闻。');
+      }
+    }
+    if (S.npcRomances.lenaAoife >= 1 && Math.random() < 0.25 && S.npcRomances.lenaAoife < 3) {
+      S.npcRomances.lenaAoife++;
+      if (S.npcRomances.lenaAoife === 2) {
+        prepTexts.push('Lena今天带了两杯咖啡来排练。一杯给自己，一杯放在Aoife的谱架旁边。Aoife来的时候看到咖啡愣了一下，然后笑了："你又记住了。"Lena说"记性好而已"。你想：Lena对所有人都记性好，但只有Aoife的咖啡她会买。你没说出口。');
+      } else {
+        prepTexts.push('排练后Lena和Aoife一起走了。你在后面看到她们的背影——一个高一个矮，步调不知道什么时候变得一致了。Aoife在说什么，Lena侧头听着。你想起第一次见Lena的时候觉得她像冰，现在你觉得她像一杯需要慢慢喝的热茶——烫嘴，但暖。而Aoife是那个愿意慢慢喝的人。');
+      }
+    }
+    if (S.npcRomances.carlosMarta >= 1 && Math.random() < 0.25 && S.npcRomances.carlosMarta < 3) {
+      S.npcRomances.carlosMarta++;
+      if (S.npcRomances.carlosMarta === 2) {
+        prepTexts.push('Carlos今天带了新菜让大家尝——巴西式的cheese bread。Marta吃了一口，沉默了三秒，然后说："这个……比我做的好。"全场倒吸一口凉气——Marta承认别人做的东西比她好？Carlos说"不可能，你做的永远最好"。Marta看了他一眼。那个眼神你读不懂，但Carlos好像读懂了。');
+      } else {
+        prepTexts.push('排练间隙你看到Carlos在教Marta几个葡萄牙语单词。Marta的发音很有波兰口音，Carlos每次都说"对了对了"——明明不对。你走过去说"Carlos你在误人子弟"。他说"我在鼓励式教学"。Marta拍了他一下。Carlos没躲。你觉得有些人之间的打闹跟别人的不一样——多了一个你说不清的东西。');
+      }
+    }
     paras.push({ text: pick(prepTexts) });
     adjustStat('vocal', 2 + Math.floor(Math.random()*3));
     adjustStat('social', 2);
@@ -1506,6 +1682,9 @@ function sceneRehearsal() {
       '排练间隙Carlos偷偷带了一个便携小音箱，放了一首巴西的bossa nova。Nico开始在排练室中间跳舞，拉着Ibrahim一起——Ibrahim面无表情地被拉了一圈，但脚步居然跟上了。你在旁边拍手。Nico冲你喊"你也来！"你说"我不会——"她已经拉住你了。你被转了一圈。苏迟在角落里看着这一切，嘴角的弧度说明他在偷笑。你冲他喊"你笑什么！"他摇了摇头，继续看他的谱。',
       '今天是你第' + rc + '次排练了。你发现自己能背下至少三首曲子了。嗓子比刚来的时候打开了很多，气息也稳了。Dietrich今天排练完说了一句"整体水平在提高"——这大概是他的最高表扬了。',
       'Yuki今天弹了一首新的热身曲——不是平时的音阶，是一首你没听过的日本童谣。旋律很简单，但她弹得像一幅水彩画。Lena问"这是什么"，Yuki说"我小时候我妈唱给我听的"。大家安静了一下。然后Dietrich说"再弹一遍，大家跟着哼"。十几个人用不同的口音哼同一首日本童谣。你也跟着哼了。你不知道歌词是什么意思，但旋律让你想起小时候在家里的某个下午。窗外的阳光照在旧钢琴上。你偷偷看了一眼Yuki——她在笑。',
+      '今天排练中间突然停电了。排练室一片漆黑。Nico尖叫了一声——然后她自己笑了。Dietrich说"别动"。安静了两秒，然后他起了一个音——所有人在黑暗里跟着唱了起来。没有谱子，没有钢琴，只有声音。你闭上眼睛（虽然睁着也一样黑），听着周围的声音包裹上来。五分钟后电来了。没人想停下来。',
+      '排练结束后你在收拾东西，听到Dietrich在跟一个新来的团员说话。新人很紧张，说自己"五音不全"。Dietrich说了一句话让你心里震了一下："五音不全是一个谎言。每个人都能唱。只是有些人还没找到自己的声音。"你想起你第一天来的时候也说过类似的话。你现在知道他说的是真的。',
+      'Ibrahim今天带了一盒椰枣。"我妈从约旦寄来的。"他把盒子打开放在窗台上，没有叫任何人——但五分钟后所有人都吃了。你咬了一口——很甜，甜到有点发苦。Ibrahim说"我妈说想我的时候就寄东西，寄着寄着就不那么想了"。你说："她骗你的。"他看了你一眼——你担心你说错了。但他笑了。"对。她骗我的。"',
     ];
     paras.push({ text: pick(texts) });
     adjustStat('vocal', 2 + Math.floor(Math.random()*3));
