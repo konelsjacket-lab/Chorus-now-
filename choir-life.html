@@ -1447,6 +1447,89 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
+  { id: 'grp_dietrich_punk', requires: ['dietrich','nico','carlos'], minAffinity: 30, time: [2],
+    label: '🎸 Nico发现了Dietrich的秘密',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_dietrich_punk = true;
+      ['dietrich','nico','carlos'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 8; S.npcs[id].talked++; } });
+      adjustStat('energy', -5); adjustStat('mood', 15); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Nico冲进排练厅的时候手里举着手机，脸上的表情像发现了新大陆。"你们！！！猜我搜到了什么！！！"你说"什么"。她把手机怼到你脸上。' },
+        { text: '屏幕上是一张老照片——大概八十年代末。一个年轻男人站在舞台上，穿撕破的黑T恤，头发染成蓝色，竖得像刺猬，脖子上挂着一把贝斯。他对着话筒嘶吼，眼神里全是愤怒和快乐。背景的横幅上写着"KEINE ANGST"——别害怕。' },
+        { text: '你看了三秒。然后你看到了那双眼睛。' },
+        { text: '"这是Dietrich？？？"' },
+        { text: 'Nico疯狂点头："我搜他的名字加合唱什么都搜不到！搜他的名字加柏林——出来了一个八十年代的朋克乐队！贝斯手！他是贝斯手！"Carlos从厨房走过来看了一眼，咖啡差点喷出来。' },
+        { text: '你继续翻。找到了三张照片和一篇旧杂志的扫描。乐队叫Glasscherben——玻璃碎片。柏林地下朋克圈。评论说他们"像一把钝刀子割在城市的皮肤上"。你看到了一段话：贝斯手Dietrich K.和主唱Eva M.是恋人，两人在柏林墙倒塌那年一起写了乐队最后一首歌《Mauer im Kopf》——脑中的墙。' },
+        { text: '你问Nico："后来呢？"她找到了一篇九三年的采访。Eva去了慕尼黑读音乐教育。Dietrich留在柏林。记者问他为什么不跟去。他说了一句话——原文是德语，你让Aoife翻译的："有些墙倒了以后，人才发现自己心里还有一堵。"乐队在那之后解散了。' },
+        { text: '你们三个人坐在排练厅里，手机传来传去。Carlos说："所以他从朋克转合唱了。"你说："也许合唱是另一种朋克。一群不一样的人非要在一起。"Nico难得安静了一会儿。然后她说："我们不能让他知道我们知道了。"你和Carlos点头。' },
+        { text: '第二天排练的时候你注意到Dietrich的手指。弹钢琴的手指，很长，指尖有老茧。你想象它们按在贝斯弦上的样子。Dietrich看到你在看他的手，问"怎么了"。你说"没什么"。他大概不知道你在他的手指上看到了一整个年轻时代——蓝头发、撕破的T恤、一个叫Eva的女孩、一堵已经不在了的墙。' },
+        { type: 'stat-up', text: '心情 +15 · 社交 +8 · Dietrich、Nico、Carlos好感度 +8' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_chinese_bond', requires: ['suchi'], minAffinity: 25, time: [1,2],
+    label: '🥟 苏迟：老乡见老乡',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_chinese_bond = true;
+      if(S.npcs.suchi) { S.npcs.suchi.affinity += 8; S.npcs.suchi.talked++; }
+      adjustStat('energy', -5); adjustStat('mood', 12); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: '超市里你在找老干妈。这座城市的超市不卖老干妈。你知道。但你每次来都会找一遍。这是一种仪式。' },
+        { text: '你转过货架角的时候看到苏迟——他蹲在最底层的架子前面，正在翻一包标签全是越南文的方便面。你说："你也在找中国的东西？"他抬头看你。"找酱油。他们只有日本的。"你说："日本酱油太甜了。"他点头。你们对视了一秒。这是一种不需要解释的痛苦。' },
+        { text: '你说你想吃饺子。他说他也想。你说"我会包"。他说"我会擀皮"。你说"走"。这是你们之间最短也最高效的一次对话。' },
+        { text: '回到你的厨房。他擀皮的手法很熟练——薄而圆，转得很均匀。你说"你跟谁学的"。他说"我妈。她包的饺子跟机器一样整齐。我的不行。"你看了看他擀的皮——确实有点歪。你说"你妈要是看到会说什么"。他说"她会叹气然后自己重新擀一遍"。' },
+        { text: '你包饺子的时候聊起了很多。用中文。你发现你已经好久没有这样不过脑子地说话了——不用翻译，不用简化语法，不用想这个词他们听不听得懂。你说了一句歇后语。他笑了。你忽然意识到你想念的不只是食物，还有这种——有人能接住你所有话的感觉。' },
+        { text: '苏迟往馅里加了一点花椒——他居然有花椒。你问他从哪搞到的。他说"我妈寄的。她每个月寄一个包裹。花椒、豆瓣酱、她腌的萝卜干。"他停了一下。"还有她的信。手写的。她不会打字。"' },
+        { text: '你说："我妈也是。"你们又沉默了。厨房里只有擀面杖的声音。' },
+        { text: '饺子煮好了。你们蘸着那瓶"不太对但凑合用"的日本酱油吃。苏迟吃了第一个以后说："皮厚了。"你说："你擀的。"他说："馅咸了。"你说："你放的花椒。"你们互相推卸责任吃完了三十个饺子。' },
+        { text: '吃完以后他靠在椅子上说了一句："谢谢。"你说："谢什么。"他说："很久没吃到——不是一个人做的饺子了。"你的鼻子酸了一下。你说："下周再包？"他说："好。下周我带醋。真的醋。"你不知道他从哪搞真的醋。但你相信他。' },
+        { type: 'stat-up', text: '心情 +12 · 社交 +8 · 苏迟好感度 +8' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_worldcup', requires: ['carlos','ibrahim','nico'], minAffinity: 15, time: [2],
+    label: '⚽ Carlos号召大家看世界杯',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_worldcup = true;
+      ['carlos','ibrahim','nico','dietrich'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('energy', -10); adjustStat('mood', 15); adjustStat('social', 10); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Carlos在群里发了一条全大写的消息："今晚！！！世界杯！！！我的店！！！免费啤酒！！！（前两杯）！！！"Nico回："括号里的内容破坏了整条消息的感染力。"Carlos回："你想喝免费啤酒就闭嘴。"' },
+        { text: '你到的时候Carlos的餐厅已经挤满了人。他把一面巴西国旗挂在了最大的那面墙上。Ibrahim带了一面约旦国旗——虽然约旦没进世界杯，但他说"精神支持"。你问他支持谁。他说"踢得好看的那个"。你觉得这是最体面的答案。' },
+        { text: '比赛开始。Carlos每一脚射门都站起来。每一脚。不管进没进。Nico坐在吧台上当解说——"这个传球太烂了""裁判你眼睛是装饰品吗""哦我的天他怎么可以跑这么慢他是不是吃了水泥"。你说"你很懂足球？"Nico说"我完全不懂但我很懂喊"。' },
+        { text: 'Dietrich来了。所有人都惊了——没人想到他会来看球。他安安静静地坐在角落里喝啤酒。第三十五分钟的时候他忽然说了一句"越位了"。全场安静。Carlos说"你看球？"Dietrich说"我在柏林的时候赫塔的季票。"所有人的世界观碎了。' },
+        { text: '进球了。Carlos跳起来把啤酒洒了一半在你头上。你尖叫。Nico笑得从吧台上差点摔下来。苏迟——你不知道他什么时候来的——在角落里安静地鼓掌。Ibrahim站起来跟Carlos抱在一起转了一圈。Marta在拍视频。你擦着头上的啤酒想：你从来没有在一群外国人中间因为一场跟你无关的比赛感到这么开心过。' },
+        { text: '中场休息。Carlos端出一大盘烤肉。你问"这免费吗"。他说"肉不免费。友情免费。"你说"那我只要友情"。他瞪你。你乖乖付了钱。' },
+        { text: '下半场的时候你发现自己已经在跟着Carlos一起站起来了——每一脚射门。你也不知道从什么时候开始你在乎了。也许不是在乎球。是在乎这些人在乎的东西。' },
+        { type: 'stat-up', text: '心情 +15 · 社交 +10 · Carlos、Ibrahim、Nico、Dietrich好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_nico_fake_date', requires: ['nico'], minAffinity: 45, time: [1,2],
+    label: '💍 Nico有一个荒唐的请求',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_nico_fake_date = true;
+      if(S.npcs.nico) { S.npcs.nico.affinity += 10; S.npcs.nico.talked++; }
+      adjustStat('energy', -5); adjustStat('mood', 12); adjustStat('social', 10); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Nico敲你的门的时候表情不太对。她没有笑——Nico不笑的时候你就知道事情严重了。' },
+        { text: '「我需要你帮我一个忙，」她说，坐在你的床上，两只手绞在一起。「我妈要跟我视频。她最近每天都问我有没有男朋友。或者女朋友。她说她不挑。她说她只想让我——」她深吸一口气。「幸福。她用了这个词。幸福。然后她哭了。」' },
+        { text: '你说："所以你需要我……"Nico看着你："你能不能假装是我的男朋友？或者女朋友？我不挑。我需要让她安心一下。就一次。拜托。"' },
+        { text: '你犹豫了。你说："你不觉得这样更麻烦吗？以后她会问的。"Nico说："以后的事以后再说。我现在需要她不要哭。我受不了她哭。"她的眼眶红了。你从来没见过Nico这样。' },
+        { text: '你说好。' },
+        { text: '视频接通了。Nico的妈妈出现在屏幕上——一个笑起来跟Nico一模一样的女人，皮肤晒得很深，背景是一个挂满植物的阳台。她看到你的时候眼睛亮了。Nico用葡萄牙语介绍你——你听不太懂，但你听到了"meu"和"namorado"。或者是"namorada"。你不确定。' },
+        { text: '你用英语说了句"Nice to meet you"。Nico的妈妈用带口音的英语说："You take care of my Nico, OK?"你说："She takes care of me, actually."Nico翻译了这句话。她妈妈大笑——那个笑声真的跟Nico一模一样。' },
+        { text: 'Nico的妈妈说了很多很多话。Nico边翻译边笑——但你看到她在偷偷擦眼角。你配合得很好——你说了你的"工作"（你编了一个），你的"爱好"（这个是真的），你"怎么认识Nico的"（合唱团，真的）。Nico的妈妈最后说了一句话，Nico没有翻译。你问她说了什么。Nico说："她说你笑起来很善良。"' },
+        { text: '挂了电话以后Nico趴在你的枕头上闷声说："谢谢。"你说："不客气。你妈妈很好。"她的声音从枕头里传出来："她是世界上最好的人。我不想让她担心。"' },
+        { text: '你拍了拍她的背。你说："以后怎么办？她会问的。"Nico从枕头里抬起脸——她的眼睛红了但她在笑："以后我告诉她我们分手了。然后我找下一个假对象。Carlos。"你说："Carlos不会同意的。"她说："他会的。他欠我钱。"你笑了。你觉得Nico是那种——把所有的心碎都藏在笑话后面的人。你想抱她一下。你抱了。她没有推开。' },
+        { type: 'stat-up', text: '心情 +12 · 社交 +10 · Nico好感度 +10' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
 ];
 
 function getAvailableGroupEvents() {
@@ -1657,10 +1740,11 @@ function sceneDailyMenu() {
     if (S.money >= 80 && time >= 1 && time <= 2)
       choices.push({ text: '🛍 去逛街', cost: '花钱', action: sceneShoppingMenu });
 
-    // Group vacation (money >= 400, enough friends)
+    // Group vacation (money >= 300, average affinity >= 30)
     if (S.money >= 300 && isWeekend() && time === 0) {
-      const friends = Object.values(S.npcs).filter(n => n.talked > 0 && n.affinity >= 15);
-      if (friends.length >= 3)
+      const metNpcs = Object.values(S.npcs).filter(n => n.talked > 0);
+      const avgAff = metNpcs.length > 0 ? metNpcs.reduce((s,n) => s + n.affinity, 0) / metNpcs.length : 0;
+      if (metNpcs.length >= 3 && avgAff >= 30)
         choices.push({ text: '🏖 约朋友们去度假！', cost: '300-500€', action: sceneVacationMenu });
     }
 
