@@ -239,6 +239,13 @@ const S = {
   metStreetArtist: false, metTomás: false,
   artSkill: 0, paintingLessons: 0,
   calledParents: 0, lastParentCall: 0,
+  rehearsalCount: 0,
+  choirPhase: 0,
+  metAtRehearsal: {},
+  sideStories: {},
+  competitionAnnounced: false,
+  repertoire: [],
+  sectionalCount: 0,
   npcs: {}
 };
 
@@ -313,7 +320,8 @@ function renderStatus() {
     <div class="stat-item"><span class="stat-label">💙 心情</span><span class="stat-value ${S.mood<25?'low':S.mood>70?'high':''}">${S.mood}</span></div>
     <div class="stat-item"><span class="stat-label">💶 存款</span><span class="stat-value ${S.money<200?'low':''}">${S.money}€</span></div>
     <div class="stat-item"><span class="stat-label">📖 视谱</span><span class="stat-value ${S.sightRead>30?'high':''}">${S.sightRead}</span></div>
-    ${S.artSkill > 0 ? `<div class="stat-item"><span class="stat-label">🎨 绘画</span><span class="stat-value ${S.artSkill>15?'high':''}">${S.artSkill}</span></div>` : ''}`;
+    ${S.artSkill > 0 ? `<div class="stat-item"><span class="stat-label">🎨 绘画</span><span class="stat-value ${S.artSkill>15?'high':''}">${S.artSkill}</span></div>` : ''}
+    ${S.choirPhase >= 2 ? `<div class="stat-item" style="grid-column:1/-1;text-align:center;background:var(--terra-light);color:var(--terracotta)"><span class="stat-label">🏛 Europa Cantat</span><span class="stat-value">${S.choirPhase>=3?'备战中':S.choirPhase>=2?'已接受邀请':''}</span></div>` : ''}`;
 }
 
 function showNarrative(paragraphs) {
@@ -374,6 +382,8 @@ function advanceTime() {
 }
 function dayOfWeek() { return (S.day - 1) % 7; }
 function isRehearsalTime() { return dayOfWeek() === 2 && S.timeSlot === 2; }
+function isExtraRehearsalTime() { return S.rehearsalCount >= 3 && dayOfWeek() === 5 && S.timeSlot === 0; }
+function isSectionalTime() { return S.choirPhase >= 3 && dayOfWeek() === 1 && S.timeSlot === 2; }
 function isWeekend() { return dayOfWeek() >= 5; }
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -711,6 +721,164 @@ function getAvailableNPCVisits() {
   return visits;
 }
 
+// ========== SIDE STORIES ==========
+const SIDE_STORIES = {
+  sofia: { threshold: 55, label: '💫 Sofia留了一封信在你门口', time: [2],
+    opener: () => {
+      S.sideStories.sofia = 1;
+      const npc = S.npcs.sofia; npc.affinity += 8; npc.talked++;
+      adjustStat('energy', -5); adjustStat('mood', 12); advanceTime(); renderStatus();
+      showNarrative([
+        { text: '你回家的时候发现门缝里塞了一张折好的纸。你认出了Sofia的字迹——很圆的字母，i上面的点画成了小圆圈。' },
+        { text: '"我报了一个合唱工作坊。周末的，在海边教堂。我以前从来不敢当众唱歌。但我想试试。你愿意陪我去吗？"' },
+        { text: '底下画了一个小小的音符，旁边写着"P.S. 我做了sopas，给你留了一碗在门口"。' },
+        { text: '你打开门，果然看到一碗还温热的葡萄牙汤放在脚垫上，盖着保鲜膜。' },
+        { text: '你端着汤坐在阳台上，读了三遍那张纸条。Sofia从来不主动要求什么。这是第一次。' },
+        { type: 'system', text: 'Sofia的故事开始了——一个总是在照顾别人的人，第一次为自己做了一件勇敢的事。' },
+        { type: 'stat-up', text: '心情 +12 · Sofia好感度 +8 · 解锁Sofia支线剧情' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  suchi: { threshold: 55, label: '💫 苏迟发来一段很长的微信', time: [3],
+    opener: () => {
+      S.sideStories.suchi = 1;
+      const npc = S.npcs.suchi; npc.affinity += 8; npc.talked++;
+      adjustStat('mood', 12); advanceTime(); renderStatus();
+      showNarrative([
+        { text: '深夜十一点半。苏迟给你发了一条微信。不是语音，不是图片——是一段文字。' },
+        { text: '很长。你翻了一下，大概有六七百字。' },
+        { text: '他说他写了一首曲子。给合唱团的，四声部，没有歌词。他说他想在Europa Cantat上把这首当作安可曲演出——但他不确定够不够好。他说他想给你看。' },
+        { text: '"你是团里唯一一个会认真听完再说话的人。"他写。' },
+        { text: '下面是一段手写乐谱的照片。你看不太懂，但笔迹是苏迟的——每个音符都写得很清晰，力度记号像是书法。' },
+        { text: '最后一行他写："这首曲子叫《你好，陌生人》。是关于所有来到一个新地方的人的。"' },
+        { type: 'system', text: '苏迟的故事开始了——一个用文字和音符表达自己的人，写了一首属于所有人的歌。' },
+        { type: 'stat-up', text: '心情 +12 · 苏迟好感度 +8 · 解锁苏迟支线剧情' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  nico: { threshold: 55, label: '💫 Nico打来电话，声音不太对', time: [2,3],
+    opener: () => {
+      S.sideStories.nico = 1;
+      const npc = S.npcs.nico; npc.affinity += 8; npc.talked++;
+      adjustStat('energy', -5); adjustStat('mood', 5); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Nico打来电话。你接了——她通常发语音不打电话的。' },
+        { text: '她的声音很轻。不是平时的Nico。"你有空吗？"' },
+        { text: '你说有。她沉默了几秒钟。"我收到了罗马尼亚那边的信。关于我妈的。"' },
+        { text: '你等着。' },
+        { text: '"她生病了。不是很严重，但她一个人在那里。我弟弟不管事。我在想要不要回去。"' },
+        { text: '你说你可以去找她。她说不用，她在hostel天台上，她想打完这个电话就去海边坐坐。' },
+        { text: '"你能帮我一件事吗？"她说，声音还是那么轻，"排练的事帮我跟Dietrich说一声，这周我可能来不了。"' },
+        { text: '你挂了电话以后坐了很久。你想起Nico从来都是那个制造快乐的人。你从来没想过她的快乐是不是也是一种盔甲。' },
+        { type: 'system', text: 'Nico的故事开始了——她第一次摘下笑容给你看里面的东西。' },
+        { type: 'stat-up', text: '心情 +5 · Nico好感度 +8 · 解锁Nico支线剧情' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  ibrahim: { threshold: 55, label: '💫 Ibrahim问你能不能帮个忙', time: [1,2],
+    opener: () => {
+      S.sideStories.ibrahim = 1;
+      const npc = S.npcs.ibrahim; npc.affinity += 8; npc.talked++;
+      adjustStat('energy', -5); adjustStat('mood', 10); advanceTime(); renderStatus();
+      showNarrative([
+        { text: '排练结束后Ibrahim走到你面前。他看起来在犹豫什么。' },
+        { text: '"你……有没有空？"他问。这是你认识他以来听到的最长的主动发言。' },
+        { text: '他说他的毕业设计要做答辩了。答辩是用英语的，他英语够用但不够"说服人"。他想练习一遍——在一个人面前。' },
+        { text: '"Marta太热情了，她会一直说「太好了太好了」。Lena太直了。你——"他停了一下，"你会认真听。"' },
+        { text: '你跟他去了大学的一间空教室。他打开投影仪——是一座社区图书馆的设计。在叙利亚，给他长大的那个社区。' },
+        { text: '他讲了四十分钟。设计是好的，但更打动你的是他讲的时候——关于光线、关于让小孩有一个安静的地方看书、关于"即使一切都被摧毁，你还是可以重新建一些什么"。' },
+        { text: '讲完他问你怎么样。你说你觉得他不需要练。他说"谢谢"。你第一次看到他的眼睛是红的。' },
+        { type: 'system', text: 'Ibrahim的故事开始了——一个带着蓝图重建世界的人。' },
+        { type: 'stat-up', text: '心情 +10 · Ibrahim好感度 +8 · 解锁Ibrahim支线剧情' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  aoife: { threshold: 55, label: '💫 Aoife说她写了一首歌', time: [1,2],
+    opener: () => {
+      S.sideStories.aoife = 1;
+      const npc = S.npcs.aoife; npc.affinity += 8; npc.talked++;
+      adjustStat('energy', -5); adjustStat('mood', 10); advanceTime(); renderStatus();
+      showNarrative([
+        { text: '你和Aoife在旧城区的咖啡馆喝东西。她忽然从包里掏出一个皱巴巴的笔记本。' },
+        { text: '"你不许笑，"她先说。然后翻开了一页——上面写满了英语和盖尔语混在一起的文字。' },
+        { text: '"我写了一首歌。歌词。"她不看你，"关于……离开一个地方然后在另一个地方醒来的感觉。我不会作曲。但我觉得如果我写了歌词，也许可以找人帮我加上旋律。"' },
+        { text: '你读了那些歌词。英语的部分你看得懂——很好，有那种能唱的节奏感。盖尔语的部分你不懂，但她念给你听了——声音低低的，像在海边捡石头。' },
+        { text: '"我想给合唱团唱，"她说，"但我不知道够不够好。你觉得呢？"' },
+        { text: '你说你觉得Dietrich会喜欢。她笑了——松了一口气的那种笑。' },
+        { type: 'system', text: 'Aoife的故事开始了——一个翻译别人语言的人，第一次用自己的语言写了一些东西。' },
+        { type: 'stat-up', text: '心情 +10 · Aoife好感度 +8 · 解锁Aoife支线剧情' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  lena: { threshold: 55, label: '💫 Lena说她要办一个音乐会', time: [2],
+    opener: () => {
+      S.sideStories.lena = 1;
+      const npc = S.npcs.lena; npc.affinity += 8; npc.talked++;
+      adjustStat('energy', -5); adjustStat('mood', 10); advanceTime(); renderStatus();
+      showNarrative([
+        { text: '排练后Lena拦住了你。她看起来有点不自然——你第一次看到她犹豫。' },
+        { text: '"我在文化局申请了一个场地，"她说，"我想办一场小型音乐会。不是合唱团的——是我自己的独唱。"' },
+        { text: '你愣了一下。Lena从来没有一个人唱过，至少你没见过。' },
+        { text: '"我学了十二年声乐，但我从来没有开过自己的音乐会。一直在说「还没准备好」。"她看着你，"我三十岁了。如果三十岁了还没准备好，那可能永远不会准备好。"' },
+        { text: '她问你愿不愿意帮她——不是唱歌，是帮忙做海报、布置场地、当天在后台递水。"我不需要观众鼓掌，我需要有人在后面，万一我忘词了可以看一眼的那种。"' },
+        { text: '你说好。她嘴角动了一下——这对Lena来说已经是一个大笑了。' },
+        { type: 'system', text: 'Lena的故事开始了——一个评判别人音准的人，终于要面对自己的声音了。' },
+        { type: 'stat-up', text: '心情 +10 · Lena好感度 +8 · 解锁Lena支线剧情' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  yuki: { threshold: 55, label: '💫 Yuki给你发了一条消息', time: [1,2],
+    opener: () => {
+      S.sideStories.yuki = 1;
+      const npc = S.npcs.yuki; npc.affinity += 8; npc.talked++;
+      adjustStat('mood', 10); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Yuki给你发了一条消息。很短："你明天下午有空吗？我想请你帮我一个忙。"' },
+        { text: '你去了。她在大学的一间琴房里。面前的三角钢琴比排练室那台好十倍。' },
+        { text: '"我在准备一个独奏会的录像，"她说，"寄回日本的。我的老师想看看我的状态。"' },
+        { text: '她问你能不能坐在琴房里听她弹。"不是当观众。是当一个……呼吸。你在那里，我弹琴的时候就不是对着空气了。"' },
+        { text: '你坐下。她开始弹。弹的是肖邦夜曲——降E大调那首。你以前在排练室听过片段，但这次是完整的。' },
+        { text: '你觉得整个房间在振动。不是音量大——是某种频率恰好对了。你看到她的手指在琴键上，像是在跟一个看不见的人跳舞。' },
+        { text: '弹完她坐了一会儿，然后转过来。她的表情是你从没见过的——不是礼貌的距离感，是一种赤裸的脆弱。"你觉得……够好吗？"' },
+        { text: '你说"不是够好。是太好了。"她低下了头。你觉得她在笑，或者在哭，或者两者都是。' },
+        { type: 'system', text: 'Yuki的故事开始了——完美主义的铠甲下面，是一个不确定自己够不够好的人。' },
+        { type: 'stat-up', text: '心情 +10 · Yuki好感度 +8 · 解锁Yuki支线剧情' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  tomas: { threshold: 55, label: '💫 Tomás说他想画合唱团', time: [1,2],
+    opener: () => {
+      S.sideStories.tomas = 1;
+      if (!S.npcs.tomas) { sceneDailyMenu(); return; }
+      const npc = S.npcs.tomas; npc.affinity += 8; npc.talked++;
+      adjustStat('energy', -5); adjustStat('mood', 10); advanceTime(); renderStatus();
+      showNarrative([
+        { text: '你在Carlos的店里碰到Tomás。他面前摊着一张大纸——不是素描本，是一张海报大小的纸。' },
+        { text: '"我想画一幅合唱团的群像，"他说，"不是照片那种。是——每个人变成一种颜色、一条线。我想把声音画出来。"' },
+        { text: '他给你看了几张草稿。Dietrich是一条笔直的深蓝色线。Nico是一团飞溅的橙色。苏迟是一片很淡的水墨，边缘清晰中间模糊。' },
+        { text: '"你是哪种？"你问。他笑了："画家不画自己。但你可以帮我——我需要一个人来「看」。来排练的时候观察大家，告诉我你看到了什么。"' },
+        { text: '你说好。他把一支小铅笔递给你："你也可以画。你的线条比你以为的好。"' },
+        { type: 'system', text: 'Tomás的故事开始了——一个画画的人，想要把声音变成画面。' },
+        { type: 'stat-up', text: '心情 +10 · Tomás好感度 +8 · 解锁Tomás支线剧情' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+};
+
+function getAvailableSideStories() {
+  const time = S.timeSlot;
+  const stories = [];
+  for (const [npcId, ss] of Object.entries(SIDE_STORIES)) {
+    if (S.sideStories[npcId]) continue;
+    const npc = S.npcs[npcId];
+    if (!npc || npc.talked < 1) continue;
+    if (npc.affinity < ss.threshold) continue;
+    if (!ss.time.includes(time)) continue;
+    stories.push({ text: ss.label, cost: `${npc.name}支线`, action: ss.opener });
+  }
+  return stories;
+}
+
 // ========== SCENES ==========
 function startGame() {
   document.getElementById('title-screen').classList.add('hidden');
@@ -846,6 +1014,10 @@ function sceneDailyMenu() {
   } else {
     if (isRehearsalTime() && S.choirJoined)
       choices.unshift({ text: '🎵 坐火车去合唱团排练', cost: '体力-15', action: sceneTrainToRehearsal });
+    if (isExtraRehearsalTime() && S.choirJoined)
+      choices.unshift({ text: '🎵 周六加排（自愿）', cost: '体力-15', action: sceneTrainToRehearsal });
+    if (isSectionalTime() && S.choirJoined)
+      choices.unshift({ text: '🎵 声部分排练', cost: '体力-12', action: sceneSectional });
 
     if (S.hasJob && time < 2 && dayOfWeek() < 5)
       choices.unshift({ text: `去上班（${S.jobType}）`, cost: '体力-20，+钱', action: sceneWork });
@@ -893,6 +1065,10 @@ function sceneDailyMenu() {
     const npcVisits = getAvailableNPCVisits();
     npcVisits.forEach(v => choices.push(v));
 
+    // Side stories
+    const sideStoryOptions = getAvailableSideStories();
+    sideStoryOptions.forEach(v => choices.push(v));
+
     if (!S.choirJoined)
       choices.push({ text: '去广场看看公告板', action: () => {
         S.choirJoined = true; advanceTime();
@@ -939,7 +1115,9 @@ function sceneTrainToRehearsal() {
 // --- Rehearsal ---
 function sceneRehearsal() {
   adjustStat('energy', -10);
-  const isFirst = !S.npcs.dietrich.talked;
+  S.rehearsalCount++;
+  const rc = S.rehearsalCount;
+  const isFirst = rc === 1;
   const paras = [];
 
   if (isFirst) {
@@ -950,6 +1128,74 @@ function sceneRehearsal() {
     paras.push({ text: '「新面孔。我是Dietrich，指挥。你唱什么声部？不知道也完全没关系。」' });
     S.npcs.dietrich.talked++; S.npcs.dietrich.affinity += 5;
     adjustStat('social', 3); adjustStat('vocal', 3);
+  } else if (rc === 2) {
+    paras.push({ text: '第二次排练。你到的时候已经有不少人了。Dietrich在调音响，Nico在跟一个你没见过的高个子男人比谁嗓门大。' });
+    paras.push({ text: '排练开始前，一个中年女人端着一盘自制饼干走过来。' });
+    paras.push({ text: '「新来的对吧？上周我不在——出差了。我是Marta，波兰来的，在这里十五年了。来，吃饼干。」她塞了两块到你手上，根本没给你拒绝的机会。' });
+    paras.push({ text: '她开始讲合唱团的历史——像打开了一本活档案："Dietrich八年前开始的时候，就他和四五个大学生，在广场上唱。没有音响没有谱架，就一个音叉。后来来了一个叫Anna的捷克女生——她后来回布拉格了——然后来了Ibrahim，然后Carlos带了一帮巴西朋友……"' });
+    paras.push({ text: '说到Ibrahim，她朝角落指了指。一个安静的男人靠在柱子上看手机。"那个，Ibrahim，叙利亚来的。平时话很少，但他一开口唱——你等着听。"' });
+    S.npcs.marta.talked++; S.npcs.marta.affinity += 8;
+    S.npcs.ibrahim.talked++; S.npcs.ibrahim.affinity += 3;
+    S.metAtRehearsal.marta = true; S.metAtRehearsal.ibrahim = true;
+    adjustStat('social', 5); adjustStat('vocal', 2);
+  } else if (rc === 3) {
+    paras.push({ text: '今天排练你来得早了一点。排练室门口站着一个金发女人，双臂交叉，在看手机。她余光扫了你一眼。' });
+    paras.push({ text: '「你上次第十七小节降B唱成了B，」她头也不抬地说。' });
+    paras.push({ text: '你愣了一下。她抬起头：「我叫Lena。本地人，在文化局上班。我不是在骂你——但你要是想进步，可以排练完来找我。」' });
+    paras.push({ text: '你还在消化这段对话的时候，从排练室里传来了钢琴声。透过门缝你看到一个黑发的东亚面孔女生坐在旧立式琴前——弹的是肖邦，但弹了几个小节就停下来，翻到另一首曲子的伴奏谱上标记什么。' });
+    paras.push({ text: 'Lena说："Yuki，日本来的钢琴老师，我们的伴奏。每次排练她都是第一个到最后一个走。琴技是专业级的，但你永远猜不到她在想什么。"' });
+    S.npcs.lena.talked++; S.npcs.lena.affinity += 5;
+    S.npcs.yuki.talked++; S.npcs.yuki.affinity += 3;
+    S.metAtRehearsal.lena = true; S.metAtRehearsal.yuki = true;
+    adjustStat('social', 4); adjustStat('vocal', 3);
+  } else if (rc === 4) {
+    paras.push({ text: '排练开始前你在台阶上坐着等，旁边一个你没见过的红头发女孩也在——她手里拿着一杯外带咖啡，看起来有点紧张。' });
+    paras.push({ text: '你们对视了一下，她先开口了："你也是合唱团的？我来了四次了但还是每次来都紧张。"爱尔兰口音。' });
+    paras.push({ text: '「我叫Aoife。翻译，自由职业。来这个城市四个月了。」她笑了一下，「你是什么时候加入的？」' });
+    paras.push({ text: '你说你也是新人。她眼睛亮了："那我们是同盟！新人要互相罩着。"' });
+    paras.push({ text: '你觉得这个城市的好处是，每个人都曾经是新来的，所以每个人都懂那种感觉。' });
+    S.npcs.aoife.talked++; S.npcs.aoife.affinity += 8;
+    S.metAtRehearsal.aoife = true;
+    adjustStat('social', 5); adjustStat('vocal', 2);
+  } else if (rc === 5 && !S.competitionAnnounced) {
+    paras.push({ text: '今天排练结束后Dietrich没有马上收东西。他站在前面，表情比平时多了一点什么——你第一次看到他有点激动。' });
+    paras.push({ text: '「大家留一下，」他说。所有人安静下来。' });
+    paras.push({ text: '「我收到了一封邮件。Europa Cantat——全欧合唱节——今年在巴塞罗那。」他顿了一下，「他们邀请我们去参加社区合唱组的展演。」' });
+    paras.push({ text: '安静了两秒。然后Nico尖叫了。Carlos开始鼓掌。Marta哭了（"我就知道会有这一天"）。Ibrahim嘴角动了一下。苏迟没有什么表情，但他合上了笔记本，一直在听。' });
+    paras.push({ text: 'Lena是第一个问实际问题的人："什么时候？我们够格吗？"' });
+    paras.push({ text: 'Dietrich说："三个月后。够不够格不是重点——Europa Cantat不是比赛，是交流。但我们要拿出最好的状态。"他看了一圈，"这意味着更多的排练，可能周六加一次。还有，我们需要选曲目——三首。"' });
+    paras.push({ text: 'Yuki在琴凳上转过身来，你很少看到她主动说话："如果是巴塞罗那……我们可以排一首加泰罗尼亚民歌。那边的观众会喜欢。"Dietrich看了她一眼，点了点头。' });
+    paras.push({ type: 'system', text: '「城市之声」要去Europa Cantat了。三个月，三首曲子，一个来自地中海小城的合唱团。' });
+    S.competitionAnnounced = true; S.choirPhase = 2;
+    S.repertoire = ['待定', '待定', '待定'];
+    adjustStat('mood', 15); adjustStat('social', 5);
+  } else if (rc === 6 && S.choirPhase === 2) {
+    paras.push({ text: '今天的排练气氛不一样了。大家来得更早，聊天更少，Dietrich的表情更认真。' });
+    paras.push({ text: '他在白板上写了三个位置："曲目一：经典合唱。曲目二：本地特色。曲目三：自由选择。"' });
+    paras.push({ text: '关于第一首，Dietrich提议了莫扎特的《Ave Verum Corpus》。"四分钟，四声部，简洁但考验音准和呼吸。"苏迟微微点头——你知道这意味着他同意了。' });
+    paras.push({ text: '第二首，Yuki之前说的加泰罗尼亚民歌——《El Cant dels Ocells》（鸟之歌）。Marta说她听过，很美。Lena说需要练发音。' });
+    paras.push({ text: '第三首争论了很久。Nico要求Taylor Swift被否决了。Carlos提议一首巴西民歌，Ibrahim安静地说了一句"不如选一首没有歌词的"。最后Dietrich拍板：Bobby McFerrin的《The Singularity》，一首没有歌词的纯人声曲——用身体的声音构建音乐。' });
+    paras.push({ text: '「这首曲子，」Dietrich说，「需要你们不只是唱——要呼吸、拍手、跺脚、弹舌。它不需要技术，需要信任。你得相信旁边那个人的节奏。」' });
+    paras.push({ text: '他看了一圈。没有人反对。你觉得空气里有一种安静的兴奋——不是紧张，是所有人都在认真对待同一件事。' });
+    S.repertoire = ['Ave Verum Corpus', 'El Cant dels Ocells', 'The Singularity'];
+    adjustStat('vocal', 4); adjustStat('social', 3);
+  } else if (S.choirPhase >= 2) {
+    const prepTexts = [
+      `今天排的是《${pick(S.repertoire.filter(r => r !== '待定') || ['Ave Verum Corpus'])}》。Dietrich把同一段反复排了七遍。到第五遍的时候你觉得自己快疯了，到第七遍的时候你忽然觉得——对了。就是这个。声音融在一起的那一瞬间像一把锁咔嗒打开了。`,
+      '今天Dietrich让大家不看谱子唱。你慌了十秒钟，然后发现——你居然记得大部分了。身体比脑子先记住了。',
+      '排练了两个小时。Ibrahim独唱《El Cant dels Ocells》的那段，安静得像在讲一个秘密。唱完他回到位置上的时候你看到他的手在微微发抖。',
+      '今天练《The Singularity》。开头全是身体打击——拍手跺脚弹舌。你和旁边的Aoife对了三次眼神才把节奏合上。合上的时候她小声说了句"yes"。',
+      '排练中间Dietrich忽然停下来说"不对"。全场安静。他说："你们在唱音符。不是音乐。音符是骨头，你们要给它血肉。再来。"大家面面相觑。从头来了一遍——好了很多。',
+      '今天来了一个新人——一个本地的退休教师，六十多岁，唱了一辈子教堂唱诗班。Dietrich让她站到女低音那边。她的声音像老教堂的木头——暗暗的，但很稳。你觉得这个团的魅力就在于什么人都收。',
+      '苏迟今天带了一份他写的声部分析。三页纸，手写的，每个声部的入声点、呼吸记号和强弱标注都标得清清楚楚。Dietrich看了以后说"比我写的还细"。苏迟说"因为我比你闲"。全场笑了——苏迟居然会开玩笑。',
+    ];
+    paras.push({ text: pick(prepTexts) });
+    adjustStat('vocal', 2 + Math.floor(Math.random()*3));
+    adjustStat('social', 2);
+    if (S.choirPhase === 2 && S.rehearsalCount >= 10) {
+      S.choirPhase = 3;
+      paras.push({ type: 'system', text: '排练强度提升了。Dietrich开始安排声部分排练——周二傍晚。' });
+    }
   } else {
     const texts = [
       '你从火车站走上台阶的时候，远远看到广场上已经有人了。今天天气很好，Dietrich决定在户外排练。',
@@ -967,14 +1213,104 @@ function sceneRehearsal() {
       { text: '紧张地说自己没什么经验', action: () => sceneFirstRehearsal('humble') },
       { text: '说小时候在学校合唱团待过', action: () => sceneFirstRehearsal('some') },
     ]);
+  } else if (rc >= 2 && rc <= 4) {
+    const ch = [
+      { text: '认真跟着排练', cost: '声乐+3', action: () => sceneRehearsalFocus() },
+      { text: '排练后留下来多聊聊', cost: '社交+5', action: () => sceneRehearsalIntroChat(rc) },
+    ];
+    showChoices(ch);
   } else {
     const ch = [
       { text: '认真跟着排练', cost: '声乐+3', action: () => sceneRehearsalFocus() },
       { text: '排练间隙和人聊聊', cost: '社交+3', action: () => sceneRehearsalChat() },
     ];
     if (S.vocal > 25) ch.push({ text: '跟Dietrich请教乐理', cost: '视谱+5', action: () => sceneRehearsalTheory() });
+    if (S.choirPhase >= 2) ch.push({ text: '排练后一起讨论曲目', cost: '社交+3，声乐+2', action: sceneRepertoireChat });
     showChoices(ch);
   }
+}
+
+function sceneRehearsalIntroChat(rc) {
+  adjustStat('social', 5); renderStatus();
+  if (rc === 2) {
+    showNarrative([
+      { text: '排练结束后你没有走，留下来帮忙收椅子。Ibrahim也在收——他默默地把椅子一把一把摞起来，动作很准。' },
+      { text: '你走到他旁边。「你唱得好好，」你说。他低下头："习惯了。在老家的时候，我妈每天晚上让我唱歌哄妹妹睡觉。"' },
+      { text: '你问他妹妹现在在哪。他停了一下："在约旦。跟我妈一起。"然后继续收椅子。' },
+      { text: 'Marta走过来打破了沉默，递给你们一人一块苹果蛋糕。"这是我妈的配方。你们不吃完我不走。"她说。Ibrahim笑了一下——很小的笑，但你看到了。' },
+      { text: 'Marta拉着你讲了十五分钟合唱团的"家谱"——谁最早来的、谁带了谁来、谁和谁谈过恋爱然后分手了但还是一起唱歌。你觉得这个信息量需要消化一下。' },
+      { type: 'stat-up', text: '社交 +5 · Marta和Ibrahim好感度提升' },
+    ]);
+    S.npcs.marta.affinity += 5; S.npcs.ibrahim.affinity += 5;
+  } else if (rc === 3) {
+    showNarrative([
+      { text: '排练结束后Lena走过来。你以为她又要指出你哪个音唱错了，但她说："今天好多了。那个降B对了。"' },
+      { text: '你问她学声乐多久了。她说从小就在教堂唱诗班唱，后来跟老师学了六年。"但我不想做专业，太苦了。在文化局上班够了——至少还能帮合唱团申请场地经费。"' },
+      { text: '她说文化局每年给社区合唱团三千欧的经费，够租场地和买谱子。"剩下的全是Dietrich自己贴的。他不说，但我们都知道。"' },
+      { text: '你回头看了一眼正在收音响的Dietrich。万年不变的亚麻衬衫。你忽然觉得这个人比看起来的更了不起。' },
+      { text: '旁边Yuki在弹一段很轻的旋律——不是排练的曲子，是她自己在玩。Lena听了一下说"德彪西？"Yuki点头。"你应该弹给Ibrahim听，他会喜欢。"Lena说完就走了。Yuki看着她的背影，你觉得她在想什么。' },
+      { type: 'stat-up', text: '社交 +5 · Lena和Yuki好感度提升' },
+    ]);
+    S.npcs.lena.affinity += 5; S.npcs.yuki.affinity += 5;
+  } else if (rc === 4) {
+    showNarrative([
+      { text: '排练后你和Aoife一起走回火车站。她聊了很多——翻译工作的不稳定、爱尔兰家里的弟弟妹妹、她为什么觉得合唱团是这个城市最好的事情。' },
+      { text: '「你有没有过那种感觉，」她说，「就是到一个新的地方，一开始觉得自己是透明的，然后慢慢有人看到你了？合唱团就是让人看到你的地方。你不用说话，你唱就好了。」' },
+      { text: '火车来了。你们上车坐在一起。她突然小声说："你知道Dietrich为什么创建这个合唱团吗？"' },
+      { text: '你说不知道。她说是Marta告诉她的——Dietrich的妻子十年前去世了，是一个歌唱家。他一个人搬到这座城市，什么都不想做。后来有一天在广场上听到有人唱歌，他停下来了。第二周他就贴了传单。' },
+      { text: '你沉默了一会儿。窗外是暮色中的海面。你觉得"城市之声"这个名字忽然有了另一层意思。' },
+      { type: 'stat-up', text: '社交 +5 · Aoife好感度提升 · 解锁合唱团背景故事' },
+    ]);
+    S.npcs.aoife.affinity += 8;
+  }
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneRepertoireChat() {
+  adjustStat('social', 3); adjustStat('vocal', 2); renderStatus();
+  const chats = [
+    [{ text: '排练后几个人留下来讨论《Ave Verum Corpus》。苏迟打开了他的笔记本，指着一段说："莫扎特写这首的时候快死了。这不是一首宗教曲，是一封告别信。"' },
+     { text: '全场安静了。Dietrich说："所以唱的时候不要想着「唱好」，想着「告别」。"' },
+     { text: '你问苏迟他怎么知道这些。他说他写过一篇关于这首曲子的乐评，花了三个月查资料。"莫扎特最后那段时间的信你读过吗？"他问你，"他跟妻子说「我嘴里有死亡的味道」。但他还是在写音乐。"' },
+     { text: '你觉得苏迟谈到音乐的时候完全是另一个人——自在、热烈、表达力极强。这才是他真正的样子。' }],
+    [{ text: '大家在讨论《The Singularity》怎么排。这首没有歌词也没有旋律——全是身体发出的声音。' },
+     { text: 'Nico说"我有个想法"，然后站到中间开始示范：拍手-跺脚-弹舌-拍手-停顿-吸气——她用身体做了一段十秒钟的打击乐，节奏感好得不像话。' },
+     { text: 'Carlos跟着加了进来，用手拍大腿。然后Ibrahim用很低的嗓音加了一个持续的嗡嗡声。苏迟听了一会儿，忽然用清晰的假声加了一个高八度的回声。' },
+     { text: '四个人即兴了大概一分钟。结束的时候全场鼓掌。Dietrich说："就是这样。你们已经在做音乐了。"' }],
+    [{ text: 'Yuki在琴上弹《El Cant dels Ocells》的旋律给大家听。非常简单的旋律——像一只鸟在唱。' },
+     { text: '她说："这首歌是加泰罗尼亚的。Pau Casals在联合国弹过大提琴版。他说「鸟儿在天空唱着peace, peace, peace」。在巴塞罗那演这首……意义不一样。"' },
+     { text: '这是你听过Yuki说最多话的一次。大家都安静地听着。Lena第一个说"我要练加泰罗尼亚语发音"。Ibrahim说"旋律我来"。' },
+     { text: '你看着这群来自世界各地的人围在一架旧钢琴旁边，认真地讨论一首关于和平与鸟的歌，觉得这个画面本身就是这首歌想说的东西。' }],
+  ];
+  showNarrative(pick(chats));
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneSectional() {
+  adjustStat('energy', -12); adjustStat('vocal', 4); adjustStat('sightRead', 3);
+  S.sectionalCount++; advanceTime(); renderStatus();
+  const scenes = [
+    [{ text: '声部分排。今天是女高+女中。Lena带的。' },
+     { text: '她的要求比Dietrich更细。"你的气要从这里出来，"她指着自己的腹部，"不是嗓子。你的嗓子已经在叫了，给它休息。"' },
+     { text: '练了一个小时。Aoife在你旁边，你们的声部合在一起的时候你觉得有什么东西对了——不是音准，是某种更微妙的共振。' },
+     { text: 'Lena最后说了句"今天不错"。Aoife在你旁边小声说"她说不错就是说很好了"。' },
+     { type: 'stat-up', text: '声乐 +4 · 视谱 +3' }],
+    [{ text: '今天的分排是全员的——Dietrich让每个声部单独唱一遍《Ave Verum Corpus》的第一段。' },
+     { text: '女高先。你们唱的时候Dietrich闭着眼睛听。唱完他说"第三小节换气再早半拍。其他的——好。"' },
+     { text: '然后是男中音。苏迟的声音很稳，像一条河。Carlos的声音暖，带着颤音。两个人的声线完全不同，但混在一起变成了一种第三种东西。你想起苏迟说的"对位的美"。' },
+     { text: '最后四个声部合在一起唱了一遍。Yuki的伴奏轻得像是不存在，但她在。所有人都在。' },
+     { type: 'stat-up', text: '声乐 +4 · 视谱 +3' }],
+    [{ text: '分排完了大家没走。Ibrahim提议大家从头到尾不停地唱一遍三首曲目——"当成彩排"。' },
+     { text: 'Dietrich点头。所有人站到了位置上。Yuki弹了起始和弦。' },
+     { text: '十二分钟。你唱完以后觉得全身在发热。不是累的热——是另一种。' },
+     { text: 'Dietrich说："这是你们到目前为止最好的一次。记住现在的感觉。巴塞罗那那天，就是这个。"' },
+     { text: 'Nico喊了一声"我们能行！"Carlos举起了一罐啤酒（不知道他从哪里变出来的）。苏迟什么也没说，但你看到他在微笑。' },
+     { type: 'stat-up', text: '声乐 +4 · 视谱 +3 · 心情 +10' }],
+  ];
+  const idx = Math.min(S.sectionalCount - 1, scenes.length - 1);
+  adjustStat('mood', idx === scenes.length - 1 ? 10 : 0);
+  showNarrative(scenes[idx]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
 function sceneFirstRehearsal(type) {
@@ -1055,22 +1391,56 @@ function sceneRehearsalFocus() {
 
 function sceneRehearsalChat() {
   adjustStat('social', 3);
-  const chatNPCs = ['marta','ibrahim','lena','yuki','aoife','carlos','nico','suchi'];
-  const id = pick(chatNPCs);
+  const knownNPCs = ['marta','ibrahim','lena','yuki','aoife','carlos','nico','suchi'].filter(id => S.npcs[id] && S.npcs[id].talked > 0);
+  if (!knownNPCs.length) { sceneDailyMenu(); return; }
+  const id = pick(knownNPCs);
   const npc = S.npcs[id]; npc.talked++; npc.affinity += 3 + Math.floor(Math.random()*5);
 
-  const convos = {
-    marta: '中场休息Marta递给你一块自己烤的苹果蛋糕。"波兰配方，"她说，"我奶奶教的。"然后开始讲合唱团十年前只有六个人的时候的故事。你吃了两块蛋糕，听了十五分钟，大部分是重复的，但蛋糕很好吃。',
-    ibrahim: '你在走廊碰到Ibrahim，他在窗边喝水。你夸他刚才唱得好，他低下头说了声谢谢。沉默了一会儿他说"唱歌的时候不用说话，挺好的"。你觉得你理解他的意思。',
-    lena: 'Lena走过来直接说"你第十三小节的音不对，是降B不是B"。你愣了一下。她又说"不是批评你，只是说一下"。你觉得这确实不算批评，只是她的表达方式需要适应。',
-    yuki: 'Yuki在收拾琴谱的时候你帮她递了一下谱架。她鞠了一躬。你问她平时都练什么，她说肖邦。"但是这里的钢琴，"她说，看了一眼那台旧立式琴，"更适合弹酒吧爵士。"这是你第一次听到她说近似于笑话的话。',
-    aoife: 'Aoife在排练间隙跟你分了一块巧克力。"爱尔兰的，我妈寄来的。"你们聊了几句。她也是独自来的，做自由翻译，客户经常不靠谱，但她说她喜欢这里的光线。"爱尔兰天天下雨，"她说，"我的维生素D缺了二十年。"',
-    carlos: 'Carlos排练间隙偷偷给大家发了自制的brigadeiro（巴西巧克力球）。Dietrich假装没看见。Carlos冲你挤挤眼说"别告诉指挥"。Dietrich就站在两米外。',
-    nico: 'Nico排练完兴高采烈地宣布："这周六我们去海边唱歌！谁来？"然后不等人回答就开始建群拉人。苏迟以一种令人敬佩的速度消失在了门口。但你注意到Nico还是给他发了消息。',
-    suchi: '你趁休息的时候走到苏迟旁边坐下。他在翻一本手写的笔记本——里面全是乐谱分析的手写批注，字迹很漂亮。他说他在整理一篇关于合唱美学的笔记。"Dietrich处理这首曲子的方式很有意思，"他说，"他把独唱段落改成了呼吸式的合唱，像潮汐一样进退。"你觉得苏迟说话的时候用的比喻比大多数人写散文还好。',
+  const convosBase = {
+    marta: [
+      'Marta递给你一块苹果蛋糕。"波兰配方，我奶奶教的。"然后开始讲合唱团的历史。你吃了两块蛋糕，听了十五分钟。蛋糕很好吃。',
+      'Marta今天没带蛋糕，大家表示了微妙的失望。她说"下周我做双份"。然后她拉着你看手机里的合唱团老照片——"这是三年前的Carlos，瘦了二十斤。这是Lena刚来的时候，居然会笑。"',
+      'Marta说她下周要回波兰看父母两周。"你帮我看着团里的人，"她说，像是在交代一个重大任务，"特别是Carlos——他上次一个人的时候偷偷在排练中间点了外卖。"',
+    ],
+    ibrahim: [
+      '你在走廊碰到Ibrahim。你夸他刚才唱得好。他说了声谢谢，然后沉默了一会儿说"唱歌的时候不用说话，挺好的"。',
+      'Ibrahim今天提前到了，在角落里对着窗户练声。声音轻得像自言自语。你走过去的时候他停了。"你听到了？"他问。你说很好听。他说"我在试一种新的共鸣方式——从这里，"他指着自己的头顶。',
+      'Ibrahim今天戴了一条新的围巾——深蓝色的，很好看。Nico说"好看！"他说是他妈妈寄来的。他摸了摸围巾，很轻地说"她在约旦。织了三个月。"你觉得那条围巾比它的颜色更重。',
+    ],
+    lena: [
+      'Lena走过来："你第十三小节的音不对，是降B不是B。不是批评你，只是说一下。"你决定把这当作表扬。',
+      'Lena今天在排练中间因为一个和声走向跟Dietrich争了三分钟。最后Dietrich让步了。Lena回到位置上的时候Nico小声说"老大赢了"。Lena瞪了她一眼，但嘴角是弯的。',
+      '排练后Lena递给你一张纸。上面写着三个发声练习的方法。"回去练，"她说，"你的声区可以更宽。"你问她为什么帮你。她想了一下说"因为你在进步。帮一个在进步的人不浪费时间。"这大概是Lena式的最高赞美了。',
+    ],
+    yuki: [
+      'Yuki在收拾琴谱的时候你帮她递了一下谱架。她鞠了一躬。你问她平时都练什么。"肖邦。但是这里的钢琴，"她看了一眼那台旧立式琴，"更适合弹酒吧爵士。"',
+      'Yuki今天来得比平时更早。你路过琴房的时候听到她在弹一首你没听过的曲子——很慢、很安静，像是在跟谁说话。你没有进去。有些东西不需要被打扰。',
+      '排练间隙你给Yuki递了一杯水。她说谢谢，然后忽然说："你知道吗，在日本我从来不跟同事说话的。这里不一样。"你问哪里不一样。她想了很久说："这里的人允许安静。"',
+    ],
+    aoife: [
+      'Aoife在排练间隙跟你分巧克力。"爱尔兰的，我妈寄来的。"她说她喜欢这里的光线。"爱尔兰天天下雨，我的维生素D缺了二十年。"',
+      'Aoife今天迟到了五分钟——客户的稿子出了问题。排练中间她还在偷偷看手机回消息。Dietrich看了她一眼但没说什么。排练后她说"对不起"。Dietrich说"下次把手机留在包里"。她说"好的爸爸"。Dietrich居然笑了。',
+      '你和Aoife在回家的火车上聊翻译的事。她说最近在翻一本爱尔兰诗集——从盖尔语翻成西班牙语。"翻诗是最难的，"她说，"你要把一种孤独翻成另一种孤独。"',
+    ],
+    carlos: [
+      'Carlos排练间隙偷偷发自制的brigadeiro。Dietrich假装没看见。Carlos冲你挤挤眼说"别告诉指挥"。Dietrich就站在两米外。',
+      'Carlos今天带了一个巨大的保温桶——热巧克力。他给每个人倒了一杯。"巴西配方，"他说，"加了肉桂和辣椒。"你喝了一口——确实辣。Ibrahim一口气喝完了，Carlos说"这个男人是真的"。',
+      '排练后Carlos留下来擦桌子扫地。你帮忙。他一边扫一边唱一首巴西民歌，声音很低很暖。你问他想不想家。"每天，"他说，"但我回去了谁请你们吃东西？"他的眼睛在笑，但你觉得那不全是笑话。',
+    ],
+    nico: [
+      'Nico兴高采烈地宣布："这周六去海边唱歌！"然后不等人回答就开始拉人。苏迟以令人敬佩的速度消失在了门口。但Nico还是给他发了消息。',
+      'Nico今天穿了一件亮黄色的外套。"我的人生信条，"她指着外套说，"做一个在人群中找得到的人。"Lena说"确实找得到，因为太丑了"。Nico一点没生气，还做了个模特走秀的pose。',
+      'Nico在排练间隙教你一句罗马尼亚语。你重复了三次都不对。她笑到蹲在地上。然后很认真地又教了你一遍。这次你说对了。她鼓掌："现在你如果去布加勒斯特可以点一杯咖啡了。"',
+    ],
+    suchi: [
+      '你走到苏迟旁边。他在翻手写笔记本。"Dietrich把独唱段落改成了呼吸式的合唱，像潮汐一样进退。"你觉得苏迟说话的时候比喻比大多数人写散文还好。',
+      '苏迟今天在排练间隙画了一幅小画——用铅笔在谱子空白处画的。你凑过去看——是广场的那棵橘子树，寥寥几笔但很传神。他看到你在看，把谱子收了。"随便画的，"他说。你说"你画得很好"。他没说话，但你注意到他没把那页撕掉。',
+      '苏迟破天荒地在排练后没有立刻走。他走到Yuki旁边，指着谱子上的一个地方说了什么。Yuki听了，试着弹了一遍，然后两个人一起讨论了五分钟。你从来没见过苏迟主动跟人讨论这么久。音乐是他的语言——用音乐说话的苏迟比用中文或英语说话的苏迟自在一百倍。',
+    ],
   };
+  const convoPool = convosBase[id] || [convosBase[id]];
   renderStatus();
-  showNarrative([{ text: convos[id] }, { type: 'stat-up', text: `社交 +3 · ${npc.name} 好感度提升` }]);
+  showNarrative([{ text: pick(convoPool) }, { type: 'stat-up', text: `社交 +3 · ${npc.name} 好感度提升` }]);
   showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
