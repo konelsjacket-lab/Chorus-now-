@@ -289,6 +289,8 @@ const S = {
   calledParents: 0, lastParentCall: 0,
   composingPhase: 0, composingDay: 0, composingSongShared: false,
   shelterVisits: 0, museumVisits: 0,
+  ownedInstruments: [], lastInstrumentPractice: 0,
+  giftsGiven: {}, vacationsTaken: 0, soloDatesDone: {},
   rehearsalCount: 0,
   choirPhase: 0,
   metAtRehearsal: {},
@@ -1329,6 +1331,28 @@ function sceneDailyMenu() {
     if (S.metTomás && S.npcs.tomas && time >= 1 && time <= 2)
       choices.push({ text: '🎨 找Tomás学画画', cost: '体力-10，心情+8', action: scenePaintingLesson });
 
+    // Instrument practice at home
+    if (S.ownedInstruments.length > 0 && time <= 2)
+      choices.push({ text: '🎸 练习乐器', cost: '体力-10，声乐+3，视谱+2', action: sceneInstrumentPractice });
+
+    // Shopping options (appear when money >= 200)
+    if (S.money >= 80 && time >= 1 && time <= 2)
+      choices.push({ text: '🛍 去逛街', cost: '花钱', action: sceneShoppingMenu });
+
+    // Group vacation (money >= 400, enough friends)
+    if (S.money >= 300 && isWeekend() && time === 0) {
+      const friends = Object.values(S.npcs).filter(n => n.talked > 0 && n.affinity >= 15);
+      if (friends.length >= 3)
+        choices.push({ text: '🏖 约朋友们去度假！', cost: '300-500€', action: sceneVacationMenu });
+    }
+
+    // Solo date (high affinity NPC)
+    if (time >= 1 && time <= 2 && isWeekend()) {
+      const dateNPCs = Object.values(S.npcs).filter(n => n.affinity >= 30 && n.talked >= 3 && !S.soloDatesDone[n.id + '_' + Math.floor(S.day/14)]);
+      if (dateNPCs.length > 0 && S.money >= 50)
+        choices.push({ text: '💌 约人单独出去', cost: '50-80€', action: sceneSoloDateMenu });
+    }
+
     // Dynamic NPC visits
     const npcVisits = getAvailableNPCVisits();
     npcVisits.forEach(v => choices.push(v));
@@ -2021,6 +2045,379 @@ function sceneWalkRandom() {
     adjustStat('social', 1);
   }
   showNarrative([...w, ...walkEnd(S.hasDog ? ' · 社交 +1' : '')]);
+}
+
+// --- Shopping & Spending system ---
+const INSTRUMENTS = [
+  { id: 'ukulele', name: '尤克里里', price: 85, vocalBonus: 2, sightBonus: 2,
+    desc: '一把彩色的尤克里里，小巧可爱，适合在阳台上弹。' },
+  { id: 'guitar', name: '吉他', price: 160, vocalBonus: 3, sightBonus: 3,
+    desc: '一把二手古典吉他，音色温暖，前主人在琴身上贴了一朵干花。' },
+  { id: 'kalimba', name: '拇指琴', price: 45, vocalBonus: 1, sightBonus: 2,
+    desc: '叮叮咚咚的声音像下雨，适合晚上一个人的时候弹。' },
+  { id: 'melodica', name: '口风琴', price: 65, vocalBonus: 2, sightBonus: 3,
+    desc: '一架绿色的口风琴。苏迟可能会嫌它音色太亮，但你觉得很好玩。' },
+];
+
+const GIFT_OPTIONS = [
+  { id: 'flowers', name: '一束当地的野花', price: 15, affinity: 5, desc: '路边花店扎的，有薰衣草和雏菊。' },
+  { id: 'book', name: '一本二手书', price: 12, affinity: 4, desc: '旧书店淘的，你挑了很久。' },
+  { id: 'food', name: '一盒手工巧克力', price: 25, affinity: 7, desc: '旧城区那家巧克力店的招牌款。' },
+  { id: 'scarf', name: '一条手织围巾', price: 35, affinity: 8, desc: '集市上一位老奶奶织的，颜色像日落。' },
+  { id: 'vinyl', name: '一张黑胶唱片', price: 28, affinity: 9, desc: '唱片店里淘的，你根据对方的品味选了一张。', forMusic: true },
+];
+
+function sceneShoppingMenu() {
+  renderStatus();
+  const choices = [
+    { text: '🎵 乐器店', cost: `你有 ${S.money}€`, action: sceneInstrumentShop },
+    { text: '🎁 礼物商店', cost: '给朋友买礼物', action: sceneGiftShop },
+    { text: '算了，不逛了', action: sceneDailyMenu },
+  ];
+  showNarrative([
+    { text: '你走到旧城区的商业街。阳光照在鹅卵石路面上，两边是各种小店——有一家乐器店，橱窗里挂满了吉他和曼陀林；旁边是一家杂货礼品店，门口摆着花和手工陶瓷。' },
+    { text: `你的钱包里有 ${S.money}€。买点什么？` },
+  ]);
+  showChoices(choices);
+}
+
+function sceneInstrumentShop() {
+  renderStatus();
+  const available = INSTRUMENTS.filter(i => !S.ownedInstruments.includes(i.id));
+  if (available.length === 0) {
+    showNarrative([{ text: '你在乐器店里转了一圈。老板认出了你："又来啦？你已经把我店里适合你的都买走了。"你说："那你进点新货啊。"他笑了。' }]);
+    showChoices([{ text: '回去', action: sceneShoppingMenu }]);
+    return;
+  }
+  const paras = [
+    { text: '乐器店很小，但塞满了东西。墙上挂着吉他、曼陀林、一把不知道什么年代的班卓琴。柜台后面坐着一个络腮胡子的老头，在调一把小提琴的弦。他抬头看了你一眼："看看？"' },
+  ];
+  showNarrative(paras);
+  const choices = available.map(inst => ({
+    text: `${inst.name}（${inst.price}€）`,
+    cost: inst.desc,
+    action: () => {
+      if (S.money < inst.price) {
+        showNarrative([{ text: `你摸了摸${inst.name}，手感很好。然后你看了看价签，又看了看钱包。你轻轻地把它放回去了。` }]);
+        showChoices([{ text: '回去', action: sceneShoppingMenu }]);
+        return;
+      }
+      S.money -= inst.price;
+      S.ownedInstruments.push(inst.id);
+      adjustStat('mood', 10); renderStatus();
+      const buyTexts = {
+        ukulele: '你抱着尤克里里走出乐器店的时候，老板在后面喊："C大调先学！"你在街上试着拨了一下弦——声音清亮得让路过的猫回头看了你一眼。',
+        guitar: '老板帮你调了弦，弹了一段弗拉门戈作为演示。你说："我能弹成这样吗？"他说："练十年吧。"你把吉他背在背上，觉得自己像个流浪歌手。',
+        kalimba: '拇指琴装在一个小布袋里。你在路上就忍不住拿出来弹了几下——叮叮咚咚，像一串透明的水滴落在石头上。一个路过的小女孩停下来听了一会儿。',
+        melodica: '你对着口风琴吹了一个音。老板皱了一下眉："轻一点。"你又吹了一个，轻了，但还是很响。你觉得这个乐器和你的性格很配——不太能控制音量。',
+      };
+      showNarrative([
+        { text: buyTexts[inst.id] },
+        { type: 'stat-up', text: `心情 +10 · 获得${inst.name}！可以在家练习了` },
+      ]);
+      showChoices([{ text: '继续逛', action: sceneShoppingMenu }, { text: '回去', action: sceneDailyMenu }]);
+    },
+  }));
+  choices.push({ text: '不买了', action: sceneShoppingMenu });
+  showChoices(choices);
+}
+
+function sceneGiftShop() {
+  renderStatus();
+  const knownNPCs = Object.values(S.npcs).filter(n => n.talked > 0 && n.id !== 'dietrich');
+  if (knownNPCs.length === 0) {
+    showNarrative([{ text: '你看了看礼品店的东西，但你不知道该送给谁。你还没有认识太多人。' }]);
+    showChoices([{ text: '回去', action: sceneShoppingMenu }]);
+    return;
+  }
+  showNarrative([
+    { text: '礼品店里摆满了各种小东西——手工陶瓷、干花束、本地的橄榄油皂、包装精致的巧克力。老板娘坐在角落里织东西，看到你进来微微点了个头。' },
+    { text: '你想给谁买个礼物？' },
+  ]);
+  const choices = knownNPCs.map(npc => ({
+    text: `${npc.flag} ${npc.name}（好感 ${npc.affinity}）`,
+    action: () => scenePickGift(npc),
+  }));
+  choices.push({ text: '不买了', action: sceneShoppingMenu });
+  showChoices(choices);
+}
+
+function scenePickGift(npc) {
+  const gifts = GIFT_OPTIONS.filter(g => {
+    if (g.forMusic && !['suchi','yuki','lena','dietrich'].includes(npc.id)) return false;
+    return S.money >= g.price;
+  });
+  if (gifts.length === 0) {
+    showNarrative([{ text: '你翻了翻钱包……好像买不起什么像样的礼物。' }]);
+    showChoices([{ text: '回去', action: sceneGiftShop }]);
+    return;
+  }
+  showNarrative([{ text: `你决定给${npc.name}挑一份礼物。` }]);
+  const choices = gifts.map(g => ({
+    text: `${g.name}（${g.price}€）`,
+    cost: g.desc,
+    action: () => {
+      S.money -= g.price;
+      npc.affinity += g.affinity;
+      if (!S.giftsGiven[npc.id]) S.giftsGiven[npc.id] = 0;
+      S.giftsGiven[npc.id]++;
+      adjustStat('mood', 5); adjustStat('social', 2); renderStatus();
+      const reactions = {
+        sofia: [
+          `Sofia接过${g.name}的时候愣了一下。"给我的？"她低头看了一会儿，耳朵变红了。"你不用……"她没说完，但她把${g.name}抱得很紧。`,
+          `Sofia说"你怎么知道我喜欢这个"。你说"猜的"。她看了你一眼，嘴角弯了："你猜得很准。"`,
+        ],
+        suchi: [
+          `苏迟接过${g.name}，表情没什么变化。但你注意到他的耳朵红了。他说了一个字："谢。"然后低头翻看——你觉得他在掩饰什么。`,
+          `苏迟看了${g.name}很久。然后他说："你挑东西的品味比我想的好。"你不确定这是夸你还是说他以前觉得你品味差。`,
+        ],
+        nico: [
+          `Nico的反应是尖叫了一声然后抱住了你。"你怎么这么好！！！"你说"你松开我我快窒息了"。她松开以后举着${g.name}转了一圈。`,
+          `Nico收到${g.name}以后拍了张照发了社交媒体。配文是"世界上最好的朋友送的"。你收到了十七个不认识的人的点赞。`,
+        ],
+        carlos: [
+          `Carlos接过${g.name}，用力拍了你肩膀一下——你踉跄了。"你不用的！但我很感动！"然后他坚持请你吃了一顿。你觉得这份礼物的回报率很高。`,
+        ],
+        marta: [
+          `Marta接过${g.name}，眼眶立刻红了。"你这孩子……"她用手背擦了一下眼睛，然后把你拉进厨房塞了三块苹果蛋糕。你觉得你在做亏本买卖——她给你的永远比你给她的多。`,
+        ],
+        ibrahim: [
+          `Ibrahim接过${g.name}，安静地看了一会儿。然后他点了下头说"谢谢你"。就三个字，但你觉得他的三个字比别人的三百个字重。`,
+        ],
+        lena: [
+          `Lena看了看${g.name}，挑了一下眉。"你在讨好我？"你说"不是——"她嘴角弯了一下："行吧。谢谢。"你怀疑那是Lena版本的"我很开心"。`,
+        ],
+        yuki: [
+          `Yuki双手接过${g.name}，微微鞠了一躬。"谢谢。"然后她很轻地摸了摸${g.name}。你觉得Yuki摸东西的方式跟弹琴一样——很轻很认真。`,
+        ],
+        aoife: [
+          `Aoife看着${g.name}笑了。"你是不是偷偷记了我说过什么。"你说"没有，碰巧的"。她说"你撒谎的水平很差"。但她笑得很开心。`,
+        ],
+        tomas: [
+          `Tomás接过${g.name}，看了看你，说："我可以画你吗——就现在这个表情。"你说"什么表情？"他说"送完礼物的那种紧张。"你说你不紧张。他已经在画了。`,
+        ],
+      };
+      const r = reactions[npc.id] || [`${npc.name}收到了你的${g.name}，看起来很高兴。`];
+      showNarrative([
+        { text: pick(r) },
+        { type: 'stat-up', text: `${npc.name} 好感度 +${g.affinity} · 心情 +5 · 社交 +2` },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    },
+  }));
+  choices.push({ text: '换一个人', action: sceneGiftShop });
+  showChoices(choices);
+}
+
+// --- Instrument practice ---
+function sceneInstrumentPractice() {
+  adjustStat('energy', -10); advanceTime(); renderStatus();
+  const inst = S.ownedInstruments[S.ownedInstruments.length - 1];
+  const instData = INSTRUMENTS.find(i => i.id === inst) || INSTRUMENTS[0];
+  adjustStat('vocal', instData.vocalBonus);
+  S.sightRead = clamp(S.sightRead + instData.sightBonus);
+
+  const practices = {
+    ukulele: [
+      [{ text: '你坐在阳台上弹尤克里里。C大调、Am、F、G——四个和弦来回切换。你的手指头还在痛，但已经能连上了。' },
+       { text: '你试着边弹边唱。第一遍乱七八糟，第二遍好了一点。你发现弹琴唱歌和只唱歌完全是两回事——你的脑子要同时做两件事，像在走钢丝的时候还要玩杂耍。' }],
+      [{ text: '你在YouTube上找了一个尤克里里教程，跟着弹了一首《Somewhere Over the Rainbow》。弹到副歌的时候你觉得——嗯，虽然很简单，但挺好听的。你闭上眼睛又弹了一遍。风从阳台吹进来，你的头发被吹到脸上，你没管。' }],
+    ],
+    guitar: [
+      [{ text: '你抱着吉他坐在床边，照着谱子练指法。左手按弦的指尖已经磨出了薄茧。你知道这是好事——说明你在进步。' },
+       { text: '你试着弹了一段练习曲。不快，但每个音都是对的。你第一次觉得自己的手指在弦上找到了属于它们的位置。' }],
+      [{ text: '你弹着弹着忘了时间。窗外的天从亮变暗了。你最后弹的那段旋律——你不知道它从哪来的，不是谱子上的，是你自己弹出来的。你录了下来，害怕忘了。' }],
+    ],
+    kalimba: [
+      [{ text: '你在被窝里弹拇指琴。叮叮咚咚的声音在安静的房间里特别清晰。你跟着感觉弹了一段旋律——没有谱子，就是你脑子里冒出来的音。' },
+       { text: '你试着把合唱团排练的旋律在拇指琴上弹出来。速度很慢，但每个音都在你的指尖下变得更加清晰。你觉得你对这些音符的理解更深了。' }],
+    ],
+    melodica: [
+      [{ text: '你对着口风琴吹了排练曲的旋律。邻居敲了一下墙。你把音量降下来——但口风琴的音量怎么降？你含了一半吹嘴。声音怪怪的，但好歹轻了。' },
+       { text: '你发现用口风琴练视谱特别有效——因为你必须看着谱子吹，不能像唱歌那样靠记忆糊弄。每个音对应一个键，错了就是错了。很诚实的乐器。' }],
+    ],
+  };
+  const p = pick(practices[inst] || practices.ukulele);
+
+  // Occasional special event
+  if (Math.random() < 0.2 && S.metSuChi) {
+    p.push({ text: '苏迟经过你家门口听到了声音。他敲门进来，听你弹了一段。"节奏不错，"他说，"但第四小节的升fa你弹成了还原fa。"你说："你就不能先夸一句吗。"他想了一下："节奏不错。第四小节的升fa你弹成了还原fa。"你叹了口气。' });
+    S.npcs.suchi.affinity += 2;
+  }
+
+  p.push({ type: 'stat-up', text: `声乐 +${instData.vocalBonus} · 视谱 +${instData.sightBonus}` });
+  showNarrative(p);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+// --- Vacation system ---
+const VACATION_SPOTS = [
+  { id: 'coast', name: '海岸小镇一日游', price: 300, emoji: '🏖',
+    desc: '坐巴士去隔壁的海岸小镇，吃海鲜，逛灯塔，晚上看星星。' },
+  { id: 'mountain', name: '山区温泉之旅', price: 400, emoji: '🏔',
+    desc: '去内陆的山区泡温泉，据说水里有矿物质对嗓子好。' },
+  { id: 'island', name: '坐船去小岛', price: 450, emoji: '🏝',
+    desc: '包一条小船去附近的无人小岛。需要自带午餐。Carlos说他来负责。' },
+  { id: 'vineyard', name: '葡萄酒庄参观', price: 350, emoji: '🍷',
+    desc: '去乡下的老酒庄。品酒、午餐、在葡萄架下唱歌。' },
+];
+
+function sceneVacationMenu() {
+  renderStatus();
+  showNarrative([
+    { text: '周末了，天气好得过分。你想约朋友们出去玩一整天。你翻了翻手机里的旅游攻略，有几个不错的选择——' },
+  ]);
+  const choices = VACATION_SPOTS.map(v => ({
+    text: `${v.emoji} ${v.name}（${v.price}€）`,
+    cost: v.desc,
+    action: () => {
+      if (S.money < v.price) {
+        showNarrative([{ text: '你算了算——钱不太够。下次吧。' }]);
+        showChoices([{ text: '回去', action: sceneDailyMenu }]);
+        return;
+      }
+      sceneVacation(v);
+    },
+  }));
+  choices.push({ text: '算了，太贵了', action: sceneDailyMenu });
+  showChoices(choices);
+}
+
+function sceneVacation(spot) {
+  S.money -= spot.price;
+  S.vacationsTaken++;
+  adjustStat('energy', -20); adjustStat('mood', 25); adjustStat('social', 10);
+  advanceTime(); advanceTime(); renderStatus();
+  const friends = Object.values(S.npcs).filter(n => n.talked > 0 && n.affinity >= 15);
+  friends.forEach(f => { f.affinity += 5; });
+  const friendNames = friends.slice(0, 5).map(f => f.name).join('、');
+
+  const stories = {
+    coast: [
+      { text: `你在群里发了"明天去海岸小镇谁去"。三分钟后收到了七条回复和Nico的十二个感叹号。最后确定了名单：${friendNames}。Carlos说他负责午餐，Marta说她带蛋糕。你说你带什么？Nico说："你带你自己就行了。"` },
+      { text: '巴士开了一个小时，沿着海岸公路。窗外是悬崖和蓝得发紫的海。Carlos在后排唱歌，Ibrahim戴着耳机但嘴角在笑。苏迟靠窗看风景，手里拿着笔记本在写东西——你偷看了一眼，他在画沿途的建筑速写。' },
+      { text: '小镇很小，只有一条主街和一个旧灯塔。你们在海边的餐厅吃了烤鱼和沙拉。Carlos评价"还行，但没我做的好"，Marta说"你就不能谦虚一次吗"。Lena说鱼有点咸。Nico说"你对什么都不满意吗"。Lena说"我对这个沙拉很满意"。大家都笑了。' },
+      { text: '下午你们爬到灯塔顶上。风大得站不稳。Aoife的帽子被吹走了，Nico追了二十米才捡回来——浑身是沙。你们在灯塔上拍了合照。Yuki举着手机的手很稳，像弹琴一样。照片里所有人都在笑，除了苏迟——他的表情很淡，但你放大看，眼睛是亮的。' },
+      { text: '回去的巴士上所有人都累了。Marta在打瞌睡，Carlos靠在窗户上轻声哼歌。你看着窗外渐暗的天，觉得这一天好长——好长好长，长到可以装下很多以后会想起来的瞬间。' },
+    ],
+    mountain: [
+      { text: `你在群里说"去山里泡温泉"的时候，最先回复的居然是Ibrahim："好。"一个字。然后${friendNames}陆续确认了。苏迟犹豫了半天最后说"我不太习惯温泉"，Carlos说"你穿着T恤泡也行"。` },
+      { text: '上山的路很绕，Carlos晕车了。Marta递给他塑料袋和薄荷糖，表情像对待一个生病的大孩子。你在心里想：Marta大概是这个合唱团的妈妈。' },
+      { text: '温泉是露天的，在山谷里，四周是橄榄树和野花。水热得刚刚好。你泡进去的时候发出了一声"啊——"，声音大到Lena在旁边说"你就不能安静一点吗"。' },
+      { text: 'Nico提议在温泉里唱歌。"声音在水面上的共鸣特别好！"Dietrich如果在这里一定会皱眉，但他不在。你们唱了三首——走调的，笑到唱不下去的，最后一首居然唱得很好。水面上飘着热气和歌声。你想：这大概是世界上最奇怪也最美的排练。' },
+      { text: '泡完以后你们在山上的小餐馆吃了烤肉和本地面包。所有人的脸都红扑扑的，像喝醉了一样。Ibrahim难得话多了一点，讲了叙利亚的公共浴室——hammam。"小时候爸爸每周五带我去。"他的声音很平静。你注意到Carlos在旁边安静地听着，没有接话。' },
+    ],
+    island: [
+      { text: `Carlos真的包了一条小渔船。船老板是他的客人。"他来我店里吃了三年饭，"Carlos说，"我只收他半价。"你说："所以你的商业模式是先亏钱交朋友？"他说"这不叫亏钱叫投资"。${friendNames}站在码头上等着上船。` },
+      { text: '船开出港口的时候你靠在船舷上看水——蓝得像颜料。Nico已经在船头站着张开双臂了。Lena说"你会掉下去的"。Nico说"值得"。苏迟在角落里看海，风把他的头发吹得很乱，他没管。你觉得他放松的样子跟平时不太一样——像是终于把什么东西放下了。' },
+      { text: '小岛没有人，只有石头和灌木丛和一片小小的沙滩。Carlos在沙滩上架了一个简易烤架，开始做巴西烤肉。"食材我凌晨三点起来准备的，"他说得好像这是理所当然的事。Marta给每个人发了她做的三明治当前菜。你觉得这个合唱团最不缺的就是吃的。' },
+      { text: 'Aoife和Yuki在浅水里捡贝壳。Ibrahim一个人走到岛的另一边去了——你远远看到他站在礁石上看海，像一座雕塑。你没有去打扰他。' },
+      { text: '吃完以后所有人躺在沙滩上。头顶是蓝天和海鸥。Nico说"我们应该每个月来一次"。Carlos说"我的钱包不同意"。你看着天空想：你从来没有在一群这么不一样的人中间，觉得这么安全过。' },
+    ],
+    vineyard: [
+      { text: `酒庄在乡下，开车要一个小时。Lena有车——"但你们谁坐副驾不许碰收音机，"她说。${friendNames}挤了两辆车才装下所有人。苏迟被分到了Carlos的车里，你看到他上车时的表情像是要上战场。` },
+      { text: '酒庄很美——石头房子，木门，到处是葡萄藤。老板是个六十多岁的本地人，说英语带着浓重的口音，但很热情。他带你们在酒窖里走了一圈，讲了每种葡萄的故事。你一个都没记住但你记住了酒窖里的光线——从小窗户斜射进来，照在酒桶上。' },
+      { text: '品酒环节。你喝了三种红酒，觉得第一种和第三种差不多。Lena摇头："完全不一样。第一种有黑莓的底味，第三种偏烟熏。"你说"我只喝出了——酒味"。苏迟在旁边轻声说："你确实不太敏感。"你说："你来了三秒钟就开始嘲讽我。"他说："陈述事实。"' },
+      { text: '午餐在葡萄架下面。长桌、面包、奶酪、烤蔬菜、更多的酒。阳光透过葡萄叶落在所有人身上，变成一块一块的光斑。Carlos站起来举杯："敬合唱团。"所有人碰杯。Marta的眼睛湿了——你不确定是被感动了还是喝多了。' },
+      { text: '饭后Nico提议在葡萄架下唱歌。"反正也没别人。"你们唱了上个月排练的那首——在葡萄架下，没有指挥，没有钢琴，只有人声。唱完以后酒庄老板站在门口鼓掌。他说了一句本地谚语，Aoife翻译："歌声和好酒一样——越老越醇。"你觉得这是你听过的最好的夸奖。' },
+    ],
+  };
+
+  showNarrative([
+    ...stories[spot.id],
+    { type: 'stat-up', text: `心情 +25 · 社交 +10 · -${spot.price}€ · 所有朋友好感度 +5` },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+// --- Solo date system ---
+function sceneSoloDateMenu() {
+  renderStatus();
+  const dateNPCs = Object.values(S.npcs).filter(n =>
+    n.affinity >= 30 && n.talked >= 3 && !S.soloDatesDone[n.id + '_' + Math.floor(S.day/14)]
+  );
+  showNarrative([{ text: '你想约谁单独出去？' }]);
+  const choices = dateNPCs.map(npc => ({
+    text: `${npc.flag} ${npc.name}（好感 ${npc.affinity}）`,
+    cost: '50-80€',
+    action: () => sceneSoloDate(npc),
+  }));
+  choices.push({ text: '算了', action: sceneDailyMenu });
+  showChoices(choices);
+}
+
+function sceneSoloDate(npc) {
+  const cost = 50 + Math.floor(Math.random() * 30);
+  S.money -= cost;
+  S.soloDatesDone[npc.id + '_' + Math.floor(S.day/14)] = true;
+  npc.affinity += 8; npc.talked++;
+  adjustStat('energy', -10); adjustStat('mood', 15); adjustStat('social', 5);
+  advanceTime(); renderStatus();
+
+  const dateScenes = {
+    sofia: [
+      { text: '你约Sofia去海边的那家你们都喜欢的小咖啡馆。她换了一件你没见过的裙子——淡蓝色，很衬她的肤色。你说了一句"你今天穿得不一样"就再也不知道说什么了。她说"你也是"。你低头看了看自己——你穿的是平时那件T恤。她笑了。' },
+      { text: '你们沿着海边走了很久。她讲了小时候在葡萄牙内陆小镇的生活——很小的镇子，所有人都认识所有人。"在那里不可能有秘密，"她说，"但在这里——有时候秘密太多了。"你问她什么意思。她摇了摇头，"没什么。你觉得冰淇淋好吃吗？"她在转移话题。你让她转了。' },
+      { text: '回去的路上天暗下来了。路灯一盏一盏亮起来。她走在你左边，你的手偶尔碰到她的手。每次碰到你都想缩回来，但你没有。她也没有。' },
+    ],
+    suchi: [
+      { text: '你约苏迟去旧城区的二手书店。他到的时候手里已经拿着一杯热巧克力——"给你的。你不喝咖啡。"你接过来的时候想：他到底记得多少关于你的事。' },
+      { text: '你们在书架之间转了一个多小时。他翻乐谱像翻情书一样认真。你在文学区找了一本中文诗集——在这座城市的书店里找到中文书像中了彩票。你拿给苏迟看。他读了两首，指着一行说："这句的韵律可以变成一个很好的旋律。"你说："你看什么都是音乐。"他想了想："不是所有东西。有些是噪音。"你说："比如？"他看了你一眼："比如你唱歌的时候跑调。"你说："我请你出来你就这么对我。"他嘴角弯了："那我换一个——你不跑调的时候很好听。"' },
+      { text: '出来以后天已经黑了。你们走在亮着路灯的巷子里，他突然停下来听——远处有人在弹曼陀林。你们站着听了一整首。你觉得跟苏迟在一起的好处是——你不需要填满所有的沉默。有些沉默本身就是对话。' },
+    ],
+    nico: [
+      { text: 'Nico约在一家你从没去过的屋顶酒吧。"怎么找到的？""我知道这座城市所有的屋顶。"她已经点好了两杯mojito。你说你不太能喝。她说"那一杯都是我的"。' },
+      { text: '她今天穿了一件vintage夹克，头发扎得很高，耳朵上多了一个你没见过的耳钉——银色的小音符。你说："新耳钉？"她摸了摸："上周集市买的。五毛钱。"你说"很好看"。她笑得很大声。' },
+      { text: '喝到第二杯的时候她安静下来了。你们看着远处的海面和星星。她说："你知道吗，我有时候觉得自己在演一个叫Nico的角色。很开心的那种。但今天——"她看了你一眼，"今天不用演。"你说："你不演的时候也很好。"她没说话，但她把头靠在了你肩上。' },
+    ],
+    carlos: [
+      { text: 'Carlos说他想带你去"一个本地人才知道的地方"。你们走了二十分钟到了一个海湾——没有游客，只有石头和海。他带了三明治和一瓶本地啤酒。' },
+      { text: '你们坐在石头上吃东西。他讲了第一年在这里的事——没有朋友，语言不通，每天在港口干体力活。"有一天晚上我在这里坐了一晚上。想回巴西。"你问他为什么没回。他想了很久："因为第二天早上太阳升起来的时候，我觉得这个日出值得再看一次。"' },
+      { text: '他教你用石头打水漂。你的石头每次都直接沉下去。他的能跳五六次。"秘诀是手腕，"他说，"跟做菜一样——不要用力，要用巧。"你怀疑他是不是把所有人生道理都跟做菜联系在一起。' },
+    ],
+    marta: [
+      { text: '你约Marta去了旧城区的集市。她走得比你慢——但她在每个摊位前都要停下来跟老板聊天。你怀疑她认识整座城市的人。' },
+      { text: '"这个橄榄好，"她说，"你尝尝。"你尝了。确实好。她又塞给你一块奶酪，一片火腿，一个杏仁糖——你还没逛完一半就饱了。' },
+      { text: '走到一个卖旧照片的摊位时她停下来了。她拿起一张黑白照片——一对穿着婚纱和西装的年轻人。"像我和Marek年轻的时候，"她小声说。你站在旁边不知道说什么。她把照片放回去，拍了拍你的手背："走吧。前面有卖蜂蜜蛋糕的。"你跟着她走，心里酸酸的。' },
+    ],
+    aoife: [
+      { text: 'Aoife说她发现了一个很好的写作咖啡馆。"安静，有好咖啡，WiFi还快。"你说："你约我出来是为了带我去上班？"她笑了："不是。我想有人陪我不工作。"' },
+      { text: '你们在靠窗的位子坐了一下午。她真的没有打开电脑。你们聊了很多——关于离开和留下，关于用另一种语言思考是什么感觉，关于"家"到底是一个地方还是一群人。' },
+      { text: '"你知道盖尔语里「思乡」怎么说吗？"她在餐巾纸上写了一个你完全看不懂的词。"直译是「心被拉回去的方向」。"你看着那个词，觉得虽然看不懂但你感觉到了。你用中文在旁边写了「乡愁」。她问什么意思。你说"故乡的忧愁"。她轻轻念了一遍："乡……愁。比英语的homesick好听多了。"' },
+    ],
+    ibrahim: [
+      { text: '你约Ibrahim去了大学旁边的建筑博物馆。你本来以为他会滔滔不绝——结果他比平时还安静。他在每个模型前面站很久，用那种你见过的最专注的目光看。' },
+      { text: '走到一个清真寺的模型前他停了很久。你站在旁边等。他开口了："我老家的清真寺长这个样子。不是一模一样。但——光线是一样的。"你问那座清真寺还在吗。他说："不知道。"两个字。你不知道这两个字里装了多少东西。' },
+      { text: '出来以后你请他吃了冰淇淋。他选了开心果味的。你们坐在台阶上吃，他突然说："谢谢你约我出来。我一个人来过三次这里。有人一起不一样。"你觉得这大概是Ibrahim能说出的最亲近的话了。' },
+    ],
+    lena: [
+      { text: '你约Lena，以为她会拒绝。结果她说"好，我知道一个唱片店，新到了一批六十年代的爵士唱片"。你没想到Lena听爵士。' },
+      { text: '唱片店老板显然认识Lena。他们用本地语聊了五分钟，你一个字都听不懂。Lena翻唱片的样子很认真——比排练时还认真。她拿起一张Miles Davis，犹豫了一下放回去，又拿起来。' },
+      { text: '你说"你买吧"。她看了你一眼："你怎么知道我在犹豫？"你说"因为你拿起放下了三次"。她的嘴角弯了一下。她买了。出来以后她说："下次来我家听。"你愣了一下——Lena邀请你去她家？她立刻补充："别多想。我的音响效果好。"' },
+    ],
+    yuki: [
+      { text: '你约Yuki去海边。她答应了——但她带了一个小音箱和一沓乐谱。你说："你不会到了海边还要练琴吧？"她说："不是练琴。我想让你听一些东西。"' },
+      { text: '她播了一首你没听过的钢琴曲。你们坐在防波堤上听。音箱的声音混着海浪声。你问这是谁的曲子。她说："坂本龙一。《Bibo no Aozora》。直译是——美丽的蓝天。"你看了看头顶的天。确实很蓝。' },
+      { text: '听完她关了音箱。安静了一会儿。她说："在东京听这首曲子和在这里听完全不一样。在东京，它让我想哭。在这里，它让我觉得——嗯。就是嗯。"你说："嗯也是一种感觉。"她笑了，很轻很短，但比她平时任何微笑都真。' },
+    ],
+    tomas: [
+      { text: '你约Tomás去了山上的观景台。他带了速写本——他出门好像从来不忘带这个。' },
+      { text: '你们坐在山顶看整座城市。他画，你看他画。他今天画的是你们脚下铺开的屋顶。"你知道吗，"他说，"从上面看，所有房子的颜色都不一样。白的、黄的、粉的、蓝的。但它们在一起的时候，是和谐的。"你说："像合唱团。"他停下笔看了你一眼，笑了："对。像合唱团。"' },
+      { text: '下山的路上你的鞋带松了。你蹲下来系的时候他站在旁边等你，手里的速写本翻到了新一页——上面画了一个人的侧脸。你说："那是谁？"他合上本子，有点快："没有人。光线练习。"你没追问。但你觉得那个侧脸有点像你。' },
+    ],
+  };
+
+  const scene = dateScenes[npc.id];
+  if (scene) {
+    scene.push({ type: 'stat-up', text: `心情 +15 · 社交 +5 · ${npc.name} 好感度 +8 · -${cost}€` });
+    showNarrative(scene);
+  } else {
+    showNarrative([
+      { text: `你和${npc.name}出去逛了一下午。聊了很多，笑了很多。你觉得你们之间的距离又近了一点。` },
+      { type: 'stat-up', text: `心情 +15 · 社交 +5 · ${npc.name} 好感度 +8 · -${cost}€` },
+    ]);
+  }
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
 // --- Composing questline ---
