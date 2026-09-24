@@ -288,7 +288,7 @@ const S = {
   artSkill: 0, paintingLessons: 0,
   calledParents: 0, lastParentCall: 0,
   composingPhase: 0, composingDay: 0, composingSongShared: false,
-  shelterVisits: 0, museumVisits: 0,
+  shelterVisits: 0, museumVisits: 0, antiqueShopUnlocked: false, antiqueItems: [],
   choirDrama: {}, npcRomances: { ibukiYuki: 0, lenaAoife: 0, carlosMarta: 0 },
   ownedInstruments: [], lastInstrumentPractice: 0,
   giftsGiven: {}, vacationsTaken: 0, soloDatesDone: {},
@@ -768,6 +768,10 @@ const NPC_EVENTS = {
         '她看着你。"那你觉得这算逃避吗？"你说："我不知道。但如果是的话——好歹是一种好听的逃避。"',
         '你们聊到凌晨一点。走的时候她抱了你一下——很短，但很用力。"谢谢你听我说废话。在这里能有个同样迷路的人真的很好。"你说："我们互相迷路。"她松开你，低声说："好。互相迷路。"',
       ], {social:8, mood:8}) },
+    { id: 'ao4', affinity: 45, label: '🔮 Aoife发现了一条奇怪的巷子', time: [1,2],
+      scene: () => sceneAoifeAntique1() },
+    { id: 'ao5', affinity: 55, label: '🔮 和Aoife重回古董店', time: [1,2],
+      scene: () => sceneAoifeAntique2() },
   ],
   lena: [
     { id: 'le1', affinity: 10, label: '找Lena问声乐问题', time: [2],
@@ -2065,6 +2069,7 @@ function sceneWalkMenu() {
     { text: '⛰ 去山上观景台', action: sceneWalkViewpoint },
   ];
   if (S.day > 3) allDests.push({ text: '🐕 去流浪狗收容基地', action: sceneWalkShelter });
+  if (S.antiqueShopUnlocked) allDests.push({ text: '🔮 去古董店', action: sceneWalkAntique });
 
   const dests = [];
   const pool = [...allDests];
@@ -2632,6 +2637,163 @@ function sceneSoloDate(npc) {
       { type: 'stat-up', text: `心情 +15 · 社交 +5 · ${npc.name} 好感度 +8 · -${cost}€` },
     ]);
   }
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+// --- Aoife：摸金校尉 ---
+function sceneAoifeAntique1() {
+  const npc = S.npcs.aoife;
+  npc.talked++; npc.events.push('ao4'); npc.affinity += 5;
+  adjustStat('energy', -5); advanceTime(); renderStatus();
+
+  showNarrative([
+    { text: 'Aoife约你去旧城区逛逛。你说好。你以为她要去上次那个跳蚤市场——结果她说"今天走另一条路"。' },
+    { text: '你们拐进了一条你从来没走过的巷子。巷子很窄，两边是没有粉刷过的石墙，墙上爬满了某种你叫不出名字的深绿色藤蔓。地上的石板路凹凸不平，你差点绊了两次。Aoife走在前面，步子很快，好像知道要去哪里。' },
+    { text: '你说："你怎么知道这条路的？"她回头："上周翻译一份旧城区的历史文件，里面提到了一条「没有名字的巷子」。我就来找了。"你说："你翻译完文件的第一反应是去实地探险？"她说："你不会吗？"你说："我的第一反应是关电脑吃东西。"' },
+    { text: '巷子走到尽头，有一扇很旧的木门。门上没有招牌，只有一个手画的符号——像一只闭着的眼睛。你说："这……是什么。"Aoife眼睛亮了："就是这个。文件里说这里以前是一个航海用品商店。十九世纪的。"' },
+    { text: '她推了一下门。门开了。' },
+    { text: '里面是一间古董店。但跟你想象的古董店完全不一样——没有整齐的展柜和聚光灯，而是从地板到天花板的东西。旧钟表、航海图、铜制的不知道什么仪器、一堆彩色玻璃瓶、一架积满灰的手风琴、三只瓷猫（其中一只缺了一只耳朵）、挂在天花板上的干花束、一面据说是威尼斯的镜子——你没去照，因为它的角度让你觉得它在看你而不是你在看它。' },
+    { text: '店里有一个人。坐在柜台后面，看不出年纪——可能五十，可能七十。灰白头发往后梳，穿着一件深红色天鹅绒外套，领子上别着一枚很旧的船锚胸针。他在读一本没有封面的书。' },
+    { text: '他抬起头看了你们一眼。眼睛是很浅的灰蓝色——浅到你觉得不太真实。' },
+    { text: '「啊，」他说，声音沙沙的，像老唱片，「新面孔。有趣。你们是被巷子选中的还是自己找来的？」' },
+    { text: 'Aoife说："我们自己——"他摆了摆手："无所谓。进来了就进来了。东西自己会找到它的主人。不用着急。"' },
+    { text: '你小声问Aoife："他刚才说「被巷子选中」是什么意思？"Aoife小声回："气氛营造。"你觉得她说得对。但你还是不太想去照那面威尼斯镜子。' },
+    { text: '老板——他自己说叫Zeno——没有推销任何东西。他继续看他那本没封面的书。你和Aoife在里面逛了半个小时，像两个进了博物馆的孩子。Aoife拿起一个指南针看了很久——指针一直指着窗户的方向，不管她怎么转。她说"这个坏了"。Zeno头也不抬："没坏。它指的不是北。"' },
+    { text: '你没买东西——不是因为没钱，是因为你觉得这些东西像是有故事的，你不确定自己准备好接收别人的故事了。走的时候Zeno说了一句："欢迎再来。门不是每天都在的。"' },
+    { text: '你出来以后回头看了一眼——门还在。你说："他说「门不是每天都在的」是什么意思。"Aoife拉着你往前走："走走走，别回头看了。"她在笑，但走得很快。' },
+    { type: 'system', text: '解锁地点：古董店。Zeno的店不在地图上，但你记住了路。' },
+    { type: 'stat-up', text: '社交 +5 · 心情 +5 · Aoife好感度提升' },
+  ]);
+  adjustStat('social', 5); adjustStat('mood', 5);
+  S.antiqueShopUnlocked = true;
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneAoifeAntique2() {
+  const npc = S.npcs.aoife;
+  npc.talked++; npc.events.push('ao5'); npc.affinity += 8;
+  adjustStat('energy', -5); advanceTime(); renderStatus();
+
+  showNarrative([
+    { text: 'Aoife说："我们再去一次那个古董店。"你说："为什么？"她说："我梦到了那个指南针。"你说："你梦到了一个指南针？"她说："它指着我的床。"你说："……我们现在就去。"' },
+    { text: '巷子还在——这让你松了一口气，虽然你不确定如果巷子不在了你会更害怕还是更安心。门上那只闭着的眼睛好像比上次画得更深了。你告诉自己那是你的想象。' },
+    { text: '推门进去，Zeno还在同一个位置。穿的是同一件天鹅绒外套。读的是同一本没封面的书。你想：他不会一直坐在这里吧？不会的。但你没问。' },
+    { text: '「指南针的朋友们，」他说，好像你们昨天才来过，「今天来找什么？」Aoife说："上次那个指南针——"他指了一下右边的架子。指南针就在那里，你确定上次它在左边。' },
+    { text: 'Aoife拿起来。这次指针没有指窗户——它指着Aoife。她把指南针转了一圈。指针跟着转回来，指着她。她抬头看Zeno。' },
+    { text: '他说："我说了。它指的不是北。"然后他笑了——笑容很温和，一点都不恐怖。但那种温和本身让你觉得他知道的东西比他说的多。' },
+    { text: 'Aoife买了那个指南针。二十五欧。Zeno找钱的时候从抽屉里拿出一叠旧纸币——你看到了好几种你不认识的货币，有些看起来已经停止流通很久了。他递给Aoife五欧的零钱，说了一句："每个东西离开这个店都会带走一个故事。有些故事好玩，有些——"他停了一下，"有些比较有趣。"' },
+    { text: '你说："「有趣」和「好玩」有什么区别？"他看了你一眼——你第一次觉得他的灰蓝色眼睛在对焦。"好玩是你在笑。有趣是你在想。"' },
+    { text: '出来以后Aoife举着指南针走在前面。指针现在指着正前方。她说："它好像在带路。"你说："我们不要跟着它走。"她说："为什么不？"你说："因为这是恐怖电影的经典开头。"她说："但我们不是恐怖电影。我们是友情剧。"' },
+    { text: '你跟着走了。指南针带你们走到了海边的一块礁石旁边。石头缝里有一个玻璃瓶——里面塞着一张纸条，墨水已经褪得快看不清了。Aoife拿出来，举到光下面辨认——上面用很旧的字体写着一句话。' },
+    { text: '她翻译了一下："「给能找到这里的人：你已经在正确的方向上了。」"她看着你，你看着她。你们都不知道这是谁写的，什么时候写的。海风吹过来。你说："巧合吧？"她说："巧合也行。"但她把纸条收进了口袋。' },
+    { type: 'stat-up', text: '社交 +5 · 心情 +10 · Aoife好感度提升 · Aoife获得了一个会指路的指南针' },
+  ]);
+  adjustStat('social', 5); adjustStat('mood', 10);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+// --- 古董店 ---
+const ANTIQUE_ITEMS = [
+  { id: 'music_box', name: '八音盒', price: 40, emoji: '🎵',
+    desc: '一个铜制八音盒，盖子上刻着一朵玫瑰。Zeno说它「很久没唱歌了」。' },
+  { id: 'mirror_shard', name: '镜子碎片', price: 15, emoji: '🪞',
+    desc: '一块威尼斯镜子的碎片，边缘被磨圆了。Zeno说「它只照得出真话」。' },
+  { id: 'old_key', name: '不知道开什么的钥匙', price: 20, emoji: '🗝',
+    desc: '一把铁钥匙，锈迹斑斑但手感很重。Zeno说「它在等它的门」。' },
+  { id: 'glass_eye', name: '玻璃眼珠', price: 30, emoji: '👁',
+    desc: '一颗蓝色玻璃眼珠，做工精致到让你不舒服。Zeno说「它以前的主人是个观星师」。' },
+  { id: 'dried_flower', name: '不凋花', price: 25, emoji: '🌸',
+    desc: '一束不知名的干花，但颜色鲜艳得不像干花。Zeno说「它忘了自己已经死了」。' },
+  { id: 'compass_twin', name: '指南针（双子）', price: 35, emoji: '🧭',
+    desc: '跟Aoife买的那个一模一样的指南针。Zeno说「这是一对。你拿着这个，另一个会指向你」。' },
+];
+
+function sceneWalkAntique() {
+  showNarrative([
+    { text: '你拐进那条没有名字的巷子。藤蔓还是那么绿，石板路还是那么不平。门上那只闭着的眼睛好像每次来都画得不太一样——但你告诉自己是光线的关系。' },
+    { text: '推门。Zeno在。天鹅绒外套。没封面的书。他抬头看了你一眼："一个人来的？"你说是。他点了点头："也好。东西有时候更愿意跟一个人说话。"' },
+  ]);
+
+  const available = ANTIQUE_ITEMS.filter(it => !S.antiqueItems.includes(it.id) && S.money >= it.price);
+  if (available.length === 0) {
+    showNarrative([
+      { text: '你在店里转了一圈。Zeno说："今天没有你的东西。"你说："你怎么知道？"他说："因为你没停下来。"你想了想——确实，你没有在任何一个东西前面停下来。也许他是对的。' },
+      { type: 'stat-up', text: '心情 +5' },
+    ]);
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    return;
+  }
+
+  const items = [];
+  const pool = [...available];
+  const count = Math.min(3, pool.length);
+  for (let i = 0; i < count; i++) {
+    const idx = Math.floor(Math.random() * pool.length);
+    items.push(pool.splice(idx, 1)[0]);
+  }
+
+  showNarrative([{ text: '你在店里慢慢看了一圈。有几样东西让你停下了脚步。' }]);
+  const choices = items.map(it => ({
+    text: `${it.emoji} ${it.name}（${it.price}€）`,
+    cost: it.desc,
+    action: () => sceneAntiqueBuy(it),
+  }));
+  choices.push({ text: '今天不买了', action: () => {
+    showNarrative([{ text: 'Zeno头也不抬："下次。"你出了门，回头看了一眼。门还在。你松了口气。' }]);
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+  }});
+  showChoices(choices);
+}
+
+function sceneAntiqueBuy(item) {
+  S.money -= item.price;
+  S.antiqueItems.push(item.id);
+  renderStatus();
+
+  const buyTexts = {
+    music_box: [
+      { text: '你把八音盒拿到柜台。Zeno看了一眼："她选了你。"你说："什么？"他说："没什么。二十欧。"你确定他说的是四十，但你没纠正——也许你听错了。你确定你没听错。' },
+      { text: '你付了钱（四十欧），把八音盒带回家。放在床头柜上。晚上你翻了一下盖子——里面的旋律很慢、很短，像一首没有名字的摇篮曲。你不认识这首曲子。但你觉得你以前在某个地方听过。' },
+      { text: '你闭上眼睛听完了整段旋律。大概二十秒。曲子结束后你睁开眼——窗外的月光正好照在八音盒的铜盖上，玫瑰的刻痕在光里像活了一样。你关上盖子。明天要跟Aoife讲。' },
+      { text: '第二天你发现八音盒的盖子又开着了。你确定你昨晚关了。你……非常确定。对吧？' },
+    ],
+    mirror_shard: [
+      { text: 'Zeno把镜子碎片包在一张报纸里递给你。报纸的日期——你看了一眼——1987年。你决定不想这件事。' },
+      { text: '回家后你对着镜子碎片照了一下。很正常，就是你的脸。但你注意到镜子里你身后的墙上好像多了一个影子——不是你的。你转过头去看。什么也没有。你再照镜子——影子也没了。' },
+      { text: '你把碎片放在书架上。第二天你路过的时候随意瞄了一眼——里面映出的是窗外的风景。但窗户在你背后。你愣了两秒。然后你决定以后把它面朝墙放。' },
+      { text: '……面朝墙放了以后你总觉得它在你背后看你。你又翻回来了。你跟自己说：这是一面镜子。镜子不会看人。对吧。你给Aoife发消息："那个老头的东西是不是都有点……"Aoife秒回："是。但不是坏的那种。你会习惯的。"你不确定「习惯」是你想要的。' },
+    ],
+    old_key: [
+      { text: '你把钥匙拿起来的时候感觉到它微微振了一下——像一只猫的呼噜。你告诉自己是你的手在抖。' },
+      { text: '回家后你把钥匙放在桌上。第二天它在门口。你确定你没有动过它。你把它放回桌上。第三天它在窗台。' },
+      { text: '你给Aoife发消息："钥匙会自己移动。"她说："酷。"你说："这不酷！这很恐怖！"她说："它只是在找它的门。你家有没有什么打不开的东西？"' },
+      { text: '你想了想——你在搬进来的时候注意到走廊尽头有一个上了锁的小柜子，房东说"不用管它"。你看了看手里的钥匙。你没有试。不是因为害怕——好吧就是因为害怕。但你把钥匙放在了柜子旁边。第二天它没有移动。它好像满意了。' },
+    ],
+    glass_eye: [
+      { text: 'Zeno把玻璃眼珠放在一个小绒布袋里递给你："观星师用它看过木星的光环。至少他是这么跟我说的。"你说："你认识他？"他说："很久以前。"他的「很久以前」让你觉得比正常的「很久以前」更久。' },
+      { text: '晚上你把玻璃眼珠放在窗台上。月光照进来的时候它亮了一下——蓝色的光，很微弱，像远处的灯塔。你凑近看：里面好像有什么东西在动。你眨了一下眼。没了。' },
+      { text: '你拿起来仔细看了看——没有什么机关，就是一颗很精致的玻璃球。但你把它放在掌心的时候觉得微微发温。不是你的体温——是它自己的温度。像它在看着什么你看不见的东西。' },
+      { text: '你放下了。你给Aoife发消息："我觉得玻璃眼珠在发光。"她回："可能在看星星。放窗台上别管它，让它看够。"你照做了。第二天早上你发现眼珠转了一个方向——面朝天空。' },
+    ],
+    dried_flower: [
+      { text: '你把不凋花带回家插在一个空玻璃瓶里。花瓣是一种你没见过的紫红色——太鲜艳了，像PS过的。你凑近闻了一下——有香味。干花不应该有香味。' },
+      { text: '第二天你发现花瓶里有水。你没有加水。你室友没有加水。Sofia不可能进来过。你盯着那半瓶水看了十秒钟。你决定接受这件事。' },
+      { text: '隔了一周你发现花好像……长了？不确定，但花茎好像比买的时候高了一点。你拿尺子量了一下。你没有之前的数据所以量了也白量。但你开始每天量一次。' },
+      { text: '你跟Aoife说了。她来你家看了看，拿起来研究了半天，说："这个花我查了。它不存在。我查了所有地中海植物图鉴，没有这种花。"你说："那它是什么？"她放下花，很自然地说："它是一朵忘了自己已经死了的花。Zeno说的。"你说："你不觉得奇怪吗？"她说："我觉得很美。"你又看了一眼那朵花。好吧。也许是很美。' },
+    ],
+    compass_twin: [
+      { text: 'Zeno看到你拿起这个指南针的时候微微笑了："你认识另一个的主人。"你说："Aoife。"他点头："那你买了这个，它就会一直指向她。而她的，一直指向你。"你说："这是GPS吗。"他说："比GPS老了三百年。但原理差不多。"' },
+      { text: '你买了带回家。打开一看——指针指着西南方。你开了手机定位对了一下：Aoife住的方向。你的后背起了一层鸡皮疙瘩——不是害怕，是一种你无法解释的震动。' },
+      { text: '你给Aoife发消息："打开你的指南针看看。"过了两分钟她发了一张照片——指针指着你家的方向。她发了一个"!!!"。你回了一个"!!!"。然后你们同时发了同一句话："Zeno到底什么来头？？？"' },
+      { text: '你们约好下次一起去问。但你心里知道——他不会回答的。他只会看着你们笑，翻他那本没有封面的书。你把指南针放在窗台上。它一直指着西南方。它一直在指着你的朋友。这件事比任何恐怖故事都让你觉得温暖。' },
+    ],
+  };
+
+  const texts = buyTexts[item.id];
+  showNarrative([
+    ...texts.map(t => ({text: t.text || t})),
+    { type: 'stat-up', text: `获得：${item.name} · 花费 ${item.price}€` },
+  ]);
   showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
