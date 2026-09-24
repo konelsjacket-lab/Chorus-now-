@@ -289,7 +289,7 @@ const S = {
   calledParents: 0, lastParentCall: 0,
   composingPhase: 0, composingDay: 0, composingSongShared: false,
   shelterVisits: 0, museumVisits: 0, antiqueShopUnlocked: false, antiqueItems: [],
-  choirDrama: {}, npcRomances: { ibukiYuki: 0, lenaAoife: 0, carlosMarta: 0 },
+  choirDrama: {}, npcRomances: { carlosMarta: 0 },
   ownedInstruments: [], lastInstrumentPractice: 0,
   giftsGiven: {}, vacationsTaken: 0, soloDatesDone: {},
   rehearsalCount: 0,
@@ -1592,18 +1592,15 @@ function sceneRehearsal() {
     S.npcs.dietrich.affinity += 10;
 
   } else if (rc === 14) {
-    // NPC恋爱暗线：Ibrahim和Yuki
-    const romPick = Math.random();
-    if (romPick < 0.5) {
+    const warmPick = Math.random();
+    if (warmPick < 0.5) {
       paras.push({ text: '排练间隙你去倒水，路过琴房的时候看到Ibrahim站在Yuki旁边。Yuki在弹一段很轻的旋律，Ibrahim闭着眼睛听。' });
       paras.push({ text: '你停下脚步——不是故意的，是那个画面让你不想动。两个最安静的人，一个在弹，一个在听。你觉得他们之间的沉默比大部分人的对话都丰富。' });
       paras.push({ text: 'Yuki弹完了。Ibrahim说了一句很轻的话——你听不清，但Yuki笑了。那种笑不是礼貌的，是从眼睛开始的。你悄悄走了。你觉得自己不应该看到这个。但你很高兴你看到了。' });
-      S.npcRomances.ibukiYuki = Math.max(S.npcRomances.ibukiYuki, 1);
     } else {
       paras.push({ text: '排练结束后你看到Lena和Aoife在台阶上坐着聊天。Lena在说什么——你听到了"文化局"和"经费"几个词。Aoife在认真听，时不时点头。' });
       paras.push({ text: '你走过去的时候Lena正好说完了。Aoife转头对你说："Lena刚才在教我怎么申请翻译项目的文化基金。"Lena说："不是教，是建议。"Aoife说："你的建议就是教。"' });
       paras.push({ text: '你注意到Lena递给Aoife一杯咖啡——你从来没见过Lena主动给别人买过东西。Aoife接过去喝了一口，说："你记得我喝什么？"Lena说："上次你点的。不难记。"她说得很平淡。但你觉得「记住一个人喝什么」这件事本身就不平淡。' });
-      S.npcRomances.lenaAoife = Math.max(S.npcRomances.lenaAoife, 1);
     }
     adjustStat('social', 3); adjustStat('vocal', 2);
 
@@ -1653,7 +1650,6 @@ function sceneRehearsal() {
     paras.push({ text: '收拾东西的时候你看到Ibrahim在角落里打电话——他在笑。你第一次看到他打电话的时候在笑。Yuki走过去递给他一瓶水，等他打完才走。你假装没看见。' });
     paras.push({ type: 'system', text: '募捐演出成功！差旅费有着落了。你第一次在公众面前唱歌。' });
     adjustStat('mood', 15); adjustStat('vocal', 5); adjustStat('social', 5);
-    S.npcRomances.ibukiYuki = Math.max(S.npcRomances.ibukiYuki, 2);
 
   } else if (rc === 22 && S.choirPhase >= 2 && !S.choirDrama.carlosMartaMoment) {
     S.choirDrama.carlosMartaMoment = true;
@@ -1676,23 +1672,6 @@ function sceneRehearsal() {
       '今天来了一个新人——一个本地的退休教师，六十多岁，唱了一辈子教堂唱诗班。Dietrich让她站到女低音那边。她的声音像老教堂的木头——暗暗的，但很稳。你觉得这个团的魅力就在于什么人都收。',
       '苏迟今天带了一份他写的声部分析。三页纸，手写的，每个声部的入声点、呼吸记号和强弱标注都标得清清楚楚。Dietrich看了以后说"比我写的还细"。苏迟说"因为我比你闲"。全场笑了——苏迟居然会开玩笑。',
     ];
-    // NPC恋爱暗线推进（随机出现在备战期排练中）
-    if (S.npcRomances.ibukiYuki >= 1 && Math.random() < 0.25 && S.npcRomances.ibukiYuki < 3) {
-      S.npcRomances.ibukiYuki++;
-      if (S.npcRomances.ibukiYuki === 2) {
-        prepTexts.push('排练间隙你去上厕所，回来的时候看到Ibrahim在帮Yuki翻谱。他们站得很近——不是暧昧的近，是一种自然的近，像两个人已经习惯了彼此的距离。Yuki指着某个小节说了什么，Ibrahim点头。你从来没见过Ibrahim跟谁站得这么近过。你绕了一圈从另一个门进去了。');
-      } else {
-        prepTexts.push('今天排练结束后Ibrahim没有像平时一样第一个走。他在等Yuki收琴。Yuki把琴盖合上的时候Ibrahim伸手帮她拿了谱夹。Nico在你耳边说"你看到了吗"。你说"看到什么"。她说"装"。你确实看到了。你很难不看到——Ibrahim帮人拿东西这件事本身就是新闻。');
-      }
-    }
-    if (S.npcRomances.lenaAoife >= 1 && Math.random() < 0.25 && S.npcRomances.lenaAoife < 3) {
-      S.npcRomances.lenaAoife++;
-      if (S.npcRomances.lenaAoife === 2) {
-        prepTexts.push('Lena今天带了两杯咖啡来排练。一杯给自己，一杯放在Aoife的谱架旁边。Aoife来的时候看到咖啡愣了一下，然后笑了："你又记住了。"Lena说"记性好而已"。你想：Lena对所有人都记性好，但只有Aoife的咖啡她会买。你没说出口。');
-      } else {
-        prepTexts.push('排练后Lena和Aoife一起走了。你在后面看到她们的背影——一个高一个矮，步调不知道什么时候变得一致了。Aoife在说什么，Lena侧头听着。你想起第一次见Lena的时候觉得她像冰，现在你觉得她像一杯需要慢慢喝的热茶——烫嘴，但暖。而Aoife是那个愿意慢慢喝的人。');
-      }
-    }
     if (S.npcRomances.carlosMarta >= 1 && Math.random() < 0.25 && S.npcRomances.carlosMarta < 3) {
       S.npcRomances.carlosMarta++;
       if (S.npcRomances.carlosMarta === 2) {
