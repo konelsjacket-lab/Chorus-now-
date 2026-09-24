@@ -1666,7 +1666,7 @@ function sceneRehearsal() {
     S.npcRomances.carlosMarta = Math.max(S.npcRomances.carlosMarta, 1);
     adjustStat('mood', 8); adjustStat('social', 3);
 
-  } else if (rc === 24 && S.choirPhase >= 3 && !S.choirDrama.dressCrisis) {
+  } else if (rc === 24 && S.choirPhase >= 2 && !S.choirDrama.dressCrisis) {
     S.choirDrama.dressCrisis = true;
     paras.push({ text: '今天排练结束后Lena说了一件事："我们还没有统一的演出服。Europa Cantat在三周后。"' });
     paras.push({ text: '全场安静了。你低头看了看自己今天穿的——一件有洗衣液印渍的灰色T恤。你忽然意识到你们这个合唱团从来没穿得像一个团过。' });
@@ -1753,9 +1753,7 @@ function sceneRehearsal() {
     paras.push({ text: '你想：明天就出发了。你从来没想过你会走到这一步——一个不会唱歌的人，在一个什么都不认识的城市，加入了一个奇怪的合唱团，然后跟着他们去巴塞罗那唱歌。你的人生在某一天拐了一个弯，然后所有这些人都出现了。你不知道你做了什么值得这些。也许什么都没做。也许你只是走进了那扇门。' });
     paras.push({ type: 'system', text: '最后一次排练结束了。明天——巴塞罗那。' });
     adjustStat('mood', 20); adjustStat('vocal', 5); adjustStat('social', 5);
-    if (S.choirPhase === 3 && S.rehearsalCount >= 35) {
-      S.choirPhase = 4;
-    }
+    S.choirPhase = 4;
 
   } else if (S.choirPhase === 4 && !S.choirDrama.barcelonaTrip) {
     S.choirDrama.barcelonaTrip = true;
@@ -1811,6 +1809,13 @@ function sceneRehearsal() {
       '排练中间Dietrich忽然停下来说"不对"。全场安静。他说："你们在唱音符。不是音乐。音符是骨头，你们要给它血肉。再来。"大家面面相觑。从头来了一遍——好了很多。',
       '今天来了一个新人——一个本地的退休教师，六十多岁，唱了一辈子教堂唱诗班。Dietrich让她站到女低音那边。她的声音像老教堂的木头——暗暗的，但很稳。你觉得这个团的魅力就在于什么人都收。',
       '苏迟今天带了一份他写的声部分析。三页纸，手写的，每个声部的入声点、呼吸记号和强弱标注都标得清清楚楚。Dietrich看了以后说"比我写的还细"。苏迟说"因为我比你闲"。全场笑了——苏迟居然会开玩笑。',
+      '今天排练Dietrich让每个声部单独唱一遍。轮到你所在的声部时你紧张得手心出汗——但唱完了。Dietrich点了点头。从他这里得到的每一个点头都像奖章。',
+      '今天Ibrahim在排练前教了大家一段呼吸练习。"用鼻子吸气四秒，屏住四秒，嘴巴呼出四秒。"你照做了，感觉整个人安静下来了。他说这是他祈祷前做的。',
+      '排练结束已经天黑了。走出来的时候你看到天上有星星。Nico说"唱歌唱到天上出星星，这种事只在这里会发生"。你想她说得对。在大城市你连星星都看不到。',
+      '今天排练你终于记住了《El Cant dels Ocells》的全部歌词。虽然你不完全确定每个加泰罗尼亚语单词的意思，但你的嘴已经记住了形状。Aoife说"你的发音比上个月好了十倍"。你说"那上个月得有多差"。她笑了但没否认。',
+      '今天排了两个小时没有休息。Dietrich进入了某种状态——他把同一个和弦让你们反复唱了十遍，每次都说"再近一点"。你不知道"近"是什么意思，直到第十遍——所有人的音准真的像磁铁一样吸在一起了。你明白了。',
+      'Sofia今天在排练前给大家带了自制的墨西哥热巧克力。很甜，有辣味。你被辣到了，Ibrahim面不改色地喝完了。Nico说"下次做辣一点我喜欢"。你开始怀疑Nico的味觉。',
+      '今天Lena带了一段她找到的往年Europa Cantat的演出视频给大家看。水平非常高。看完所有人安静了几秒。然后Nico说"我们比他们好看"。不知道为什么大家都笑了，然后排练比平时更认真了。',
     ];
     if (S.npcRomances.carlosMarta >= 1 && Math.random() < 0.25 && S.npcRomances.carlosMarta < 3) {
       S.npcRomances.carlosMarta++;
@@ -3821,8 +3826,21 @@ function scenePaintingLesson() {
      { text: '出来以后你说"我觉得我看世界的方式变了一点"。Tomás说"那我今天的课就上完了"。' },
      { type: 'stat-up', text: '心情 +8 · 绘画技巧 +3 · Tomás好感度提升' }],
   ];
-  const idx = Math.min(S.paintingLessons - 1, lessons.length - 1);
-  showNarrative(lessons[idx]);
+  if (S.paintingLessons <= lessons.length) {
+    showNarrative(lessons[S.paintingLessons - 1]);
+  } else {
+    const freePaint = [
+      [{ text: '你和Tomás在海边画画。今天画的是渔船。你画得还是不太像，但他说"你的颜色感觉比上次好了"。你觉得这就够了。' },
+       { type: 'stat-up', text: '心情 +8 · 绘画技巧 +3 · Tomás好感度提升' }],
+      [{ text: '你在Carlos的店里画速写。Tomás在旁边画他的。你们没怎么说话。但有时候不说话比说话更舒服。' },
+       { type: 'stat-up', text: '心情 +8 · 绘画技巧 +3 · Tomás好感度提升' }],
+      [{ text: '今天Tomás让你画他。你画了半个小时。画出来的他比真人好看一点。他看了说"你美化了我"。你说"也许我看到的就是这样"。他没回话但你看到他耳朵红了。' },
+       { type: 'stat-up', text: '心情 +8 · 绘画技巧 +3 · Tomás好感度提升' }],
+      [{ text: '你们去了旧城区画建筑。阳光很好。Tomás教你怎么画阴影——"阴影不是黑色的，它有颜色。看，那个墙的影子是紫色的。"你以前从来没注意过影子有颜色。' },
+       { type: 'stat-up', text: '心情 +8 · 绘画技巧 +3 · Tomás好感度提升' }],
+    ];
+    showNarrative(pick(freePaint));
+  }
   showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
