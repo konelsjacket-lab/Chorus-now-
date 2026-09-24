@@ -288,7 +288,7 @@ const S = {
   artSkill: 0, paintingLessons: 0,
   calledParents: 0, lastParentCall: 0,
   composingPhase: 0, composingDay: 0, composingSongShared: false,
-  shelterVisits: 0, museumVisits: 0, antiqueShopUnlocked: false, antiqueItems: [],
+  shelterVisits: 0, museumVisits: 0, antiqueShopUnlocked: false, antiqueItems: [], rockBarUnlocked: false, rockBarGigs: 0, lastRockBarDay: 0,
   choirDrama: {}, npcRomances: { carlosMarta: 0 },
   ownedInstruments: [], lastInstrumentPractice: 0,
   giftsGiven: {}, vacationsTaken: 0, soloDatesDone: {},
@@ -662,6 +662,10 @@ const NPC_EVENTS = {
         '你不知道说什么。你把啤酒又喝了一口——太苦了，但你装作很自然地咽下去了。你说："那你今天可以不说话。"',
         '她又把腿晃了晃。过了一会儿她伸手把你的啤酒拿过去喝了一口："你明明不喜欢喝啤酒。"你说："你怎么知道。"她说："因为你每次喝完都皱一下眉。"你说："我以为我藏得很好。"她终于笑了——不是平时那种大笑，是那种很轻的、只属于夜晚的笑。',
       ], {mood:15}, true, true) },
+    { id: 'nc5', affinity: 60, label: '🔥 Nico：有件事只跟你说', time: [2,3],
+      scene: () => sceneNicoRockBar1() },
+    { id: 'nc6', affinity: 70, label: '🎸 Nico：Fire! Burning Fire!', time: [2,3],
+      scene: () => sceneNicoRockBar2() },
   ],
   carlos: [
     { id: 'ca1', affinity: 8, label: '去Carlos的餐厅坐坐', time: [1,2],
@@ -2049,6 +2053,7 @@ function sceneWalkMenu() {
   ];
   if (S.day > 3) allDests.push({ text: '🐕 去流浪狗收容基地', action: sceneWalkShelter });
   if (S.antiqueShopUnlocked) allDests.push({ text: '🔮 去古董店', action: sceneWalkAntique });
+  if (S.rockBarUnlocked && S.day - S.lastRockBarDay >= 5 && Math.random() < 0.35) allDests.push({ text: '🎸 去摇滚酒吧驻唱', action: sceneWalkRockBar });
 
   const dests = [];
   const pool = [...allDests];
@@ -2616,6 +2621,144 @@ function sceneSoloDate(npc) {
       { type: 'stat-up', text: `心情 +15 · 社交 +5 · ${npc.name} 好感度 +8 · -${cost}€` },
     ]);
   }
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+// --- Nico：Fire! Burning Fire! ---
+function sceneNicoRockBar1() {
+  const npc = S.npcs.nico;
+  npc.talked++; npc.events.push('nc5'); npc.affinity += 8;
+  adjustStat('energy', -5); advanceTime(); renderStatus();
+
+  showNarrative([
+    { text: 'Nico约你去港口那边散步。你们走到一条你没去过的老街上——酒吧、纹身店、一家永远在放雷鬼乐的理发店。Nico的步子慢了下来，不像平时那样飞快。' },
+    { text: '她在一扇黑色铁门前停了下来。门上用白色油漆潦草地写着「INFERNO」。没有招牌灯，没有营业时间。' },
+    { text: '你说："这是什么地方？"她没有马上回答。她伸手碰了一下门——那个动作太轻了，不像是要推开，更像是在确认它还在。' },
+    { text: '「我有件事想跟你说。」她的声音不太一样。没有感叹号，没有表情包式的语气。「但你得答应我不告诉合唱团的人。」' },
+    { text: '你说好。' },
+    { text: '「我在这里唱歌。」她说。「每周四晚上。驻唱。摇滚。」' },
+    { text: '你张嘴想说"啊"但没发出声音。Nico——那个在合唱团唱女高音的、精力过剩的、每次排练完第一个喊肚子饿的Nico——摇滚驻唱？' },
+    { text: '她看出了你的表情：「你看，这就是我不跟人说的原因。」她笑了一下，但那个笑里有一点防御。「大家觉得我是小太阳嘛。阳光可爱什么都不怕。但有时候我不想可爱。我想嘶吼。我想把胸腔里堆了一周的东西全吼出来。你懂吗？」' },
+    { text: '你说："我懂。"你确实懂。你也有想尖叫的时候。只是你从来不敢。' },
+    { text: '她盯着那扇铁门看了一会儿。「Dietrich知道。他没说什么——他只说了一句『好的歌手在任何风格里都是好的歌手』。除了他和老板没人知道。」' },
+    { text: '她转过头来看你，眼神跟天台那次很像——认真的、不设防的：「下周四你来不来？我——我想让你看到。另一个我。」' },
+    { text: '你说："来。"你没有犹豫。' },
+    { text: '她笑了——这次是真的笑了。「得变装。」她说，语气忽然又变回那个Nico。「你不能穿成合唱团团建的样子出现在摇滚酒吧里。我不认识你。」' },
+    { type: 'system', text: 'Nico告诉了你她的秘密。下周四，酒吧见。' },
+    { type: 'stat-up', text: '心情 +8 · Nico好感度提升' },
+  ]);
+  adjustStat('mood', 8);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneNicoRockBar2() {
+  const npc = S.npcs.nico;
+  npc.talked++; npc.events.push('nc6'); npc.affinity += 12;
+  adjustStat('energy', -10); advanceTime(); renderStatus();
+
+  showNarrative([
+    { type: 'deco', items: ['fire','fire','fire'] },
+    { text: '周四晚上九点。你站在镜子前——Nico下午发来一张清单：' },
+    { text: '「黑色为主。皮的更好。眼线画浓。头发弄乱。不要带合唱谱。不要看起来像个好人。」' },
+    { text: '你翻了半天衣柜。你没有皮衣。你找到一件黑色T恤、一条旧牛仔裤、一双你从来没穿过的马丁靴（你甚至忘了它是怎么来的）。你把头发弄得像刚起床的样子。你在镜子里看了看——不像摇滚，像一个失眠的上班族。但你决定不管了。' },
+  ]);
+  showChoices([{ text: '出门', action: sceneNicoRockBar2b }]);
+}
+
+function sceneNicoRockBar2b() {
+  showNarrative([
+    { text: '你到INFERNO门口的时候差点没认出Nico。' },
+    { text: '她穿着一件剪掉了袖子的乐队T恤——上面印着一个你不认识的罗马尼亚朋克乐队。破洞网袜，厚底靴，眼线画到太阳穴，嘴唇涂成暗红色。头发用发蜡弄得一缕一缕的，像火焰。她脖子上挂着三条银色项链。' },
+    { text: '她看到你，上下打量了一圈：「还行。」然后她从口袋里掏出一支眼线笔：「蹲下。」' },
+    { text: '你蹲了。她在你眼角画了几笔。你觉得痒但不敢动。她退后两步看了看：「好多了。走吧。」' },
+    { text: '推开铁门。里面比外面暗，空气是啤酒和烟雾和旧木头的混合气味。墙上贴满了乐队海报，灯光是红色的，地面微微振动——你能通过脚底感觉到bass。大概四五十个人，有的站在吧台边，有的坐在角落里。年龄从二十到六十都有。没人看起来像合唱团成员。' },
+    { text: '一个满脸胡子的男人从吧台后面伸出手来："Nico！你的人来了！"Nico击了他一掌："Marco，这是我朋友。今晚她跟我一起。"' },
+    { text: '你说："等——一起？"' },
+    { text: 'Nico看着你，眼线下的眼睛在红光里亮得吓人：「我说了变装来。你变了。说明你准备好了。」' },
+    { text: '你想说你没准备好。你想说你连摇滚都不怎么听。你想说你的嗓子是练出来唱《Ave Verum Corpus》的不是嘶吼的。但Nico已经拉着你的手往舞台走了——所谓舞台就是一个比地面高出二十厘米的木台，上面一个麦克风架，一把电吉他，一面很破的鼓。' },
+    { text: '她拿起那把电吉他挂在身上——你之前不知道她会弹吉他——试了几个和弦。声音很脏、很重、很好听。你站在旁边，膝盖有点软。' },
+  ]);
+  showChoices([{ text: '继续', action: sceneNicoRockBar2c }]);
+}
+
+function sceneNicoRockBar2c() {
+  showNarrative([
+    { text: '「第一首我自己来。」Nico说。然后她对着麦克风吹了一下。' },
+    { text: '全场安静了三秒——一种习惯性的安静，像他们知道接下来会发生什么。' },
+    { text: '然后Nico开始唱了。' },
+    { text: '你不知道这首歌叫什么。歌词是罗马尼亚语的，你一个字也听不懂。但你听到了——' },
+    { text: '那不是女高音。那不是合唱团的Nico。那是另一个声音——从嗓子最深的地方刮出来的，像砂纸蹭过铁丝，像火从裂缝里窜出来。她的身体在动，不是排练时的站姿，是一种本能的、不受控制的动。她闭着眼睛，握着麦克风的手指发白。' },
+    { text: '你站在台侧看着她。你想起她在天台上说的话——「我怕安静下来就得想很多事情」。你忽然明白了。这就是她的出口。合唱团给她归属感，但这里——这里给她释放。这里她不需要做任何人的小太阳。' },
+    { text: '唱完第一首的时候台下口哨声和掌声乱作一团。Nico喘着气，额头上全是汗。她回头看你——笑了。那个笑里有一种你在合唱团从没见过的东西：野。' },
+    { text: '「轮到你了。」' },
+    { text: '你说："我不——"' },
+    { text: '「你不需要会唱。你只需要吼。」她把麦克风递给你。「想一件让你愤怒的事。想一件你从来没对任何人说过的事。然后把它吼出来。歌词不重要。调不重要。什么都不重要。」' },
+    { text: '你拿着麦克风。手在抖。台下四五十个陌生人在看你。他们不认识你。他们不知道你叫什么、你从哪里来、你为什么在这个地中海城市的地下酒吧里站在一个破木台上。' },
+    { text: '你想了一件事。' },
+    { text: '你没有想清楚那是什么——但你感觉到了。胸腔里有一团东西。一直在那里。你从来不碰它。你围着它走路、围着它吃饭、围着它学唱歌、围着它交朋友。' },
+    { text: 'Nico弹了一个和弦——很重、很脏的和弦。你觉得那个和弦像一只手推了你一下。' },
+    { text: '你张嘴了。' },
+  ]);
+  showChoices([{ text: '吼出来', action: sceneNicoRockBar2d }]);
+}
+
+function sceneNicoRockBar2d() {
+  showNarrative([
+    { text: '你不知道你喊了什么。不是歌词。不是旋律。不是任何语言。就是——声音。从嗓子最底下来的、你从来不知道自己能发出的声音。' },
+    { text: '很难听。你知道。但你不在乎。' },
+    { text: 'Nico跟上了你的节奏——如果那能叫节奏的话。她弹得越来越快、越来越重，鼓手也跟了进来。台下有人开始打拍子。不是礼貌的那种，是真的在跟你一起。' },
+    { text: '你闭上了眼睛。你继续吼。你想到了很多事——离开家的那天，到这里的第一个晚上，不知道自己在干什么的恐惧，一个人吃饭的沉默，打电话给父母时装出来的开心——你把这些全部从嗓子里推出去。不是唱。是烧。' },
+    { text: 'Fire. Burning fire.' },
+    { text: '你不知道过了多久。可能一分钟。可能三分钟。你停下来的时候全身在发抖。嗓子像吞了砂纸。但你的胸腔——空了。那团东西不在了。至少现在不在了。' },
+    { text: '台下安静了一秒。然后掌声炸开了。有人吹口哨。有人举着酒杯。你站在台上喘气，眼睛有点酸——不是要哭，是那种燃烧完以后的灼热感。' },
+    { text: 'Nico走过来。她没说话。她把吉他摘下来，张开双臂抱了你。你闻到她身上的汗和发蜡和啤酒的味道。她在你耳边说了一句话：' },
+    { text: '「这才是你。」' },
+    { text: '你们在台上站了一会儿。Marco从吧台递了两杯啤酒过来。你喝了一口——这次没皱眉。也许是因为太渴了。也许是因为你终于觉得自己配喝这种苦的东西了。' },
+    { text: 'Nico坐到你旁边，妆花了一半，汗把眼线蹭成了浣熊眼。她说："下次再来。"你说："你就不怕我把你的观众吓跑？"她笑了——大声地、肆无忌惮地、像合唱团那个Nico一样地笑：' },
+    { text: '「你没吓跑他们。你把他们点着了。」' },
+    { text: '你们一直待到凌晨。走出去的时候街上很安静。海风吹过来，凉的。你的嗓子明天肯定要哑。你不在乎。你觉得自己烧掉了什么——然后在灰烬里找到了什么。' },
+    { type: 'system', text: '解锁地点：INFERNO摇滚酒吧。你可以偶尔去驻唱赚外快了。' },
+    { type: 'stat-up', text: '心情 +15 · 歌唱 +5 · Nico好感度大幅提升' },
+  ]);
+  adjustStat('mood', 15); adjustStat('vocal', 5);
+  S.rockBarUnlocked = true;
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneWalkRockBar() {
+  S.lastRockBarDay = S.day;
+  S.rockBarGigs++;
+  adjustStat('energy', -10); advanceTime(); renderStatus();
+  const pay = 30 + Math.floor(Math.random() * 21);
+  S.money += pay;
+
+  const gigs = [
+    [
+      { text: '你推开INFERNO的铁门。Marco在擦杯子，看到你就笑了："Nico的朋友！今晚唱什么？"' },
+      { text: '你说你不知道。他说："最好的摇滚就是不知道自己要唱什么然后张嘴。"你觉得他说得对也说得不对。但你上台了。' },
+      { text: '今晚没有Nico。你一个人。鼓手打了个节奏，你跟着哼——不是唱，是一种介于说话和喊叫之间的东西。你越来越大声。台下有人跟着拍手。唱完你下台，手心全是汗。Marco塞了一个信封给你："今晚的份。"你打开看了一眼。够吃三天了。' },
+    ],
+    [
+      { text: '今晚INFERNO人特别多——好像是什么乐队来客串。你钻到台侧等着。' },
+      { text: '客串乐队唱完以后Marco对你招手："暖过场了，轮到你收场。"你深吸一口气，上台了。' },
+      { text: '你唱了一首你在合唱团学的曲子——但你把速度加快了两倍，把力度加大了三倍。你不确定Dietrich听到会不会气死。但台下的人疯了。你觉得自己像一根被点着的火柴——小，但亮。' },
+      { text: '演完Marco给了你钱和一杯免费的啤酒。你坐在吧台上喝，听乐队的人聊天。你听不懂一半（他们说的是本地方言），但你觉得你属于这里——至少在周四晚上。' },
+    ],
+    [
+      { text: 'INFERNO今晚来了一桌水手。你不确定是真水手还是打扮成水手的人。但他们喝酒的速度像是真的。' },
+      { text: '你上台唱了两首。第一首他们没什么反应。第二首你把音量推到最大——你的嗓子在抗议但你不管了——他们开始跺脚。整个酒吧在震。你觉得地板要塌了。' },
+      { text: '唱完一个水手走过来递给你一杯酒："你让我想起我年轻时候的女朋友。"你说："你女朋友也唱摇滚？"他说："不。她也是那种安静了很久然后突然着火的人。"你不知道说什么好。你收下了那杯酒。' },
+      { text: 'Marco照例给了你报酬。你把钱装进口袋，觉得自己过着一种奇怪的双重生活——白天合唱团，晚上摇滚酒吧。但这两个你都不是演的。' },
+    ],
+  ];
+
+  const g = pick(gigs);
+  showNarrative([
+    ...g.map(t => ({ text: t.text || t })),
+    { type: 'stat-up', text: `歌唱 +2 · 心情 +8 · 获得 ${pay}€` },
+  ]);
+  adjustStat('vocal', 2); adjustStat('mood', 8);
+  renderStatus();
   showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
