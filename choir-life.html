@@ -239,7 +239,6 @@ const S = {
   metStreetArtist: false, metTomás: false,
   artSkill: 0, paintingLessons: 0,
   calledParents: 0, lastParentCall: 0,
-  cnFriends: { xiaoyu: { name: '小鱼', talked: 0 }, ruirui: { name: '芮芮', talked: 0 } },
   npcs: {}
 };
 
@@ -885,8 +884,6 @@ function sceneDailyMenu() {
     // Phone calls & friends
     if (time <= 2 && (S.day - S.lastParentCall >= 3 || !S.calledParents))
       choices.push({ text: '📱 给家里打电话', cost: '心情+8', action: sceneCallParents });
-    if (time <= 2)
-      choices.push({ text: '📱 和国内朋友聊天', cost: '心情+5', action: sceneChatCNFriends });
 
     // Painting with Tomás
     if (S.metTomás && S.npcs.tomas && time >= 1 && time <= 2)
@@ -1369,50 +1366,6 @@ function sceneCallParents() {
   showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
-function sceneChatCNFriends() {
-  adjustStat('energy', -3); advanceTime(); renderStatus();
-  const friend = Math.random() < 0.5 ? 'xiaoyu' : 'ruirui';
-  S.cnFriends[friend].talked++;
-  const chats = {
-    xiaoyu: [
-      [{ text: '小鱼发来消息："姐妹你还活着吗！！朋友圈怎么没动静了！"' },
-       { text: '你发了一张阳台上的照片给她。她回了一串感叹号和"这是什么神仙地方？？？"' },
-       { text: '你们开始视频。她在北京加班——背景是格子间和外卖盒子。"你在那里看海我在这里看Excel，"她说，"我恨你。"' },
-       { text: '聊到一半她忽然认真了："但说真的，你还好吗？一个人在外面，有时候晚上会不会——你知道，那种感觉。"' },
-       { text: '你说有时候会。她说"那你打给我。几点都行。我反正也加班到凌晨。"你知道她是认真的。' }],
-      [{ text: '小鱼给你发了一段语音。你点开听——背景是吵闹的商场，她在喊："我在买奶茶！你想喝什么！我给你拍张照让你看看你错过了什么！"' },
-       { text: '你回了一个哭笑不得的表情。她发了十二张奶茶店的照片和一段"替你喝了一杯"的视频。' },
-       { text: '你说你这里也有好喝的——espresso、sangria、Carlos做的巴西热巧克力。她说"你变了你已经不是原来那个喝一点力甜的女孩了"。' },
-       { text: '你笑出了声。然后你们聊了很久——工作、租房、各自的困难。隔着八千公里，友谊的频率没有变。' }],
-      [{ text: '小鱼半夜发来一条长消息。她说她跟男朋友吵架了。' },
-       { text: '你给她回电话。她在那头哭了一会儿，然后开始骂。你听着，偶尔说一句"嗯"或者"然后呢"。这是你们的默契——她需要的不是建议，是有人在那里。' },
-       { text: '哭完她说"对不起大半夜的打扰你"。你说别说这种话。' },
-       { text: '她吸了吸鼻子说"你什么时候带我去看海"。你说随时。你挂了电话以后发现自己也有点想哭——不是因为难过，是因为有人在那么远的地方还需要你。' }],
-    ],
-    ruirui: [
-      [{ text: '芮芮在群里@了你："看到一个很好笑的视频你一定要看！"然后发了一个猫从柜子上掉下来的短视频。' },
-       { text: '你私聊她聊了一会儿。她刚从上海换工作到杭州，也在适应新城市。"杭州很好但是我谁都不认识，"她说，"除了西湖和外卖小哥。"' },
-       { text: '你说你在这边也是这样，但现在好多了——你有了合唱团。她说"什么？？你居然去唱歌了？？你不是小学音乐课被老师说过跑调吗？？"' },
-       { text: '你说是啊，所以你在进步。她发了一个竖大拇指的表情："行吧姐妹，这个欧洲新生活有点东西。"' }],
-      [{ text: '芮芮发来消息："你在那边有没有碰到好看的外国人？"后面跟了五个眼睛emoji。' },
-       { text: '你想了想，说你认识了一些有意思的人。她开始追问。你提了几个名字，她对每一个都要详细八卦。' },
-       { text: '聊到苏迟的时候她说："等等，在欧洲碰到了一个中国人，还在同一个合唱团？这不是电视剧是什么？"' },
-       { text: '你说没那么戏剧化。她说"你说没有就是有"。你觉得她的判断力有时候烦人地准确。' }],
-      [{ text: '你刷手机看到芮芮发了一条朋友圈——她一个人去了杭州的一个寺庙，拍了一张很安静的照片，配文是"也不是不开心，就是偶尔会想原来的日子"。' },
-       { text: '你给她打了电话。她说她没事，只是偶尔会觉得换了一个城市以后，原来那个自己好像留在了旧地方。' },
-       { text: '你说你也有这种感觉。来到这里以后你有时候会梦到原来的街道和餐厅，醒来要花几秒钟才能想起来自己在哪。' },
-       { text: '她说"你说这是好事还是坏事"。你说你不知道，也许两样都是。' },
-       { text: '聊完你觉得好了一些。迷路的人需要另一个也在迷路的人。' }],
-    ],
-  };
-  const pool = chats[friend];
-  const idx = Math.min(S.cnFriends[friend].talked - 1, pool.length - 1);
-  const paras = pool[idx] || pool[pool.length-1];
-  paras.push({ type: 'stat-up', text: `心情 +5 · 和${S.cnFriends[friend].name}聊了天` });
-  adjustStat('mood', 5);
-  showNarrative(paras);
-  showChoices([{ text: '继续', action: sceneDailyMenu }]);
-}
 
 // --- Painting with Tomás ---
 function scenePaintingLesson() {
