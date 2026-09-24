@@ -291,6 +291,7 @@ const S = {
   choirPhase: 0,
   metAtRehearsal: {},
   sideStories: {},
+  groupEvents: {},
   competitionAnnounced: false,
   repertoire: [],
   sectionalCount: 0,
@@ -511,11 +512,20 @@ const NPC_EVENTS = {
       scene: () => npcEvent('suchi','sc2', [
         '你约苏迟在广场碰面。他准时到了，穿着一件洗得发白的亚麻衬衫，看起来比排练时松弛。',
         '你们在旧城区的巷子里走。他走得很慢，会在一面剥落的墙前停下来。"这个颜色好，"他说，"像Rothko晚期的那种红。"',
-        '你问他怎么什么都知道。他说不是什么都知道，是从小被泡在里面——他爸的书房墙上挂满了画册，他妈弹琴的时候他就在地上翻。',
         '走到一个安静的小教堂门口时，他停住了，侧耳听。里面传出管风琴的声音。他闭上眼睛，站了差不多一整分钟。',
         '「对不起，」他睁开眼说，「我这个人有时候会突然需要——停一下。」',
         '你说没关系。你觉得这种停顿比说话更让你了解他。',
+        '路过Carlos的餐厅时Carlos从里面探出头来："苏迟！你居然出门了！"苏迟面无表情地说"我经常出门"。Carlos说"不是去图书馆的不算"。你笑了，苏迟的耳朵红了一点。',
       ], {social:5, mood:5}) },
+    { id: 'sc2b', affinity: 15, label: '苏迟约你去听一场音乐会', time: [2],
+      scene: () => npcEvent('suchi','sc2b', [
+        '苏迟发消息说大学音乐厅今晚有一场免费的室内乐演出。"你要来吗？"后面跟了一个句号，没有问号——你已经学会读苏迟的标点了：句号代表他其实很希望你来。',
+        '你到的时候他已经在音乐厅门口了，手里拿着一杯外带咖啡——只有一杯。你到了以后他从包里拿出一个保温杯递给你："热巧克力。你上次说你不喝咖啡。"',
+        '你愣了一下。那是两周前聊天时随口说的。',
+        '演出是一组弦乐四重奏，拉的海顿。苏迟听得非常专注，偶尔在随身带的小本子上快速记些什么。你偷看了一眼——他画了一幅声部走向图，用不同颜色的笔标注了四条线怎样交织。',
+        '中场休息的时候你遇到了Yuki——她也来了，坐在后面几排。苏迟跟Yuki讨论了三分钟大提琴手的弓法，用词你完全听不懂，但你喜欢看他说话的样子——亮起来的眼睛、加快的语速、偶尔用手在空气中画旋律线的动作。',
+        'Yuki走回座位前对你说："苏迟很少约人。你来了他很高兴，虽然看不出来。"你看了苏迟一眼。他在低头翻节目单，假装没听到。',
+      ], {social:5, mood:10, vocal:2}) },
     { id: 'sc3', affinity: 20, label: '苏迟深夜发了一段音频', time: [2,3],
       scene: () => npcEvent('suchi','sc3', [
         '凌晨一点，苏迟给你发了一条微信。没有文字，只有一段30秒的音频。',
@@ -525,8 +535,28 @@ const NPC_EVENTS = {
         '你不知道怎么回。过了一会儿他又发了一条："我的意思是，你的声音让整个女高声部的质感变了。这是学术观察。"',
         '你盯着"学术观察"这四个字看了很久。苏迟大概是全世界最会用学术语言说情话的人。',
       ], {vocal:3, mood:8}, true) },
-    { id: 'sc4', affinity: 35, label: '💙 苏迟不小心说了实话', time: [1,2],
+    { id: 'sc3b', affinity: 25, label: '苏迟在图书馆等你', time: [0,1],
+      scene: () => npcEvent('suchi','sc3b', [
+        '苏迟说他在大学图书馆写论文，问你要不要来一起看书。"你不用看书也行，带本杂志就好。我就是——需要有个人在。"',
+        '图书馆在一栋老楼的三层，窗户很大，能看到远处的海。苏迟已经占了一张靠窗的桌子，摊开了笔记本和四五本打开的书。',
+        '你在他对面坐下。他写东西的时候嘴唇会微微动——你后来发现他在无声地唱乐谱上的旋律。右手写字，左手在桌面下轻轻打拍子。',
+        '你看了两个小时的书（好吧，有一个小时在偷看他）。中间他忽然抬起头说："Ibrahim上周跟我说了一句话。他说「声音是看不见的建筑」。你觉得呢？"',
+        '你想了想说也许是的。他低下头继续写，嘴角带了一点笑。',
+        '离开的时候你注意到他的笔记本边缘画了一个很小的东西——一只海鸥。画得很好。你没提，但你记住了。',
+      ], {social:5, mood:8}) },
+    { id: 'sc4', affinity: 30, label: '苏迟带你去他的秘密地方', time: [2],
       scene: () => npcEvent('suchi','sc4', [
+        '排练结束后苏迟说："你跟我来。"这是他第一次主动带你去一个地方。',
+        '你们走了十五分钟，穿过旧城区的窄巷，爬上一段很陡的石阶。最上面是一个小小的平台——能看到整个海湾、远处的灯塔和层叠的屋顶。',
+        '「我来这座城市的第一个月找到的，」他说，「每次写不下去论文的时候就来这里坐。」他顿了一下，「没有带别人来过。」',
+        '你们坐在石头栏杆上。他从包里拿出两个橘子——你猜是Carlos塞给他的。你们安静地剥橘子，看夕阳。',
+        '他说他给Yuki听了他写的那首曲子——《你好，陌生人》。Yuki弹了钢琴伴奏的初稿。"她弹的时候我听哭了，"他说得很轻，"但我没让她看到。"',
+        '你说你想听。他沉默了一会儿，然后轻声地、只给你一个人，唱了开头的四个小节。没有伴奏，只有他的声音和海风。',
+        '他唱完以后你们又安静了很久。他说："这个地方以后你也可以来。密码是——走过第三个巷口右转上楼梯。"',
+        '你觉得他给了你一把钥匙，通往他最私密的房间。',
+      ], {mood:15, social:5}, true) },
+    { id: 'sc5', affinity: 38, label: '💙 苏迟不小心说了实话', time: [1,2],
+      scene: () => npcEvent('suchi','sc5', [
         '排练结束后你们一起坐火车回去。车上人很少，苏迟破天荒地没有戴耳机。',
         '窗外是暮色中的海岸线。他从包里拿出一本小小的笔记本——你瞄了一眼，里面全是手写的乐句分析和零散的文字，字迹清秀，像他爸爸教出来的。',
         '他说他论文快写完了，不知道毕业以后怎么办。「我爸希望我回去，」他说，「他觉得做学术太清苦。他不知道我在这里过得比在家自在。」',
@@ -550,6 +580,7 @@ const NPC_EVENTS = {
         '你们在海边的岩石上坐了一下午。她放了一个奇怪的歌单——罗马尼亚民歌接巴西bossa nova接Taylor Swift接一首你完全没听过的土耳其情歌。',
         '她讲了她为什么从罗马尼亚出来。讲的时候笑嘻嘻的，但你觉得不全是好笑的事情。',
         '「回去干嘛呢，」她剥着橘子说，「这里有海，有合唱团，有你们。」',
+        '她忽然说起Lena："你知道吗，Lena表面上老嫌弃我，但有次我发烧三十九度她开车来给我送药和粥。我说谢谢她说「别说了，欠我一次」。"她笑了，"她就是这样的人——嘴上最毒，心最软。"',
         '她把橘子分你一半。指甲缝里都是橘子汁的味道。',
       ], {social:5, mood:8}) },
     { id: 'nc3', affinity: 20, label: '下雨天Nico来找你', time: [0,1,2],
@@ -577,6 +608,7 @@ const NPC_EVENTS = {
       scene: () => npcEvent('carlos','ca1', [
         '你走进Carlos的小餐厅。午后没什么客人。他正在擦杯子，看到你笑着说："照旧？"你还没有"照旧"，但他已经端了一杯espresso过来。',
         '你们聊了一会儿。他讲了他第一次来这里的事——身上只剩几十欧，睡了一周的hostel沙发。"十二年前了，"他说，"现在我有自己的店，还有一个合唱团。人生嘛。"',
+        '他指着墙上一张照片——合唱团在某次演出后的合影，他站在中间，两边是Marta和Dietrich。"Marta是我来这边遇到的第一个好人，"他说，"我连本地语都不会说的时候她就拉着我去排练。她说「你不需要会说话，你会唱歌就够了」。"',
       ], {social:3, mood:5}) },
     { id: 'ca2', affinity: 15, label: '帮Carlos准备合唱团聚餐', time: [0,1],
       scene: () => npcEvent('carlos','ca2', [
@@ -584,6 +616,7 @@ const NPC_EVENTS = {
         '下午你在他的小厨房里洗菜、切洋葱、搅拌酱料。他一边做他的巴西炖菜一边教你怎么调味。"秘诀就是不要急，"他说，"跟唱歌一样，慢慢来。"',
         '你切洋葱的时候眼泪流了一脸。Carlos递给你一张纸巾，说："在我老家，我妈说切洋葱流的眼泪不算哭。所以你现在可以随便想什么伤心事。"',
         '你笑了。他这个人就是这样——用玩笑化解一切，但玩笑底下是认真的温柔。',
+        '苏迟提前来了，帮忙摆桌子。他摆得非常整齐——杯子和盘子之间的间距像是用尺子量过的。Carlos说"你是不是有强迫症"。苏迟说"这叫审美"。Carlos大笑。你觉得苏迟跟Carlos在一起的时候会稍微放松一点——也许是因为Carlos那种热腾腾的友善不给人拘谨的余地。',
         '做完的时候你们在后厨偷吃了一块brigadeiro。"别告诉别人，"他说。你觉得这是友谊的仪式。',
       ], {social:5, mood:8}) },
     { id: 'ca3', affinity: 35, label: '和Carlos聊他的故事', time: [2],
@@ -594,6 +627,7 @@ const NPC_EVENTS = {
         '他喝了一口酒。"十二年了，我每个月给她打电话，她每次都问我有没有好好吃饭。"',
         '你想起了自己的妈妈。你们沉默了一会儿，但这种沉默很舒服。',
         '「你知道吗，」Carlos说，「合唱团就是我在这里的家。你们每个人都是我的家人。我是认真的。」',
+        '他又喝了一口："Ibrahim我第一次见他的时候，他一个字也不说。我就每天给他送外卖——送了两周。后来他终于跟我说了一句「你做的豆子很好吃」。我差点哭了。"他笑着摇头，"Nico说我是「强制社交专家」。她说得对。但有时候人就是需要被人强制拉进温暖里。"',
       ], {social:5, mood:10}) },
   ],
   marta: [
@@ -602,14 +636,16 @@ const NPC_EVENTS = {
         '你在广场上碰到Marta，她提着菜篮子从市场回来。她坚持请你喝了一杯茶。',
         '她讲了合唱团早年的事情——怎么从五六个人变成二十多个人，Dietrich怎么一个一个把人拉进来。"他从来不主动招人，"她说，"他就是把传单贴在那里，然后等。"',
         '她还讲了Ibrahim刚来的那年几乎不说话，是唱歌的时候大家才发现他嗓子那么好。"这个团就是这样，"她说，"你不需要说话，唱就好了。"',
+        '"还有苏迟，"她忽然笑了，"他来的第一天坐在最后面一句话没说，我还以为他是路人坐错了地方。后来Dietrich说「这个男孩的耳朵是我见过最好的」。"',
       ], {social:5}) },
     { id: 'ma2', affinity: 20, label: '去Marta家吃蛋糕', time: [1,2],
       scene: () => npcEvent('marta','ma2', [
         'Marta邀请你去她家。她的公寓不大，但到处都是照片和十字绣。客厅里有一整面照片墙——合唱团历年的合影。',
         '她指着最早的一张："看，这是2016年。只有六个人。那个时候Dietrich头发还没白。"然后一张一张地讲，每张照片都是一个故事。',
-        '你在里面找到了苏迟第一次出现的那张——站在最边上，表情像是被人按在那里的。你笑了。',
+        '你在里面找到了苏迟第一次出现的那张——站在最边上，表情像是被人按在那里的。你笑了。旁边一张是Nico刚加入那年，她的笑容大得占了半张照片，后面的Carlos也在笑。',
         '她端出了苹果蛋糕，切了很大一块给你。"你太瘦了，"她说。不管你瘦不瘦她都会这么说。',
-        '你在她家待了一个下午。走的时候她塞给你一盒剩下的蛋糕。"给Sofia也分一点。"',
+        '"Aoife上周来了也吃了两块，"她说，"那孩子一个人在这边，我总怕她不好好吃饭。Lena嘴上说减肥不吃了，每次来还是吃三块。"你觉得Marta是合唱团的大家长——她操心所有人，但从不让操心变成负担。',
+        '走的时候她塞给你一盒剩下的蛋糕。"给Sofia也分一点。"',
       ], {social:5, mood:8}) },
     { id: 'ma3', affinity: 35, label: 'Marta教你做波兰饺子', time: [2],
       scene: () => npcEvent('marta','ma3', [
@@ -618,6 +654,7 @@ const NPC_EVENTS = {
         '你们包饺子的时候她讲起了她来这里的经过。她丈夫是本地人，他们在波兰认识的，结婚以后搬来了。"他去世五年了，"她说得很平静，"但我没有回去。这里有我的团，有我的朋友。回去干嘛呢。"',
         '她擦了一下眼角，然后立刻说："你那个褶子捏反了！"你们都笑了。',
         '煮好的饺子很好吃。她说味道和她奶奶做的一模一样。你忽然很想家。',
+        '吃着的时候门铃响了——是Carlos，他提着一瓶红酒。"我闻到了波兰饺子的味道，"他说。Marta说"你住在两公里外怎么闻到的"。Carlos说"这叫美食直觉"，然后把酒放下加入了你们。三个人吃了一整锅饺子和半瓶酒。Carlos走的时候说"下次我做巴西菜你们来"。',
       ], {social:5, mood:5}) },
   ],
   ibrahim: [
@@ -633,7 +670,7 @@ const NPC_EVENTS = {
         '你们六点半在海边碰头。晨光是金色的，海面平得像镜子。Ibrahim跑得很稳，节奏像一个精密的钟。',
         '跑完你累得在长椅上瘫了。他递给你一瓶水，在旁边做拉伸。安静了一会儿他说："跑步的时候我什么都不想。这座城市给了我这个——一个什么都不想的地方。"',
         '你问他在老家的时候想什么。他看着海面说："想太多了。所以我跑步。"',
-        '你没有追问。但你觉得你们之间有了一种不需要说出来的默契。',
+        '远处有个人影也在跑——是苏迟。你叫了他一声。他跑过来，喘着气说"我是被Carlos逼的，他说我再不运动就要进医院"。Ibrahim难得笑出声来。你觉得这两个全团最安静的人之间有一种不用说话就懂的默契。',
       ], {energy:5, social:3, mood:5}) },
     { id: 'ib3', affinity: 40, label: 'Ibrahim唱了一首阿拉伯歌', time: [2],
       scene: () => npcEvent('ibrahim','ib3', [
@@ -642,6 +679,7 @@ const NPC_EVENTS = {
         '你听得头皮发麻。他的声音在空旷的广场上回荡，好像整个广场都在给他伴奏。',
         '唱完他沉默了一会儿。"我妈妈唱的，"他说，"哄我睡觉的时候。"',
         '你问他想家吗。他说："每一天。但想家不是一件坏事。它提醒我我从哪里来。"',
+        '他忽然说："Carlos每次听我唱阿拉伯歌都会流泪。他以为我没看到。"他停了一下，"Dietrich也是。他们跟我经历的事完全不同，但他们听到了同样的东西。这就是音乐的意思——不需要翻译的语言。"',
         '你们坐在台阶上看了很久的天。你觉得Ibrahim是那种——表面最安静，内心最辽阔的人。',
       ], {social:5, mood:10}) },
   ],
@@ -656,9 +694,9 @@ const NPC_EVENTS = {
       scene: () => npcEvent('aoife','ao2', [
         '周六Aoife约你去旧城区的跳蚤市场。她穿了一件大得离谱的vintage夹克，看起来很开心。',
         '你们在摊子之间穿梭。她买了一本爱尔兰语的旧诗集（"给我自己，免得忘了母语"），你买了一个手绘的陶瓷杯，三欧。',
-        '逛到一半她拉你进了一家小小的唱片店。老板在放爵士乐。你们在里面翻了半小时唱片，她给你讲了爱尔兰民谣的历史——她外婆会唱sean-nós，一种古老的无伴奏唱法。',
-        '「我其实是因为外婆才喜欢上唱歌的，」她说，「她的声音像风。」',
-        '出来的时候阳光很好。你觉得和Aoife在一起的时候，你不需要假装自己是哪种人。',
+        '逛到一半你们碰到了Yuki——她在翻一堆旧乐谱。"贝多芬第七号的手抄谱，"她拿起一张纸轻声说，"抄的人字很漂亮。"Aoife说"你们音乐人看什么都是音乐"。Yuki想了想说"你翻译的人看什么不都是语言吗"。Aoife愣了一下然后笑了："说得好。"',
+        '三个人一起逛了剩下的摊位。你发现Aoife和Yuki在一起的时候特别自在——两个安静的异乡人，不需要填满所有沉默。',
+        '「我其实是因为外婆才喜欢上唱歌的，」Aoife说，「她的声音像风。」Yuki轻轻点头："我奶奶弹三味线。我们都是被老人家领进门的。"',
       ], {social:5, mood:8}) },
     { id: 'ao3', affinity: 35, label: 'Aoife夜里找你', time: [3],
       scene: () => npcEvent('aoife','ao3', [
@@ -677,6 +715,7 @@ const NPC_EVENTS = {
         '她看了你一眼。"行。唱。"',
         '你唱了。她听完说"第三小节换气的位置不对，还有你的元音太扁了"。然后她自己唱了一遍——声音干净漂亮得让你有点嫉妒。',
         '她教了你怎么调整，很有耐心，和平时说话的语气完全不同。教完她说"你其实条件不错，只是基本功差。不是骂你。"你决定把这当成一句表扬。',
+        'Nico路过的时候说"Lena老师在上课了！"Lena回了一句"你也该来上"。Nico做了个鬼脸跑了。你觉得她俩的互动像一对永远在斗嘴的姐妹。',
       ], {vocal:5, social:2}) },
     { id: 'le2', affinity: 22, label: '陪Lena去文化局办事', time: [0,1],
       scene: () => npcEvent('lena','le2', [
@@ -684,6 +723,7 @@ const NPC_EVENTS = {
         '文化局是一栋老建筑，里面出奇地安静。Lena和同事说话的时候完全变了一个人——冷静、高效、没有任何多余的话。你在旁边坐着等，翻了一本本地文化杂志。',
         '出来以后她说"谢谢你陪我，一个人去太无聊了"。这是她说过的最接近撒娇的话。',
         '你们顺路去了一家咖啡馆。她点了一杯很复杂的花式咖啡，你有点意外。她说"我只是嘴上毒，又不是喝什么都无所谓"。',
+        '她聊到Marta："你知道Marta每周给Dietrich送一次蛋糕吗？已经持续四年了。她说这是「波兰人的礼节」，但我觉得她就是心疼他一个人。"Lena说这话的时候语气很柔，跟平时完全不一样。',
         '她还说了一件事——她学声乐的时候曾经想考音乐学院，但最后放弃了。"没有后悔，"她说，但语气让你觉得她后悔过很多次。',
       ], {social:5, mood:3}) },
     { id: 'le3', affinity: 38, label: 'Lena请你去她家听唱片', time: [2],
@@ -694,6 +734,7 @@ const NPC_EVENTS = {
         '一首唱完她睁开眼说："她的高音从来不是靠力量的，是靠控制。大部分人不明白这个。"',
         '你问她为什么不继续唱。她沉默了一会儿。"因为我知道自己够好，但不够好到成为Callas。做一个够好的人是最痛苦的，你知道吗？"',
         '你说你好像懂。她看了你一眼，表情比平时柔和了很多。"你是第一个没有说「你已经很好了」的人。谢谢。"',
+        '她忽然笑了一下："苏迟也说过类似的话。他说他写的东西「够好，但不够好到不朽」。我当时觉得他矫情。现在我懂了——他跟我是同一种人。"',
       ], {social:5, mood:8, vocal:3}) },
   ],
   yuki: [
@@ -703,6 +744,7 @@ const NPC_EVENTS = {
         '「肖邦，」她说，「降E大调夜曲。在这架琴上弹只有七成的效果。」',
         '你问她为什么来这里。她想了一下说："在日本弹琴太安静了。我想听到琴声以外的东西。"',
         '她又弹了几个和弦。那架旧钢琴在她手下听起来没那么旧了。',
+        '苏迟路过，听到琴声停了一下。他站在门口听完了最后几个和弦，轻轻点了一下头，然后走了。Yuki没有停，但你注意到她嘴角微微动了一下。你觉得他俩之间有一种不需要说出来的音乐默契。',
       ], {mood:5, social:2}) },
     { id: 'yk2', affinity: 22, label: '去听Yuki的钢琴课', time: [1],
       scene: () => npcEvent('yuki','yk2', [
@@ -711,12 +753,14 @@ const NPC_EVENTS = {
         '小孩走了以后你在教室里坐着没走。Yuki坐回琴凳上，弹了一首你没听过的曲子。很安静，很美，像月光落在水面上。',
         '「坂本龙一，」她说，「这首曲子叫《Merry Christmas Mr. Lawrence》。」',
         '弹完她坐在那里，手放在琴键上很久没动。你觉得钢琴是她说话的方式——在键盘上她从来不沉默。',
+        '走出教室的时候她忽然说："Aoife跟我说过一句话——她说翻译是把一种孤独变成另一种孤独。我觉得弹琴也是。"她想了想，"不过在合唱团伴奏的时候不孤独。因为有人在跟着你的呼吸唱。"',
       ], {mood:8, social:3}) },
     { id: 'yk3', affinity: 38, label: '和Yuki在海边散步', time: [2],
       scene: () => npcEvent('yuki','yk3', [
         '排练后Yuki难得没有直接走。她问你要不要去海边走走。你惊讶地说好。',
         '你们沿着海岸走。她今天话比平时多——讲了她在东京的生活，一个人住在一个很小的公寓里，每天练琴八小时。"邻居投诉过三次，"她说，嘴角弯了一下。',
         '她脱了鞋，走在潮湿的沙滩上。"我来这里以后第一次看到这么蓝的海。日本也有海，但不是这个颜色。"',
+        '她说起苏迟给她看他写的曲子的事："他很紧张，虽然他不会承认。我弹了第一遍的时候他一直在走来走去。弹完我说「这个第二段的转调很漂亮」，他站住了，好像松了一口气。"她轻轻笑了，"他是那种——需要别人说一句才能相信自己的人。跟我一样。"',
         '你问她打算在这里待多久。她想了很久说："我不知道。我只知道回去以后我会想念这里的光线、这里的声音，还有——不用鞠躬的日子。"',
         '你们在一块礁石上坐了很久。她没有再说话，但她没有走，这本身就是一种难得的信任。',
       ], {social:5, mood:8}) },
@@ -927,6 +971,168 @@ function getAvailableSideStories() {
   return stories;
 }
 
+// ========== GROUP FRIENDSHIP EVENTS ==========
+const GROUP_EVENTS = [
+  { id: 'grp_birthday_nico', requires: ['lena','nico','carlos'], minAffinity: 15, time: [0,1],
+    label: '🎂 Lena和Nico邀请你帮忙准备生日',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_birthday_nico = true;
+      const npcs = ['lena','nico','carlos'];
+      npcs.forEach(id => { S.npcs[id].affinity += 5; S.npcs[id].talked++; });
+      adjustStat('energy', -10); adjustStat('mood', 12); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Lena发消息："这周六是Carlos的生日。Nico说要搞惊喜派对。你来不来帮忙？"' },
+        { text: '你到了Lena家——Nico已经在了，满桌子都是彩色纸和气球。她一边吹气球一边兴奋地说"Carlos肯定不知道！"Lena冷静地说"你已经在群里暗示了八遍了"。' },
+        { text: '你负责写贺卡。Nico提议每个人写一句话。她自己写了"你是世界上最好的厨子和男中音和朋友"，字歪歪扭扭占了半张卡。Lena写了"生日快乐，别再在排练间隙偷发甜点了"。你也写了一句。' },
+        { text: 'Marta贡献了一个三层的巧克力蛋糕——她前一天晚上做到凌晨两点。Ibrahim帮忙搬桌子和椅子。苏迟来得最晚，手里拿着一张手写的乐谱——他把《Happy Birthday》改编成了四声部合唱，附注是"原调太低了，改成D大调更适合在户外唱"。' },
+        { text: 'Carlos走进来的时候大家齐声唱了苏迟的四声部版。Carlos先是愣了，然后笑得眼泪都出来了。"你们这些人——"他说不下去了。Nico跳上去抱他。Marta在后面擦眼泪。' },
+        { text: '派对持续到很晚。Carlos打开了三瓶他从巴西带来的甘蔗酒。大家在Lena的客厅里跳舞、唱歌、吃蛋糕。你看到Ibrahim在角落里安静地笑着，Yuki和Aoife在沙发上聊天，苏迟站在阳台上看夜景——但他没有走，这就够了。' },
+        { type: 'stat-up', text: '心情 +12 · 社交 +8 · Lena、Nico、Carlos好感度 +5 · 全团氛围提升' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_beach_trip', requires: ['nico','aoife','sofia'], minAffinity: 12, time: [0,1],
+    label: '🏖️ Nico组织大家去海边玩一天',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_beach_trip = true;
+      const npcs = ['nico','aoife','sofia'];
+      npcs.forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('energy', -15); adjustStat('mood', 15); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Nico在群里发了一个巨长的消息：周六海边！不来的人要被踢出合唱团！（开玩笑的）（半开玩笑）带泳衣带零食带好心情！集合地点火车站！九点！迟到自己游过来！' },
+        { text: '最后来了七八个人。你、Nico、Aoife、Sofia、Carlos带了一个冷藏箱的三明治和啤酒。苏迟居然也来了——他说是Carlos逼的。他穿了一件白T恤和长裤，看起来完全没有要下水的意思。' },
+        { text: 'Nico第一个冲进海里，尖叫着说水好冷——但三秒后她已经在玩水了。Aoife在沙滩上铺了毯子，拿出一本书，看了两页就被Nico拉进了水里。Sofia在帮Carlos涂防晒霜的背，一边涂一边笑。' },
+        { text: '你在水里泡了一会儿。回到沙滩上的时候看到苏迟在读一本书——但他的目光不在书上。他在看大家。你在他旁边坐下，他把书合上。' },
+        { text: '"我不太会这个，"他说，指着海里闹成一团的人们。"热闹的东西。但我觉得——不来的话会后悔。"' },
+        { text: '傍晚的时候大家围着Carlos临时搭的烧烤架吃东西。Nico提议每个人说一句"我来这个城市以后最开心的事"。Aoife说"找到了合唱团"。Sofia说"认识了隔壁的你"——她看着你。苏迟想了很久，说"被Carlos拉来今天。"Carlos说"我是不是该感动"。苏迟说"不用，这是陈述事实"。大家都笑了。' },
+        { type: 'stat-up', text: '心情 +15 · 社交 +8 · Nico、Aoife、Sofia好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_movie_night', requires: ['sofia','suchi'], minAffinity: 18, time: [2],
+    label: '🎬 Sofia和苏迟约你看电影',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_movie_night = true;
+      ['sofia','suchi'].forEach(id => { S.npcs[id].affinity += 5; S.npcs[id].talked++; });
+      adjustStat('energy', -5); adjustStat('mood', 10); adjustStat('social', 5); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Sofia敲你的门："旧城区的露天电影院今晚放《天堂电影院》，你去不去？苏迟说他也去。"' },
+        { text: '你有点惊讶——Sofia和苏迟什么时候开始约着出门了？Sofia看出了你的疑惑，笑着说："上周我在楼下碰到他，他在等洗衣机。我们聊了二十分钟——他推荐了三部电影和一张专辑，聊完我觉得他其实很好聊，只是需要一个安静的场合。"' },
+        { text: '你们三个在露天电影院的折叠椅上坐了下来。荧幕搭在一面老墙上，头顶是星星。苏迟坐在你和Sofia中间，手里拿着一袋自己带的爆米花——"超市买的，"他说，"但我加了一点肉桂粉。"你尝了一颗，意外地好吃。' },
+        { text: '电影很好看。放到男孩第一次独自放映电影的段落时Sofia轻声说"我小时候也想过当放映员"。苏迟没有说话，但你注意到他在黑暗中微微点了一下头。' },
+        { text: '散场的时候苏迟说："这部电影的配乐是Morricone写的。他说过一句话——「音乐是时间的雕塑」。"你们三个人在夜风里走回家，路灯在石板路上投下长长的影子。苏迟走在你们中间，步子比平时慢，好像不想太快到家。' },
+        { type: 'stat-up', text: '心情 +10 · 社交 +5 · Sofia和苏迟好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_cooking_battle', requires: ['carlos','marta','nico'], minAffinity: 20, time: [1,2],
+    label: '🍳 Carlos和Marta的料理对决',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_cooking_battle = true;
+      ['carlos','marta','nico'].forEach(id => { S.npcs[id].affinity += 5; S.npcs[id].talked++; });
+      adjustStat('energy', -5); adjustStat('mood', 12); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Nico宣布了一个"极好的主意"——Carlos和Marta进行一场料理对决。主题：用本地市场的食材做一道你的家乡菜。裁判：你和Nico。' },
+        { text: 'Carlos做了一道巴西版的烤鱼配椰子汁和辣椒，Marta做了波兰版的炖牛肉配土豆泥。厨房里挤了五六个人在围观。Ibrahim负责计时，Lena负责说风凉话（"Carlos你那个火太大了""Marta那个盐放多了"）。' },
+        { text: '苏迟坐在角落里吃着两道菜的试吃品，非常认真地在手机上写"品评笔记"。你凑过去看了一眼——他写得像美食杂志的专栏，用了"层次""余韵""味觉的建筑感"这样的词。' },
+        { text: '最后你和Nico宣布平局——因为两个都太好吃了。Carlos和Marta互相尝了对方的菜，Carlos说"你的土豆泥比我妈做的好"。Marta说"你的辣椒差点让我在天堂见到我奶奶"。两个人都笑了。' },
+        { text: 'Nico提议下次让苏迟做中国菜加入比赛。苏迟面无表情地说"我只会煮方便面"。Carlos说"那也是一种料理哲学"。' },
+        { type: 'stat-up', text: '心情 +12 · 社交 +8 · Carlos、Marta、Nico好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_yuki_concert', requires: ['yuki','suchi','aoife'], minAffinity: 20, time: [2],
+    label: '🎹 Yuki在咖啡馆弹了一场小演出',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_yuki_concert = true;
+      ['yuki','suchi','aoife'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('energy', -5); adjustStat('mood', 12); adjustStat('social', 5); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Yuki在旧城区的咖啡馆弹了一场小型钢琴演出——老板让她用店里的旧三角琴，作为回报她可以喝一个月免费咖啡。' },
+        { text: '合唱团来了好几个人。你到的时候Aoife已经占了最前面的位子。苏迟坐在靠墙的角落里，面前一杯热巧克力，笔记本摊开着。' },
+        { text: 'Yuki弹了五首曲子。肖邦、德彪西、坂本龙一，还有两首你没听过的。弹第四首的时候她闭上了眼——那首曲子很安静，像月光落在水面上然后碎了又聚。' },
+        { text: '弹完全场安静了好几秒。然后Aoife第一个鼓掌。Carlos用两根手指吹了一声口哨。Nico喊了一声"Yuki最棒！"Ibrahim在后面安静地鼓着掌，但你注意到他的眼眶红了。' },
+        { text: '散场后你看到苏迟走到Yuki面前说了一句什么——很短，声音很轻。Yuki听了以后低下了头，但你看到她在笑。Aoife凑过来跟你说："苏迟对音乐的评价是全团最值钱的——因为他从来不敷衍。"' },
+        { type: 'stat-up', text: '心情 +12 · 社交 +5 · Yuki、苏迟、Aoife好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_stargazing', requires: ['ibrahim','suchi','sofia'], minAffinity: 22, time: [2],
+    label: '🌙 Ibrahim提议去山上看星星',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_stargazing = true;
+      ['ibrahim','suchi','sofia'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('energy', -10); adjustStat('mood', 15); adjustStat('social', 5); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Ibrahim在群里发了一条消息——这是他第一次在群里发消息："今晚天气很好，山上能看到银河。有人想去吗？"' },
+        { text: '最后去了四个人：你、Ibrahim、苏迟和Sofia。你们坐了最后一班火车到山脚的小站，然后走了二十分钟的夜路。Ibrahim带了一条毯子，Sofia带了热巧克力，苏迟带了一个便携音箱——但没放音乐。' },
+        { text: '山顶的草坪上，四个人躺下来的时候，你看到了银河——一条很淡的光带横跨整个天空。你从来没见过这么多星星。' },
+        { text: 'Ibrahim指着天空说："这颗是天狼星。在阿拉伯语里叫al-shi`rā。我妈妈以前在天台上给我指过。"Sofia说："我妈妈也是。她说天狼星是回家的方向。"' },
+        { text: '苏迟安静了很久，然后说："德彪西写过一首钢琴曲叫《月光》。但我觉得他应该写一首叫《星光》。月光是一个人的，星光是很多人的。"' },
+        { text: '你们在山上待到凌晨一点。下山的时候Sofia走在前面用手机照路，Ibrahim走在最后确保没人掉队。苏迟走在你旁边，忽然轻声说了一句："今天很好。"这是他能说出的最大声的赞美了。' },
+        { type: 'stat-up', text: '心情 +15 · 社交 +5 · Ibrahim、苏迟、Sofia好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_lena_birthday', requires: ['nico','suchi','marta'], minAffinity: 25, time: [1,2],
+    label: '🎂 Nico拉你给Lena准备生日惊喜',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_lena_birthday = true;
+      ['nico','suchi','marta','lena'].forEach(id => { if(S.npcs[id]) { S.npcs[id].affinity += 5; S.npcs[id].talked++; } });
+      adjustStat('energy', -10); adjustStat('mood', 15); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: 'Nico私聊你："下周二是Lena的生日！！！她绝对不想让人知道但我就是知道了！！！我们搞一个惊喜！！！"她的感叹号多到让你有点头晕。' },
+        { text: '计划是这样的：在排练后突然唱生日歌。Nico负责联络，你负责买蛋糕，Marta说她来做一道Lena最喜欢的柠檬塔，苏迟——苏迟居然主动请缨写了一个四声部的生日歌改编。' },
+        { text: '排练那天一切按计划进行。Lena完全没有察觉。排练结束后Dietrich说"等一下"，然后Nico从后面搬出蛋糕，所有人开始唱苏迟版的《Happy Birthday》——有和声，有转调，有一个很美的结尾。' },
+        { text: 'Lena站在那里，第一次你看到她完全不知道该说什么。她的嘴唇抿了一下——你觉得她在忍眼泪。' },
+        { text: '"你们这些人……"她终于说，声音有点不稳，"我说过不要搞这些的。"Nico说"你说过的事情多了"。Marta递上柠檬塔。Carlos拍着Lena的肩说"三十岁第一天就收到了全城最好的合唱，值了"。' },
+        { text: '苏迟站在后面，你看到他嘴角微微弯着。他走过去把那份手写乐谱递给Lena："留个纪念。"Lena接过来看了一眼，然后——Lena抱了苏迟。所有人都惊呆了。苏迟僵了一秒，然后轻轻拍了拍她的背。' },
+        { text: 'Nico小声对你说："我录到了。"' },
+        { type: 'stat-up', text: '心情 +15 · 社交 +8 · Nico、苏迟、Marta、Lena好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  { id: 'grp_rainy_day', requires: ['suchi','carlos','ibrahim'], minAffinity: 18, time: [1,2],
+    label: '☔ 大雨天被困在Carlos的餐厅',
+    scene: () => {
+      if (!S.groupEvents) S.groupEvents = {};
+      S.groupEvents.grp_rainy_day = true;
+      ['suchi','carlos','ibrahim'].forEach(id => { S.npcs[id].affinity += 5; S.npcs[id].talked++; });
+      adjustStat('mood', 10); adjustStat('social', 8); advanceTime(); renderStatus();
+      showNarrative([
+        { text: '你在Carlos的餐厅喝咖啡的时候天忽然暗了——然后暴雨就下来了，没有任何过渡。' },
+        { text: '你出不去了。苏迟也被困在这里——他来买外带咖啡，结果被淋成了落汤鸡。Ibrahim从对面书店跑过来避雨，头发上全是水。' },
+        { text: 'Carlos说"反正走不了，我做点吃的"。然后他从冰箱里翻出一些食材，十五分钟后端出了四碗热汤和烤面包片。窗外雨声很大，餐厅里暖和又安静。' },
+        { text: '四个人坐在一起喝汤聊天。Carlos讲他小时候在里约的暴雨——"那种雨能把公交车冲走"。Ibrahim说大马士革也有暴雨，"但不常下。下雨的时候小孩子都跑到街上去接水。"苏迟说他老家也下大雨，"我爸下雨天就在家写书法。他说雨声是最好的背景音乐。"' },
+        { text: '你说你妈妈下雨天会做红烧肉。说完你忽然很想吃红烧肉。苏迟看了你一眼，说"我也是"。这是你们之间一种不需要翻译的默契。' },
+        { text: '雨小了一点以后Ibrahim提议合唱一首歌。Carlos起了个头，唱了一首巴西民歌。Ibrahim跟着加和声。苏迟犹豫了一下，然后用男中音加了一个很稳的低声部。你也跟着唱。四个人在空荡荡的餐厅里唱了三首歌——没有伴奏，没有谱子，只有雨声和他们的声音。' },
+        { type: 'stat-up', text: '心情 +10 · 社交 +8 · 苏迟、Carlos、Ibrahim好感度 +5' },
+      ]);
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+];
+
+function getAvailableGroupEvents() {
+  if (!S.groupEvents) S.groupEvents = {};
+  const time = S.timeSlot;
+  const events = [];
+  for (const ge of GROUP_EVENTS) {
+    if (S.groupEvents[ge.id]) continue;
+    if (!ge.time.includes(time)) continue;
+    const allMet = ge.requires.every(id => S.npcs[id] && S.npcs[id].talked > 0 && S.npcs[id].affinity >= ge.minAffinity);
+    if (!allMet) continue;
+    events.push({ text: ge.label, cost: '多人友情', action: ge.scene });
+  }
+  return events;
+}
+
 // ========== SCENES ==========
 function startGame() {
   document.getElementById('title-screen').classList.add('hidden');
@@ -1116,6 +1322,10 @@ function sceneDailyMenu() {
     // Side stories
     const sideStoryOptions = getAvailableSideStories();
     sideStoryOptions.forEach(v => choices.push(v));
+
+    // Group friendship events
+    const groupOptions = getAvailableGroupEvents();
+    groupOptions.forEach(v => choices.push(v));
 
     if (!S.choirJoined)
       choices.push({ text: '去广场看看公告板', action: () => {
@@ -1501,6 +1711,10 @@ function sceneRehearsalChat() {
       '你走到苏迟旁边。他在翻手写笔记本。"Dietrich把独唱段落改成了呼吸式的合唱，像潮汐一样进退。"你觉得苏迟说话的时候比喻比大多数人写散文还好。',
       '苏迟今天在排练间隙画了一幅小画——用铅笔在谱子空白处画的。你凑过去看——是广场的那棵橘子树，寥寥几笔但很传神。他看到你在看，把谱子收了。"随便画的，"他说。你说"你画得很好"。他没说话，但你注意到他没把那页撕掉。',
       '苏迟破天荒地在排练后没有立刻走。他走到Yuki旁边，指着谱子上的一个地方说了什么。Yuki听了，试着弹了一遍，然后两个人一起讨论了五分钟。你从来没见过苏迟主动跟人讨论这么久。音乐是他的语言——用音乐说话的苏迟比用中文或英语说话的苏迟自在一百倍。',
+      '苏迟今天带了保温杯，排练间隙倒了杯茶给你。你问他什么茶。"铁观音，我妈从老家寄来的。"你喝了一口——和你在超市买的完全不一样，有一种很干净的花香。"我爸说好茶不用多泡，水过一遍就够了，"他说。你觉得苏迟说所有事情的方式都像在写乐评——精确，又带着感情。',
+      '排练间隙苏迟坐在窗边看着外面。你走过去，他忽然说："你有没有觉得这里的光线特别好？"你说你觉得。他说他来这里第一个月写了五首曲子，"全是因为光线"。他翻开笔记本给你看——五首曲子的标题分别是《晨光》《午后》《金色》《傍晚》《夜蓝》。你说这不就是一天的颜色吗。他看了你一眼，眼神有点亮："你是第一个说出来的人。"',
+      '苏迟今天排练的时候一直在皱眉。排练结束你问他怎么了，他说他论文的导师让他改第四章。"她说我写得太感性了。但我觉得合唱美学本来就不能只用理性来分析。"他叹了口气，"Ibrahim跟我说过一句话——他说「如果你必须在正确和真实之间选一个，选真实」。我还在想他这话对不对。"',
+      '你在排练间隙碰到苏迟从外面走进来——他手上多了一个纸袋。你问什么。他说"Carlos让我带的，说排练不能空腹"。你看了一眼，是Carlos餐厅的brigadeiro。苏迟分了你一颗。"他对所有人都这样，"苏迟说，"就是——不由分说地塞东西给你。一开始我不习惯，现在如果他一天没塞我东西我反而会不安。"你笑了，他也弯了一下嘴角。',
     ],
   };
   const convoPool = convosBase[id] || [convosBase[id]];
