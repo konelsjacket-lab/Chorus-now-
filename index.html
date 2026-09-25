@@ -606,7 +606,7 @@ const NPC_EVENTS = {
         '你说你没想到他听这么杂。他说："我爸写书法，我妈教古筝。从小的训练就是——什么都听，什么都感受。"后面跟了一个链接："这首的和声走向很像今天排练那首的副歌段落。你听听。"',
         '你听了。确实像。你回了一个"卧槽真的诶"。他没回。你怀疑"卧槽"不在他的词汇表里。',
       ], {social:5}) },
-    { id: 'sc2', affinity: 10, label: '约苏迟去旧城区逛逛', time: [0,1],
+    { id: 'sc2', affinity: 15, label: '约苏迟去旧城区逛逛', time: [0,1],
       scene: () => npcEvent('suchi','sc2', [
         '你约苏迟在广场碰面。你到的时候他已经站在喷泉旁边了，穿着一件洗得发白的亚麻衬衫，看手机。你偷偷观察了他几秒——他站得很直，像一棵被修剪过的树。',
         '你们在旧城区的巷子里走。他走得慢到你快要原地踏步了。他会在一面剥落的墙前停下来。"这个颜色好，"他说，"像Rothko晚期的那种红。"你说："我只知道这是一面烂墙。"他看了你一眼，好像在判断你是在开玩笑还是真的文盲。',
@@ -615,7 +615,7 @@ const NPC_EVENTS = {
         '你说："没关系，我反正也没什么急事。"话一出口又觉得自己像在强调自己很闲很无聊。',
         '路过Carlos的餐厅时Carlos从里面探出头来："苏迟！你居然出门了！"苏迟面无表情地说"我经常出门"。Carlos说"不是去图书馆的不算"。你笑了，苏迟的耳朵红了一点。你想说"你耳朵红了"，但忍住了。',
       ], {social:5, mood:5}) },
-    { id: 'sc2b', affinity: 15, label: '苏迟约你去听一场音乐会', time: [2],
+    { id: 'sc2b', affinity: 25, label: '苏迟约你去听一场音乐会', time: [2],
       scene: () => npcEvent('suchi','sc2b', [
         '苏迟发消息说大学音乐厅今晚有一场免费室内乐演出。"你要来吗。"句号，没有问号。你已经学会读苏迟的标点了——句号代表他其实很希望你来。',
         '你到的时候他已经在门口了，手里一杯外带咖啡。你想他没给你带——然后他从包里掏出一个保温杯："热巧克力。你上次说你不喝咖啡。"',
@@ -624,7 +624,7 @@ const NPC_EVENTS = {
         '中场休息碰到Yuki——她也来了。苏迟跟Yuki讨论了三分钟大提琴手的弓法，用的词你一个都不懂。你站在旁边像个外语听力不及格的考生。但你喜欢看他说话的样子——亮起来的眼睛、加快的语速、手在空气中画旋律线。',
         'Yuki回座位前小声对你说："苏迟很少约人。你来了他很高兴，虽然看不出来。"你转头看他。他在低头翻节目单，假装没听到。你说："你偷听了。"他翻了一页，说："没有。"',
       ], {social:5, mood:10, vocal:2}) },
-    { id: 'sc3', affinity: 20, label: '苏迟突然冷淡了', time: [2,3],
+    { id: 'sc3', affinity: 35, label: '苏迟突然冷淡了', time: [2,3],
       scene: () => npcEvent('suchi','sc3', [
         '苏迟这两天没回你消息。你发了三条，已读，没回。你检查了一遍自己的聊天记录——上次说了什么奇怪的话吗？好像没有。',
         '排练的时候他来了，坐在老位置，跟你点了下头就低头翻谱子。你坐在他旁边，空气突然变得很别扭。你想说"怎么了"，但Dietrich已经开始了。',
@@ -633,7 +633,7 @@ const NPC_EVENTS = {
         '你说："那他不能说一声吗。"Nico看了你一眼，笑了："你在意了。"',
         '你说"没有"。Nico说"好好好没有"。你知道她不信。你自己也不信。',
       ], {social:2, mood:-3}, true) },
-    { id: 'sc3b', affinity: 25, label: '苏迟在图书馆等你', time: [0,1],
+    { id: 'sc3b', affinity: 45, label: '苏迟在图书馆等你', time: [0,1],
       scene: () => npcEvent('suchi','sc3b', [
         '苏迟突然发消息了。上来不是道歉，是："我在大学图书馆写论文，你要来吗。你不用看书也行，带本杂志就好。我就是——需要有个人在。"',
         '你盯着这段话看了两分钟。"需要有个人在"——你想回一句"你之前需要我的时候我在啊你自己不理人的"。但你最后只说了"好"。',
@@ -644,7 +644,7 @@ const NPC_EVENTS = {
         '你想了想说："我觉得我看不见的东西太多了。"他愣了一下，然后嘴角动了一下——你不确定那算不算笑。"这也是一种回答。"',
         '离开的时候你注意到他笔记本边缘画了一只很小的海鸥。画得很好。你没提，但你记住了。你发现自己已经原谅他了。这让你有点生气——太容易了。',
       ], {social:5, mood:8}) },
-    { id: 'sc4', affinity: 30, label: '苏迟带你去他的秘密地方', time: [2],
+    { id: 'sc4', affinity: 55, label: '苏迟带你去他的秘密地方', time: [2],
       scene: () => npcEvent('suchi','sc4', [
         '排练结束后苏迟说："你跟我来。"',
         '你犹豫了一秒。上次他突然消失的事你还记着。但他的表情不像是在开玩笑。你说："去哪。"他说："不告诉你。"',
@@ -656,7 +656,7 @@ const NPC_EVENTS = {
         '你说你想听。他沉默了很久——久到你以为他要拒绝了。然后他轻声唱了开头的四个小节。没有伴奏，只有他的声音和海风。',
         '你的眼睛有点酸。你说："很好听。"他说："你说话的时候别哭。"你说："我没哭，是风。"他说："嗯。风。"',
       ], {mood:15, social:5}, true) },
-    { id: 'sc5', affinity: 38, label: '💙 苏迟不小心说了实话', time: [1,2],
+    { id: 'sc5', affinity: 68, label: '💙 苏迟不小心说了实话', time: [1,2],
       scene: () => npcEvent('suchi','sc5', [
         '排练结束后你们一起坐火车回去。车厢空荡荡的，苏迟破天荒没戴耳机。',
         '窗外是暮色中的海岸线。他从包里拿出笔记本——你瞄了一眼，手写乐句分析和零散文字，字迹清秀。你说："你爸教的？"他说："嗯。小时候每天练一页。烦死了。"他很少说"烦死了"这种话，你笑了。',
@@ -668,7 +668,7 @@ const NPC_EVENTS = {
         '火车出了隧道，光线突然涌进来。他的表情像被自己吓到了。你们都没有说话。窗外灯塔一闪一闪的。你听到自己的心跳和火车碾过铁轨的声音——你分不清哪个更吵。',
         '到站的时候他先站起来，背对你说："当我没说。"你说："来不及了。"他停了一秒，没回头，走了。你坐在座位上又坐了一站才下车。',
       ], {mood:15}, true, true) },
-    { id: 'sc6', affinity: 50, label: '💙 苏迟在雨天弹了一首曲子', time: [2],
+    { id: 'sc6', affinity: 80, label: '💙 苏迟在雨天弹了一首曲子', time: [2],
       scene: () => npcEvent('suchi','sc6', [
         '下雨了。你本来不想出门，但苏迟发了一条消息："大学琴房没人。你来吗。"没有句号——你第一次看到他的消息没有句号。这意味着什么你说不清。',
         '你撑着伞走到大学。琴房在走廊尽头，门开着一条缝，灯是暖色的。你推门进去的时候他坐在旧立式钢琴前——你不知道他会弹琴。',
@@ -680,7 +680,7 @@ const NPC_EVENTS = {
         '你说："不结尾不行吗。"他转过头看你——很认真的眼神。"你说得对，"他说，"有些东西不需要结尾。"',
         '雨打在窗户上。琴房里只有你们两个人和一架旧钢琴。你坐在他旁边的凳子上，近到能看到他睫毛上的光。他没有让开。你也没有。',
       ], {mood:15, social:5}, true) },
-    { id: 'sc7', affinity: 65, label: '💙 苏迟写了一整夜', time: [0,1],
+    { id: 'sc7', affinity: 92, label: '💙 苏迟写了一整夜', time: [0,1],
       scene: () => npcEvent('suchi','sc7', [
         '苏迟两天没有回消息了。你没有慌——你已经学会了他的节奏。但第三天早上你收到了Nico的消息："苏迟在排练室睡着了。Carlos发现的。你去看看？"',
         '你赶到排练室，推开门——苏迟趴在桌上，旁边散着好几页手写的谱子。他的笔还握在手里。旁边Carlos的保温杯，空了。',
@@ -690,7 +690,7 @@ const NPC_EVENTS = {
         '你说："你在这写了一夜？"他揉了揉眼睛："有些东西不写出来会堵在这里。"他指了指心口的位置。',
         '你把Carlos的保温杯拿去洗了，又买了两个面包回来。他接过去的时候说了一句很轻的话："你怎么总是在。"你说："因为你不叫我我也来。"他咬了一口面包，没说话。但他把谱子上划掉标题的那条线擦淡了一点。',
       ], {mood:10, social:5}, true) },
-    { id: 'sc8', affinity: 80, label: '💙 苏迟问了一个问题', time: [2,3],
+    { id: 'sc8', affinity: 96, label: '💙 苏迟问了一个问题', time: [2,3],
       scene: () => npcEvent('suchi','sc8', [
         '排练后你们又去了那个山上的小平台。他已经不用说"跟我来"了——你们有默契了。你带了橘子，他带了保温杯。',
         '今天的落日特别好。天空像调色盘打翻了——金色、橙色、粉色一层一层的。远处的海面被染成了你没见过的颜色。',
@@ -1182,7 +1182,7 @@ function getAvailableSideStories() {
 
 // ========== GROUP FRIENDSHIP EVENTS ==========
 const GROUP_EVENTS = [
-  { id: 'grp_birthday_nico', requires: ['lena','nico','carlos'], minAffinity: 15, time: [0,1],
+  { id: 'grp_birthday_nico', requires: ['lena','nico','carlos'], minAffinity: 20, time: [0,1],
     label: '🎂 Lena和Nico邀请你帮忙准备生日',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1201,7 +1201,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_beach_trip', requires: ['nico','aoife','sofia'], minAffinity: 12, time: [0,1],
+  { id: 'grp_beach_trip', requires: ['nico','aoife','sofia'], minAffinity: 8, time: [0,1],
     label: '🏖️ Nico组织大家去海边玩一天',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1219,7 +1219,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_movie_night', requires: ['sofia','suchi'], minAffinity: 18, time: [2],
+  { id: 'grp_movie_night', requires: ['sofia','suchi'], minAffinity: 22, time: [2],
     label: '🎬 Sofia和苏迟约你看电影',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1269,7 +1269,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_stargazing', requires: ['ibrahim','suchi','sofia'], minAffinity: 22, time: [2],
+  { id: 'grp_stargazing', requires: ['ibrahim','suchi','sofia'], minAffinity: 30, time: [2],
     label: '🌙 Ibrahim提议去山上看星星',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1286,7 +1286,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_lena_birthday', requires: ['nico','suchi','marta'], minAffinity: 25, time: [1,2],
+  { id: 'grp_lena_birthday', requires: ['nico','suchi','marta'], minAffinity: 35, time: [1,2],
     label: '🎂 Nico拉你给Lena准备生日惊喜',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1321,7 +1321,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_karaoke', requires: ['nico','carlos','yuki'], minAffinity: 15, time: [2],
+  { id: 'grp_karaoke', requires: ['nico','carlos','yuki'], minAffinity: 10, time: [2],
     label: '🎤 Nico拉大家去KTV',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1339,7 +1339,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_football', requires: ['ibrahim','carlos','aoife'], minAffinity: 12, time: [0,1],
+  { id: 'grp_football', requires: ['ibrahim','carlos','aoife'], minAffinity: 8, time: [0,1],
     label: '⚽ Ibrahim组织足球赛',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1375,7 +1375,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_lost_way', requires: ['nico','ibrahim','marta'], minAffinity: 18, time: [0,1],
+  { id: 'grp_lost_way', requires: ['nico','ibrahim','marta'], minAffinity: 10, time: [0,1],
     label: '🗺️ 集体迷路了',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1392,7 +1392,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_power_out', requires: ['dietrich','carlos','nico'], minAffinity: 15, time: [1,2],
+  { id: 'grp_power_out', requires: ['dietrich','carlos','nico'], minAffinity: 10, time: [1,2],
     label: '🕯️ 排练到一半停电了',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1429,7 +1429,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_boardgame', requires: ['suchi','lena','yuki'], minAffinity: 22, time: [2],
+  { id: 'grp_boardgame', requires: ['suchi','lena','yuki'], minAffinity: 32, time: [2],
     label: '🎲 苏迟居然会打麻将',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1447,7 +1447,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_dietrich_punk', requires: ['dietrich','nico','carlos'], minAffinity: 30, time: [2],
+  { id: 'grp_dietrich_punk', requires: ['dietrich','nico','carlos'], minAffinity: 38, time: [2],
     label: '🎸 Nico发现了Dietrich的秘密',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1468,7 +1468,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_chinese_bond', requires: ['suchi'], minAffinity: 25, time: [1,2],
+  { id: 'grp_chinese_bond', requires: ['suchi'], minAffinity: 35, time: [1,2],
     label: '🥟 苏迟：老乡见老乡',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1489,7 +1489,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_worldcup', requires: ['carlos','ibrahim','nico'], minAffinity: 15, time: [2],
+  { id: 'grp_worldcup', requires: ['carlos','ibrahim','nico'], minAffinity: 10, time: [2],
     label: '⚽ Carlos号召大家看世界杯',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
@@ -1508,7 +1508,7 @@ const GROUP_EVENTS = [
       ]);
       showChoices([{ text: '继续', action: sceneDailyMenu }]);
     }},
-  { id: 'grp_nico_fake_date', requires: ['nico'], minAffinity: 45, time: [1,2],
+  { id: 'grp_nico_fake_date', requires: ['nico'], minAffinity: 55, time: [1,2],
     label: '💍 Nico有一个荒唐的请求',
     scene: () => {
       if (!S.groupEvents) S.groupEvents = {};
