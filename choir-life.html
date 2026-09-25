@@ -2193,13 +2193,19 @@ function sceneRehearsal() {
     S.npcs.dietrich.talked++; S.npcs.dietrich.affinity += 5;
     adjustStat('social', 3); adjustStat('vocal', 3);
   } else if (rc === 2) {
-    paras.push({ text: '第二次排练。你到的时候已经有不少人了。你发现自己走到广场的时候脚步比上周快了一点——你没有犹豫要不要来。Dietrich在调音响，Nico在跟一个你没见过的高个子男人比谁嗓门大。你想走过去跟Nico打招呼但她太忙了。' });
+    if (S.metNico) {
+      paras.push({ text: '第二次排练。你到的时候已经有不少人了。你发现自己走到广场的时候脚步比上周快了一点——你没有犹豫要不要来。Dietrich在调音响，Nico在跟一个你没见过的高个子男人比谁嗓门大。你想走过去跟Nico打招呼但她太忙了。' });
+    } else {
+      paras.push({ text: '第二次排练。你到的时候已经有不少人了。你发现自己走到广场的时候脚步比上周快了一点。一个卷发女生冲过来——像一阵风带着笑声——' });
+      paras.push({ text: '「嘿！你上周来的吧！我记得你！我是Nico！」她握你的手的力度像在比腕力。你还没来得及报名字她就说："不用说我已经知道了，Dietrich跟我说了。欢迎欢迎！以后咱们是队友了！"你心想：她说话不用标点的吗。' });
+    }
     paras.push({ text: '排练开始前，一个中年女人端着一盘自制饼干走过来。' });
     paras.push({ text: '「新来的对吧？上周我不在——出差了。我是Marta，波兰来的，在这里十五年了。来，吃饼干。」她塞了两块到你手上，根本没给你拒绝的机会。你吃了一口——很好吃。你说"谢谢"。她说"不客气，多吃"。你又吃了一块。' });
     paras.push({ text: '她开始讲合唱团的历史——像打开了一本活档案。你插不上嘴但你也不想插嘴，她讲得太精彩了。Dietrich八年前开始的时候就他和四五个大学生，在广场上唱，没有音响没有谱架，就一个音叉。你心想：那得多冷清。' });
     paras.push({ text: '说到Ibrahim，她朝角落指了指。一个安静的男人靠在柱子上看手机。"那个，Ibrahim，叙利亚来的。平时话很少，但他一开口唱——你等着听。"你偷偷看了一眼Ibrahim。他看起来是那种你不会主动打招呼的人。不是因为不友好——是因为他身上有一种让你不确定自己是否被欢迎的气场。' });
     S.npcs.marta.talked++; S.npcs.marta.affinity += 8;
     S.npcs.ibrahim.talked++; S.npcs.ibrahim.affinity += 3;
+    if (!S.metNico) { S.metNico = true; S.npcs.nico.talked++; S.npcs.nico.affinity += 5; }
     S.metAtRehearsal.marta = true; S.metAtRehearsal.ibrahim = true;
     adjustStat('social', 5); adjustStat('vocal', 2);
   } else if (rc === 3) {
