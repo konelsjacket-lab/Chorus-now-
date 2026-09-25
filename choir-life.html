@@ -1283,6 +1283,13 @@ function getAvailableNPCVisits() {
       break; // only show the next available event per NPC
     }
   }
+  if (visits.length > 3) {
+    for (let i = visits.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [visits[i], visits[j]] = [visits[j], visits[i]];
+    }
+    visits.length = 3;
+  }
   return visits;
 }
 
