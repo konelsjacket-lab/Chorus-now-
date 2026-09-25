@@ -291,7 +291,7 @@ const S = {
   shelterVisits: 0, museumVisits: 0, antiqueShopUnlocked: false, antiqueItems: [], rockBarUnlocked: false, rockBarGigs: 0, lastRockBarDay: 0,
   choirDrama: {}, npcRomances: { carlosMarta: 0 },
   ownedInstruments: [], lastInstrumentPractice: 0,
-  giftsGiven: {}, vacationsTaken: 0, soloDatesDone: {},
+  giftsGiven: {}, vacationsTaken: 0, soloDatesDone: {}, showsSeen: {},
   rehearsalCount: 0,
   choirPhase: 0,
   metAtRehearsal: {},
@@ -1927,6 +1927,23 @@ function sceneDailyMenu() {
         choices.push({ text: '🏖 约朋友们去度假！', cost: '300-500€', action: sceneVacationMenu });
     }
 
+    // Commercial gigs (after first gig unlocked)
+    if (S.choirDrama.firstCommercialGig && time >= 1 && !S.choirDrama.gigDoneThisWeek && isWeekend()) {
+      const gigTypes = ['wedding','festival','corporate','charity','private'];
+      const availableGigs = gigTypes.filter(t => !S.choirDrama['gig_' + t]);
+      if (availableGigs.length > 0) {
+        const gigType = pick(availableGigs);
+        const gigLabels = { wedding: '🎵 婚礼演出', festival: '🎪 文化节演出', corporate: '🏢 酒店晚宴演出', charity: '🐕 慈善音乐会', private: '🏡 私人晚宴演出' };
+        const gigPays = { wedding: '60€', festival: '80€', corporate: '100€', charity: '30€', private: '120€' };
+        choices.push({ text: gigLabels[gigType] + '（商演）', cost: `收入 ${gigPays[gigType]}`, action: () => {
+          S.choirDrama['gig_' + gigType] = true;
+          S.choirDrama.gigDoneThisWeek = S.day;
+          sceneCommercialGig(gigType);
+        }});
+      }
+    }
+    if (S.choirDrama.gigDoneThisWeek && S.day - S.choirDrama.gigDoneThisWeek >= 7) S.choirDrama.gigDoneThisWeek = 0;
+
     // Solo date (high affinity NPC)
     if (time >= 1 && time <= 2 && isWeekend()) {
       const dateNPCs = Object.values(S.npcs).filter(n => n.affinity >= 30 && n.talked >= 3 && !S.soloDatesDone[n.id + '_' + Math.floor(S.day/14)]);
@@ -2889,6 +2906,10 @@ function sceneWalkMenu() {
     { text: '⛰ 去山上观景台', action: sceneWalkViewpoint },
   ];
   if (S.day > 3) allDests.push({ text: '🐕 去流浪狗收容基地', action: sceneWalkShelter });
+  if (S.day > 6) allDests.push({ text: '⚓ 去港口码头', action: sceneWalkHarbor });
+  if (S.day > 10) allDests.push({ text: '🌿 去植物园', action: sceneWalkBotanical });
+  if (S.day > 8) allDests.push({ text: '🎓 去大学校园', action: sceneWalkCampus });
+  if (S.day > 14 && S.timeSlot >= 2) allDests.push({ text: '🏮 逛夜市', action: sceneWalkNightMarket });
   if (S.antiqueShopUnlocked) allDests.push({ text: '🔮 去古董店', action: sceneWalkAntique });
   if (S.rockBarUnlocked && S.day - S.lastRockBarDay >= 5 && Math.random() < 0.35) allDests.push({ text: '🎸 去摇滚酒吧驻唱', action: sceneWalkRockBar });
 
@@ -3070,6 +3091,93 @@ function sceneWalkShelter() {
   showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
+function sceneWalkHarbor() {
+  const stories = [
+    [{ text: '港口码头的空气是咸的。渔船密密麻麻挤在一起，桅杆上挂着晾晒的渔网。一个老渔民坐在船头补网，动作快得像在弹琴。' },
+     { text: '你坐在码头的石墩上看了半小时。有渡轮驶向对面的小岛，有帆船从远处回来，有海鸥站在系缆柱上，用一种审视的目光看你。你跟海鸥对视了三秒，它先移开了视线。你赢了。' }],
+    [{ text: '码头边有一排海鲜摊。你花了五欧买了一份炸小鱼，蘸柠檬汁，站在海边吃。风很大，差点把纸盒吹走。小鱼很酥很新鲜——你觉得这是你来这座城市以后吃到的最便宜也最好吃的东西之一。' },
+     { text: '吃完以后你在码头边走了一圈。有人在钓鱼，有人在修船，有一个男人在给一艘很小的木船刷漆——刷成了天蓝色。你问他这是他的船吗。他用蹩脚的英语说「不，是我爸爸的。他去年走了。我每年春天给它刷一次漆。」你不知道说什么好。你说了「很漂亮」。他笑了。' }],
+    [{ text: '今天码头上有个小型鱼市。渔民们大声吆喝着，手里举着各种你叫不出名字的鱼。你在人群里挤来挤去，被一条章鱼的触手吓了一跳。旁边一个本地老太太笑了，拍了拍你的肩膀，指了指另一边一条银色的鱼——好像在推荐。你说「我不会做鱼」。她听不懂但还是笑着点头。' }],
+  ];
+  if (S.npcs.carlos && S.npcs.carlos.talked > 0 && Math.random() < 0.3) {
+    showNarrative([
+      { text: '你在码头上碰到了Carlos。他在跟一个渔民讨价还价——用一种夹杂着巴西葡萄牙语、本地语和手势的混合语言。你站在旁边看了一分钟，完全听不懂但觉得很精彩。' },
+      { text: '他买了一条很大的鱼。转头看到你，咧嘴一笑："嘿！帮我拎一下——晚上来我家吃。我做给你吃。"你说："你做鱼好吃吗？"他说："在巴西的时候不会。来了这里以后学的。海边的人不会做鱼说不过去。"你帮他拎着鱼走了一段路，鱼的尾巴甩了你两下。' },
+      { type: 'stat-up', text: '心情 +5 · 社交 +3 · Carlos好感度 +3' },
+    ]);
+    S.npcs.carlos.affinity += 3; adjustStat('social', 3);
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    return;
+  }
+  showNarrative([...pick(stories), ...walkEnd('')]);
+}
+
+function sceneWalkBotanical() {
+  const stories = [
+    [{ text: '植物园在半山上，门票两欧。你买了票走进去——一整个地中海植被的世界在你面前展开。橄榄树、无花果树、石榴树、仙人掌、三角梅、还有很多你只能叫出「好看的花」「不认识的树」的植物。' },
+     { text: '你在一棵巨大的橄榄树下坐了二十分钟。树干扭曲得像一个缓慢的舞蹈动作冻结在半空。标牌说它有三百年了。你想：三百年前这里站着的人看到的是同一棵树。他们在想什么？大概也是「好大的树」。' }],
+    [{ text: '植物园的温室区有热带植物。你走进去——空气突然变得潮湿闷热，像进了一个巨大的蒸笼。到处是巨大的蕨类和开着奇怪花的植物。有一株兰花颜色你从来没见过——紫色里带着绿色，像被施了魔法。' },
+     { text: '你在温室里拍了十几张照片。出来以后冷空气打在脸上，你打了个寒颤。你在长椅上坐了一会儿，看远处的海。植物园在山上，能看到整个城市和海湾。你想：这大概是植物们每天看到的风景。它们运气不错。' }],
+    [{ text: '你在植物园的小径上散步，迷路了两次。第二次迷路的时候你发现了一个隐蔽的角落——一个小池塘，水面上漂着睡莲，旁边有一张石头长椅。完全没有人。你坐下来——世界突然安静了。只有水声和虫鸣。你闭上眼睛。你觉得如果天堂存在，大概就是一个没人打扰你的花园。' }],
+  ];
+  adjustStat('money', -2);
+  if (S.npcs.yuki && S.npcs.yuki.talked > 0 && Math.random() < 0.25) {
+    showNarrative([
+      { text: '你在植物园的日本庭园区碰到了Yuki。她坐在一棵修剪得很整齐的松树下，面前摊着速写本——她在画那棵松树。你凑过去看了一眼：画得简洁干净，几笔就把树的形状抓住了。' },
+      { text: '"我不知道你会画画。"你说。Yuki没抬头："不是画画。是记录。我奶奶说——看过的东西画下来，就永远不会忘。"你在她旁边坐下来，安静地看她画。她画完以后轻声说："这棵树跟我家附近寺庙里的很像。"她的声音平静得像水面，但你听到了下面的涟漪。' },
+      { type: 'stat-up', text: '心情 +5 · Yuki好感度 +3' },
+    ]);
+    S.npcs.yuki.affinity += 3;
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    return;
+  }
+  showNarrative([...pick(stories), ...walkEnd('')]);
+}
+
+function sceneWalkCampus() {
+  const stories = [
+    [{ text: '大学校园在城市的另一头，要坐二十分钟公交。你走进去的时候觉得自己年轻了——虽然你其实也不算老。校园里到处是背书包的学生、骑自行车的人、坐在草坪上看书或亲嘴的情侣。' },
+     { text: '你在校园咖啡馆买了一杯很便宜的咖啡（学生价！），坐在露台上看来来往往的人。有个穿帽衫的男生在弹吉他唱歌，唱得一般但很投入。你想起自己大学的时候——你那时候在干什么？好像在考试。一直在考试。' }],
+    [{ text: '你在校园里闲逛，发现了一栋音乐学院的楼。你贴着窗户往里看——有人在练琴，有人在打鼓，有人在声乐教室里练声。各种声音从不同的窗户飘出来，混在一起像一首先锋派的曲子。' },
+     { text: '走廊的公告栏上贴着各种演出和大师班的海报。有一个是合唱指挥大师班——你拍了照发给Dietrich。他回：「那个教授是我同学。他比我差。」你不确定这是在开玩笑还是认真的。' }],
+    [{ text: '校园的中央广场上有人在组织一个小型露天音乐会。你坐在台阶上听了一会儿。一个学生乐队在唱本地的流行歌——你一句都听不懂但旋律很好听。你拿出手机搜了一下歌词——原来在唱「我们在一个不属于我们的城市里找到了自己」。你觉得这句话也是在说你。' }],
+  ];
+  if (S.npcs.lena && S.npcs.lena.talked > 0 && Math.random() < 0.25) {
+    showNarrative([
+      { text: '你在校园图书馆前面碰到了Lena。她穿着一件不太搭调的花裙子——你第一次看到她穿裙子。她看到你的表情说："别看了。我今天来给语言系的学生上客座课。他们的教授是我以前的同事。"' },
+      { text: '"你教什么？"你问。她说："口译入门。教这些孩子怎么在脑子里同时运行两种语言。"你说："听起来像超级英雄的技能。"她嘴角弯了一下——这大概是Lena版本的灿烂微笑。"你说得对。我们就是超级英雄。只是没有披风。"' },
+      { type: 'stat-up', text: '心情 +5 · Lena好感度 +3' },
+    ]);
+    S.npcs.lena.affinity += 3;
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    return;
+  }
+  showNarrative([...pick(stories), ...walkEnd('')]);
+}
+
+function sceneWalkNightMarket() {
+  const stories = [
+    [{ text: '夜市在海边的长廊上。灯泡串成一条条线挂在头顶，像低垂的星星。摊子上什么都有——烤肉串、炸海鲜、手工首饰、皮具、干花、本地人画的明信片。空气里混杂着食物的香味和海风的咸味。' },
+     { text: '你买了一串烤虾和一杯sangria。站在海边吃喝。远处有人在弹吉他唱歌，声音隔着人群传过来断断续续的。你想：这大概就是地中海的夏夜该有的样子——热闹但不吵，随意但有味道。' }],
+    [{ text: '夜市上有个摊子在卖各国街头小吃。你看到了一个牌子——「中国煎饼」。你走过去一看——那是一张可丽饼上面放了豆芽和甜辣酱。你犹豫了很久要不要指出这不是煎饼。最后你决定不说了。文化交流有时候就是这样的——不完美但有趣。' },
+     { text: '你买了一份"中国煎饼"。味道其实还行——至少甜辣酱是真的。你拍了照发到朋友圈，配文是「欧洲人对中国美食的理解」。你妈回复了一个翻白眼emoji。' }],
+    [{ text: '你在夜市的手工区逛了一圈。一个本地艺人在现场做陶器——手指沾着泥在转盘上捏出一个杯子，整个过程不到三分钟。你看呆了。她做完以后抬头看你，指了指旁边的空椅子——意思是要不要试试。你坐下来试了。捏出了一个——你不知道那是什么。可能是碗。可能是烟灰缸。可能只是一坨泥。艺人看了看你的作品，微笑着说：「很有个性。」你觉得这是最温柔的侮辱。' }],
+  ];
+  adjustStat('money', -8);
+  if (S.npcs.nico && S.npcs.nico.talked > 0 && Math.random() < 0.3) {
+    showNarrative([
+      { text: '你在夜市上撞见了Nico——她正在一个耳环摊子前面试戴，两只耳朵上各挂了四五个不同的耳环。看到你她尖叫了一声："哎！你也来！快帮我选——月亮还是星星？"' },
+      { text: '你说月亮。她说："我也觉得。但星星也好看——算了两个都买了。"你说"你不是说要省钱吗"。她说"夜市不算花钱，夜市算体验。"你觉得这个逻辑有问题但你反驳不了。' },
+      { text: '你们一起逛了剩下的夜市。她拉着你尝了三个摊子的食物、跟一个卖手链的小哥聊了十分钟、在一个算命摊子前面犹豫了五分钟最终没有算——"万一算出来不好呢？我怕影响心情。"你觉得跟Nico逛街很累但心情确实很好。' },
+      { type: 'stat-up', text: '心情 +8 · 社交 +3 · Nico好感度 +3' },
+    ]);
+    S.npcs.nico.affinity += 3; adjustStat('social', 3); adjustStat('mood', 3);
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    return;
+  }
+  showNarrative([...pick(stories), ...walkEnd('')]);
+}
+
 function sceneWalkRandom() {
   const walks = [
     [{ text: '你沿着铁轨旁边的小路走。蓝皮火车从身边过去的时候你冲窗户里挥了挥手。有人挥了回来。你不认识他们，他们不认识你，但你们互相挥了手。你觉得这很好。' },
@@ -3108,15 +3216,39 @@ const GIFT_OPTIONS = [
   { id: 'vinyl', name: '一张黑胶唱片', price: 28, affinity: 9, desc: '唱片店里淘的，你根据对方的品味选了一张。', forMusic: true },
 ];
 
+const SPECIAL_GIFTS = [
+  { id: 'sg_suchi_pen', name: '🖋 一支古董钢笔', price: 80, affinity: 15, forNpc: 'suchi', minAffinity: 40,
+    desc: '古董店老板说这是1960年代的百利金。笔尖是金的，墨水还能用。' },
+  { id: 'sg_sofia_shell', name: '🐚 一串贝壳风铃', price: 45, affinity: 12, forNpc: 'sofia', minAffinity: 35,
+    desc: '码头边一个老渔民的妻子手工做的，每一片贝壳都不一样。' },
+  { id: 'sg_nico_camera', name: '📸 一台拍立得', price: 120, affinity: 18, forNpc: 'nico', minAffinity: 40,
+    desc: '二手店里淘的Instax Mini，还附送两盒相纸。' },
+  { id: 'sg_carlos_knife', name: '🔪 一把手工厨刀', price: 95, affinity: 15, forNpc: 'carlos', minAffinity: 35,
+    desc: '集市上铁匠手打的，刀柄是橄榄木的，刻着一条鱼。' },
+  { id: 'sg_marta_recipe', name: '📖 一本手写食谱', price: 55, affinity: 14, forNpc: 'marta', minAffinity: 30,
+    desc: '旧书店里找到的，一位本地老太太六十年的家庭食谱，手写的，还夹着干花。' },
+  { id: 'sg_ibrahim_compass', name: '🧭 一个铜指南针', price: 65, affinity: 14, forNpc: 'ibrahim', minAffinity: 35,
+    desc: '古董店里的航海指南针，虽然旧了但还能用。针永远指向北方。' },
+  { id: 'sg_yuki_bonsai', name: '🌳 一棵迷你盆栽', price: 50, affinity: 13, forNpc: 'yuki', minAffinity: 30,
+    desc: '植物园门口卖的一棵小松树盆栽，用日式浅盆种着。' },
+  { id: 'sg_lena_journal', name: '📓 一本皮面日记本', price: 60, affinity: 13, forNpc: 'lena', minAffinity: 35,
+    desc: '手工皮革封面，纸张是奶白色的，封面压了一朵矢车菊——德国的国花。' },
+  { id: 'sg_aoife_map', name: '🗺 一幅手绘古地图', price: 70, affinity: 14, forNpc: 'aoife', minAffinity: 30,
+    desc: '十八世纪的爱尔兰手绘地图复刻版，标注了阿兰群岛和Galway湾。' },
+  { id: 'sg_tomas_pigment', name: '🎨 一套矿物颜料', price: 90, affinity: 15, forNpc: 'tomas', minAffinity: 35,
+    desc: '十二种天然矿石研磨的颜料，装在小玻璃瓶里，颜色深沉浓郁。' },
+];
+
 function sceneShoppingMenu() {
   renderStatus();
   const choices = [
     { text: '🎵 乐器店', cost: `你有 ${S.money}€`, action: sceneInstrumentShop },
     { text: '🎁 礼物商店', cost: '给朋友买礼物', action: sceneGiftShop },
+    { text: '🎭 看演出', cost: '买票看音乐剧/合唱/管弦乐', action: sceneShowTickets },
     { text: '算了，不逛了', action: sceneDailyMenu },
   ];
   showNarrative([
-    { text: '你走到旧城区的商业街。阳光照在鹅卵石路面上，两边是各种小店——有一家乐器店，橱窗里挂满了吉他和曼陀林；旁边是一家杂货礼品店，门口摆着花和手工陶瓷。' },
+    { text: '你走到旧城区的商业街。阳光照在鹅卵石路面上，两边是各种小店——有一家乐器店，橱窗里挂满了吉他和曼陀林；旁边是一家杂货礼品店，门口摆着花和手工陶瓷。街角有一个海报柱，贴满了各种演出的传单。' },
     { text: `你的钱包里有 ${S.money}€。买点什么？` },
   ]);
   showChoices(choices);
@@ -3188,21 +3320,35 @@ function scenePickGift(npc) {
     if (g.forMusic && !['suchi','yuki','lena','dietrich'].includes(npc.id)) return false;
     return S.money >= g.price;
   });
-  if (gifts.length === 0) {
+  const specials = SPECIAL_GIFTS.filter(sg =>
+    sg.forNpc === npc.id && S.money >= sg.price && npc.affinity >= sg.minAffinity && !S.giftsGiven['special_' + sg.id]
+  );
+  const allGifts = [...gifts, ...specials];
+  if (allGifts.length === 0) {
     showNarrative([{ text: '你翻了翻钱包……好像买不起什么像样的礼物。' }]);
     showChoices([{ text: '回去', action: sceneGiftShop }]);
     return;
   }
   showNarrative([{ text: `你决定给${npc.name}挑一份礼物。` }]);
-  const choices = gifts.map(g => ({
-    text: `${g.name}（${g.price}€）`,
-    cost: g.desc,
+  const choices = allGifts.map(g => ({
+    text: `${g.name}（${g.price}€）` + (g.forNpc ? ' ✨' : ''),
+    cost: g.desc + (g.forNpc ? ' 「特别礼物」' : ''),
     action: () => {
+      if (S.money < g.price) {
+        showNarrative([{ text: '你看了看价签又看了看钱包，叹了口气。' }]);
+        showChoices([{ text: '回去', action: sceneGiftShop }]);
+        return;
+      }
       S.money -= g.price;
       npc.affinity += g.affinity;
       if (!S.giftsGiven[npc.id]) S.giftsGiven[npc.id] = 0;
       S.giftsGiven[npc.id]++;
       adjustStat('mood', 5); adjustStat('social', 2); renderStatus();
+      if (g.forNpc) {
+        S.giftsGiven['special_' + g.id] = true;
+        sceneSpecialGiftEvent(npc, g);
+        return;
+      }
       const reactions = {
         sofia: [
           `Sofia接过${g.name}的时候愣了一下。"给我的？"她低头看了一会儿，耳朵变红了。"你不用……"她没说完，但她把${g.name}抱得很紧。`,
@@ -3248,6 +3394,310 @@ function scenePickGift(npc) {
   }));
   choices.push({ text: '换一个人', action: sceneGiftShop });
   showChoices(choices);
+}
+
+function sceneSpecialGiftEvent(npc, gift) {
+  const events = {
+    suchi: () => showNarrative([
+      { text: '苏迟接过钢笔的时候手指微微颤了一下。他把笔帽拧开，看了看笔尖——金色的，在阳光下闪了一下。他没说话。' },
+      { text: '然后他在随身带的笔记本上试了一划。墨水是蓝黑色的。他的笔迹一如既往——端正得像印刷体，但比印刷体多了一种温度。' },
+      { text: '"1960年代的百利金，"他说，声音很轻。"那个年代还没有圆珠笔泛滥。人们写字很慢。写一封信要花一个下午。"他合上笔帽，把笔别在胸口口袋里。那个位置以前什么都没有。' },
+      { text: '他看了你一眼。那个眼神——你从来没见过。不是他平时那种评估一切的目光，而是一种更柔软的东西。他说："你怎么知道我喜欢钢笔的？"你说你不知道，你只是觉得适合他。他低下头："你做了一件很多人不会做的事——你注意到了我是什么样的人。"' },
+      { text: '他走了几步，又回头说了一句："我会用它写很重要的东西。"你不知道他说的「很重要的东西」是什么。但你莫名觉得——也许跟你有关。' },
+      { type: 'stat-up', text: `苏迟好感度 +${gift.affinity} · 心情 +5 · 社交 +2 · 解锁特殊记忆` },
+    ]),
+    sofia: () => showNarrative([
+      { text: '你把风铃递给Sofia的时候，她小心翼翼地接过去，举到耳边轻轻晃了一下——贝壳碰撞的声音像很远的海浪。' },
+      { text: '"每一片都不一样，"她翻来覆去看着。她的眼睛亮了："这一片——看到没有——像一只蝴蝶的翅膀。"你凑过去看。你觉得更像一片薯片。但你没说。' },
+      { text: '她说："小时候在里斯本我家门口也有一串风铃。是我爸爸做的——用易拉罐剪的。风一吹就响。后来搬家的时候弄丢了。我一直很后悔。"她把风铃举起来对着光："这串比爸爸做的好看多了。但它让我想起了那串。谢谢你。"' },
+      { text: '她把风铃小心地收进包里——用围巾裹了两层。你觉得Sofia收礼物的方式跟她对待所有东西一样——轻得像怕把世界弄疼了。' },
+      { type: 'stat-up', text: `Sofia好感度 +${gift.affinity} · 心情 +5 · 社交 +2 · 解锁特殊记忆` },
+    ]),
+    nico: () => showNarrative([
+      { text: 'Nico拆开拍立得包装的时候——你以为她会尖叫。她没有。她捧着那台相机安静了整整五秒钟。这可能是Nico安静过的最长的五秒。' },
+      { text: '然后她抬起头，眼眶红了。"你知道我想要这个多久了吗？"你说你不知道。她说："自从我来这里以后。我手机里有一万张照片，但照片太多了——看起来反而什么都不是。拍立得不一样。一张就是一张。不能删。不能修。它就是那一刻。"' },
+      { text: '她立刻装了相纸，举起来对着你按了快门。闪光灯晃了你一下。照片慢慢显影——你看到了自己被闪到、微微眯眼、嘴角还带着笑的脸。不算好看。但很真实。' },
+      { text: 'Nico用手指在照片下面写了一行小字："第一张。"她把它夹在笔记本第一页。你想这台相机大概会拍满整整一本的回忆。而你是第一张。' },
+      { type: 'stat-up', text: `Nico好感度 +${gift.affinity} · 心情 +5 · 社交 +2 · 解锁特殊记忆` },
+    ]),
+    carlos: () => showNarrative([
+      { text: 'Carlos接过厨刀，拔出来看了一眼——他的表情变了。不是他平时那种大大咧咧的笑，而是一种你没见过的认真。' },
+      { text: '他用拇指试了一下刀刃。"好钢，"他说。然后他翻过来看刀柄——橄榄木上刻的那条鱼。他摸了摸那条鱼，嘴角弯了："这条鱼长得像我以前在萨尔瓦多钓的那种。叫robalo。我爸每周末带我去钓。"' },
+      { text: '他把刀放在桌上，很郑重地看着你："你知道吗——在巴西，送厨刀给一个厨师是最大的信任。意思是「我相信你做的东西」。"他的眼眶有点红了——Carlos哭起来毫不遮掩。他擦了一下眼睛说："今晚你必须来吃饭。我用这把刀做的第一道菜得给你。"' },
+      { type: 'stat-up', text: `Carlos好感度 +${gift.affinity} · 心情 +5 · 社交 +2 · 解锁特殊记忆` },
+    ]),
+    marta: () => showNarrative([
+      { text: 'Marta翻开那本手写食谱的第一页——你看到她的手指停在了上面。那页写着一道南瓜汤的做法，字迹是圆圆的，旁边画了一个小南瓜。' },
+      { text: '"这个字迹，"Marta的声音突然变了调，"跟我外婆的好像。"她一页一页翻下去。每一页都是手写的——有的用蓝色墨水，有的用铅笔，有几页被油渍染了。夹在第三十七页的干花是薰衣草。' },
+      { text: '她翻到最后一页——那页只写了一行字。你看不懂，但Marta翻译给你听："「做饭的秘密不是食材，是你想着谁在吃。」"她闭上眼睛，深呼吸了两次。' },
+      { text: '"你知道吗，"她睁开眼说，"我来这座城市以后每次做饭都想着我外婆。她不在了——但她的菜还在我手上。现在又多了一本别人外婆的菜。"她把食谱抱在胸前。"我会把里面每一道都做一遍的。"' },
+      { type: 'stat-up', text: `Marta好感度 +${gift.affinity} · 心情 +5 · 社交 +2 · 解锁特殊记忆` },
+    ]),
+    ibrahim: () => showNarrative([
+      { text: 'Ibrahim接过指南针，沉默了很久。他把它放在掌心——铜壳已经泛了绿锈，但打开以后指针还在动。它慢慢停在了一个方向。' },
+      { text: '"北，"他说。然后他转向那个方向，安静了一会儿。你不知道他在看什么。但你猜——北方，穿过地中海，穿过大陆，是他来的方向。' },
+      { text: '他合上指南针，把它握在手里。"我爸爸有一个，"他终于开口。声音平稳，但你听出了下面的重量。"他在大学教地理。他说——指南针永远知道北方在哪，但它不会告诉你该往哪走。那是你自己的事。"' },
+      { text: '他把指南针放在口袋里——跟他的手机放在同一侧。他说："谢谢。"就两个字。但他握了一下你的手。Ibrahim从来不主动碰人。你知道那一握代表什么。' },
+      { type: 'stat-up', text: `Ibrahim好感度 +${gift.affinity} · 心情 +5 · 社交 +2 · 解锁特殊记忆` },
+    ]),
+    yuki: () => showNarrative([
+      { text: 'Yuki看到盆栽的一瞬间——你第一次看到她的眼睛睁大了。她蹲下来，跟那棵小松树平视。她的手指碰了碰树枝——很轻，像在弹一个极弱的音。' },
+      { text: '"这是五叶松，"她的声音很小。"日本叫「御前」。我奶奶家的院子里有一棵——很大。她每天早上浇水的时候会跟树说话。"你问她说什么。Yuki想了想："早安——之类的。有时候汇报天气。我小时候觉得很奇怪。现在我觉得那是最正常的事。"' },
+      { text: '她把盆栽端起来，侧过头看了看树的形状。"有点歪，"她说。然后她很轻地笑了——"歪的好看。完美的反而没有意思。"你觉得这句话也许不只是在说树。' },
+      { text: '她小心翼翼地抱着盆栽，鞠了一个很深的躬："ありがとうございます。"你的日语水平只够听懂这一句。但这一句够了。' },
+      { type: 'stat-up', text: `Yuki好感度 +${gift.affinity} · 心情 +5 · 社交 +2 · 解锁特殊记忆` },
+    ]),
+    lena: () => showNarrative([
+      { text: 'Lena打开日记本，看了看封面的矢车菊。她的表情变化了好几次——先是惊讶，然后是某种你叫不出名字的表情。' },
+      { text: '"矢车菊，"她说。"你知道这是德国的国花？"你点头。她翻了翻里面的纸——空白的，奶白色的。她用指腹摸了一下纸面。"好纸，"她说，声音比平时轻。' },
+      { text: '"我以前有一本日记本，"她合上本子。"在柏林的时候。每天写。后来分手的那天我把它烧了。连那些好的日子也一起烧了。后来觉得很蠢——那些好的日子又没有错。"' },
+      { text: '她看着你——Lena看人的时候像在翻译你。"你送这个是因为觉得我应该重新开始写？"你说你没想那么多。她挑了一下眉："骗人。"然后她把日记本放进包里。走的时候她说了一句你差点没听到："第一页我知道写什么了。"' },
+      { type: 'stat-up', text: `Lena好感度 +${gift.affinity} · 心情 +5 · 社交 +2 · 解锁特殊记忆` },
+    ]),
+    aoife: () => showNarrative([
+      { text: 'Aoife展开那幅地图的时候，你看到她的瞳孔放大了。她蹲在地上，把地图整个铺开——上面画着爱尔兰西海岸的轮廓，阿兰群岛标注得清清楚楚，Galway湾的弧线用淡蓝色的水彩画成。' },
+      { text: '"Inis Mór，"她指着最大的那个岛。"我外婆住这里。"她的手指移到海峡上方——"这里是渡轮码头。冬天浪大的时候坐在上面像坐过山车。"她的手指移到一个标注了十字架的地方——"这是Dún Aonghasa。三千年前的石头堡垒。站在崖边往下看能看到一百米的悬崖和大西洋。我十四岁的时候站在那里哭了——不是害怕，是太美了。"' },
+      { text: '她卷起地图，很仔细地卷，好像在卷一份圣旨。"你知道吗，"她说，眼眶红了但笑着，"我来这里快两年了。有时候做梦会梦到那片海。醒来发现窗外是地中海——也很美。但颜色不对。大西洋是灰的。"' },
+      { text: '她抱着卷好的地图说："我要把它挂在我的书桌上方。这样我每天抬头就能看到回家的路。虽然我暂时不走。"' },
+      { type: 'stat-up', text: `Aoife好感度 +${gift.affinity} · 心情 +5 · 社交 +2 · 解锁特殊记忆` },
+    ]),
+    tomas: () => showNarrative([
+      { text: 'Tomás打开装颜料的盒子——十二个小玻璃瓶，每个里面装着不同颜色的矿物粉末。他一瓶一瓶地拿起来对着光看。他的手指在发抖。' },
+      { text: '"天青石，"他拿起一瓶深蓝色的。"中世纪的画家用这个画圣母的披风。因为太贵了——比黄金还贵——所以只有最神圣的部分才用它。"他又拿起一瓶赭红色的："赭石。最古老的颜料。三万年前的洞穴壁画用的就是这个。"' },
+      { text: '他把所有瓶子排成一行，像一道彩虹。他安静地看了很久。然后他说了一句让你心跳加速的话："我要用这些画你。"' },
+      { text: '你说："画我？"他说："嗯。但不是画你的脸——是画你给我的感觉。"你问那是什么感觉。他想了想："大概是……天青石和赭石之间的某种颜色。一种还没有名字的颜色。"你的脸烫了。你假装在看窗外。' },
+      { type: 'stat-up', text: `Tomás好感度 +${gift.affinity} · 心情 +5 · 社交 +2 · 解锁特殊记忆` },
+    ]),
+  };
+  const fn = events[npc.id];
+  if (fn) fn();
+  else showNarrative([{ text: `${npc.name}收到了这份特别的礼物，看了很久。你觉得你选对了。` }, { type: 'stat-up', text: `${npc.name} 好感度 +${gift.affinity}` }]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+// --- Show tickets ---
+const SHOWS = [
+  { id: 'show_opera', name: '歌剧《卡门》', price: 40, type: '歌剧',
+    bestFriends: ['suchi','yuki','dietrich','lena'],
+    desc: '市立歌剧院演的比才《卡门》，据说女主角是本地最好的女中音。' },
+  { id: 'show_musical', name: '音乐剧《妈妈咪呀》', price: 35, type: '音乐剧',
+    bestFriends: ['nico','sofia','carlos','aoife'],
+    desc: '巡演版《妈妈咪呀》，在海边露天剧场演出。据说散场以后能看星星。' },
+  { id: 'show_choir', name: '维也纳少年合唱团', price: 55, type: '合唱',
+    bestFriends: ['suchi','dietrich','marta','ibrahim'],
+    desc: '维也纳少年合唱团欧洲巡演，在大教堂演出。Dietrich说「去听。不去后悔一辈子」。' },
+  { id: 'show_orchestra', name: '管弦乐团：德沃夏克《新世界》', price: 45, type: '管弦乐',
+    bestFriends: ['yuki','suchi','lena','tomas'],
+    desc: '市交响乐团的秋季音乐会，演德沃夏克第九交响曲「自新世界」。指挥是Dietrich的老同学。' },
+  { id: 'show_flamenco', name: '弗拉门戈之夜', price: 30, type: '弗拉门戈',
+    bestFriends: ['carlos','sofia','nico','tomas'],
+    desc: '旧城区一个洞穴酒吧里的弗拉门戈表演。空间很小，你离舞者只有一米。' },
+  { id: 'show_jazz', name: '爵士即兴夜', price: 25, type: '爵士',
+    bestFriends: ['nico','ibrahim','aoife','carlos'],
+    desc: '码头边一个小酒馆的爵士即兴夜。来的都是本地的乐手，水平出奇地高。' },
+  { id: 'show_play', name: '话剧《等待戈多》', price: 35, type: '话剧',
+    bestFriends: ['suchi','aoife','lena','marta'],
+    desc: '大学剧社演的贝克特《等待戈多》，双语版（本地语/英语）。苏迟说这是他最喜欢的戏。' },
+];
+
+function sceneShowTickets() {
+  renderStatus();
+  const available = SHOWS.filter(s => S.money >= s.price && !S.showsSeen?.[s.id]);
+  if (available.length === 0) {
+    if (SHOWS.every(s => S.showsSeen?.[s.id])) {
+      showNarrative([{ text: '你把海报柱上的演出都看完了。你现在大概是这座城市最勤奋的观众。下次换了新演出再来吧。' }]);
+    } else {
+      showNarrative([{ text: '你看了看海报上的票价，又看了看钱包。嗯——先赚钱吧。' }]);
+    }
+    showChoices([{ text: '回去', action: sceneShoppingMenu }]);
+    return;
+  }
+  showNarrative([
+    { text: '你走到海报柱前面。各种演出海报层层叠叠贴着——歌剧、音乐剧、合唱、管弦乐、弗拉门戈……你看了一圈，有几个挺想去的。' },
+    { text: '一个人去也行，但如果约个朋友一起看就更好了。' },
+  ]);
+  const choices = available.map(s => ({
+    text: `🎫 ${s.name}（${s.price}€）`,
+    cost: `${s.type} · ${s.desc}`,
+    action: () => scenePickShowCompanion(s),
+  }));
+  choices.push({ text: '不看了', action: sceneShoppingMenu });
+  showChoices(choices);
+}
+
+function scenePickShowCompanion(show) {
+  const knownNPCs = Object.values(S.npcs).filter(n => n.talked > 0 && n.id !== 'dietrich');
+  const paras = [{ text: `你决定去看${show.name}。约谁一起？` }];
+  const choices = knownNPCs.map(npc => {
+    const isBest = show.bestFriends.includes(npc.id);
+    return {
+      text: `${npc.flag} ${npc.name}` + (isBest ? ' ✨' : ''),
+      cost: isBest ? '特别适合一起看这个！' : '',
+      action: () => sceneWatchShow(show, npc),
+    };
+  });
+  choices.push({ text: '一个人去', action: () => sceneWatchShow(show, null) });
+  choices.push({ text: '算了', action: sceneShowTickets });
+  showNarrative(paras);
+  showChoices(choices);
+}
+
+function sceneWatchShow(show, companion) {
+  if (!S.showsSeen) S.showsSeen = {};
+  S.showsSeen[show.id] = true;
+  S.money -= show.price;
+  adjustStat('energy', -5); advanceTime(); renderStatus();
+  const isBest = companion && show.bestFriends.includes(companion.id);
+  const moodBonus = companion ? (isBest ? 15 : 10) : 8;
+  adjustStat('mood', moodBonus);
+  if (companion) { companion.affinity += (isBest ? 8 : 4); companion.talked++; adjustStat('social', 5); }
+
+  const showTexts = {
+    show_opera: {
+      solo: '你一个人坐在歌剧院二楼最便宜的位子上。舞台很远但声音很近——女中音的声音穿过整个大厅撞在你身上。卡门的哈巴涅拉响起来的时候你的手臂起了一层鸡皮疙瘩。中场休息你去买了一杯红酒。你装作很懂的样子喝了一口。其实你也确实开始懂了一点。',
+      normal: (n) => `你和${n.name}坐在歌剧院里。灯暗下来的时候你偷偷看了一眼${n.name}的脸——被舞台灯光映着。卡门唱哈巴涅拉的时候，${n.name}跟着轻声哼了几个音。你想：原来看歌剧也可以这么自然。散场以后你们讨论了一路——${n.name}说了一些你没想到的角度，你觉得有个人一起看演出就像有了另一双眼睛。`,
+      best: {
+        suchi: '苏迟在开场前五分钟才到——他在迟到的边缘精准卡点。他坐下来，翻开节目单，用铅笔在角上做了个标记。你问他标什么。他说："比才的和声进行有一段在第二幕，我想验证一个想法。"你觉得苏迟看歌剧跟看乐谱没区别——他是在研究。但到了卡门死的那一幕，你偷偷看了他一眼——他的下巴绷紧了。他不只是在研究。散场后他沉默了一路。快到家的时候他说了一句："悲剧之所以是悲剧，是因为每一步都合理。"你觉得他不只是在说歌剧。',
+        yuki: '你和Yuki提前二十分钟到了。她选了一个靠走道的位子——"万一太激动了可以出去冷静一下。"你觉得Yuki版的激动大概就是微微皱眉。序曲响起来的时候她闭上了眼睛。你偷偷看了她一眼——她的手指在膝盖上随着旋律轻轻动着，像在弹一架看不见的钢琴。散场后她说："比才死的时候三十六岁。他没看到这部歌剧成功。"她的声音很轻。你们走了一段沉默的路。然后她说："所以——要趁活着的时候做想做的事。"',
+        dietrich: '你约了Dietrich。他穿了他最好的衬衫——就是那件有领子的白衬衫。他对歌剧院的声学做了十五分钟的评价。你假装听懂了。但到了哈巴涅拉的时候他安静了。你从来没见过Dietrich那样听音乐——不是在分析，而是在接受。散场后他说："年轻的时候我想当歌剧指挥。后来觉得合唱更好——合唱里没有主角，每个人都是。"',
+        lena: '你和Lena坐在一起。她带了一个小笔记本——你以为她要做笔记。她没有。她只是在中场休息的时候写了一句话。你偷看了一眼："好的音乐让翻译变得多余。"你觉得这是Lena说过的最浪漫的话。散场后她说你笑什么。你说没笑。她说你明明在笑。',
+      },
+    },
+    show_musical: {
+      solo: '你一个人坐在露天剧场的石头台阶上。《妈妈咪呀》开场了——ABBA的音乐响起来的时候，全场开始跟着节拍拍手。你也拍了。你从来不知道你可以在一个公共场合毫不尴尬地拍手。这就是音乐剧的魔力。散场以后你一路哼着Dancing Queen走回家。',
+      normal: (n) => `你和${n.name}一起看了《妈妈咪呀》。ABBA的歌一首接一首——到了Dancing Queen的时候${n.name}忍不住站起来跟着节拍动了起来。你犹豫了两秒也站了起来。周围的人都在跳。散场的时候你们嗓子都哑了——因为唱了太多。${n.name}说："我从来没在公共场合这么放松过。"你说你也是。你觉得好的演出就是让你忘掉自己是谁。`,
+      best: {
+        nico: 'Nico在开场前就开始唱了——她知道每一首歌的每一句词。你问她看过几遍。她举起三根手指。"三遍？"她说："三十遍。"你觉得这大概不是夸张。到了Super Trouper的时候她拉着你站起来一起唱——你不知道词但你跟着她喊。周围的人看着你们笑。你不在乎。跟Nico在一起你永远不需要在乎别人怎么看。散场以后她在海边的石阶上坐着唱了十分钟的Thank You for the Music。月光照在她脸上。你想这大概就是Nico版本的「感谢生活」。',
+        sofia: 'Sofia在第一幕就红了眼眶——音乐剧里母女关系的部分。你偷偷递给她纸巾。她小声说："我妈也是一个人把我带大的。"你握了一下她的手。她没有缩回去。到了快乐的部分她笑得比谁都大声。你觉得Sofia就是这样——悲伤和快乐都很真，都在表面，都不藏。散场后她挽着你的手臂走了一路。她说："下次再来。不管演什么。"',
+        carlos: 'Carlos在人群里不停地跟陌生人说话。到了第二幕他已经跟前排一家法国人成了朋友。散场的时候那家人邀请你们去他们的酒店喝一杯。Carlos答应了。你们在酒店大堂喝了免费的酒，Carlos教法国人的女儿唱了一段巴西版的Dancing Queen。你觉得Carlos到哪里都能变成一个派对。',
+        aoife: 'Aoife说她小时候在都柏林看过一次《妈妈咪呀》的巡演。"我妈带我去的。那是她最后一次带我出门看演出——后来她就太忙了。"露天剧场的风吹来海的味道。Aoife闭着眼睛听了整首I Have a Dream。你没打扰她。有些时刻属于她和她的记忆。',
+      },
+    },
+    show_choir: {
+      solo: '维也纳少年合唱团在大教堂里唱歌的时候，你突然明白了Dietrich说的「不去后悔一辈子」。那些声音——纯到像光，像水——在石头穹顶下面回荡。你坐在那里，觉得自己被什么巨大的东西包裹了。散场以后你在台阶上坐了十分钟才走。你在想：你有一天能唱成那样吗？不能。但你想离那个方向再近一点。',
+      normal: (n) => `你和${n.name}一起听了维也纳少年合唱团。大教堂的声学把每一个音都放大了——像从天花板上掉下来的。${n.name}全程一动不动地听。散场后你们谁也没说话走了好几分钟。然后${n.name}说："我以前觉得天使是瞎编的。现在我觉得不一定。"你笑了。你也觉得不一定。`,
+      best: {
+        suchi: '苏迟听维也纳少年合唱团的时候，你第一次看到他流泪了。不是大哭——他的表情几乎没变——但你坐在他旁边，看到一滴泪从他脸上滑下来。他用手背擦了一下，没看你。你假装没看到。他们唱莫扎特安魂曲的Lacrimosa的时候你听到苏迟的呼吸变了。散场后他在教堂门口站了很久。你等着。终于他说："我六岁学钢琴。第一次弹的就是莫扎特。我妈坐在旁边听。"他停了一下。"她说——你弹得比CD上的好。当然不是真的。但那一刻我相信了。"你什么都没说。有些时候不说话是最对的话。',
+        dietrich: 'Dietrich坐在你旁边，脊背挺得笔直——他在音乐会上的坐姿跟指挥时一模一样。少年合唱团唱到一半他低声说了一句："第二男高音的第三排左边那个孩子——记住他。"你顺着看过去——一个瘦瘦的男孩，张嘴的弧度特别大。"他的声音在变声期前。再过一两年他就唱不了了。"Dietrich的声音平静但你听到了底下的什么。你觉得Dietrich看合唱的方式就像医生看X光片——他看到了时间。',
+        marta: 'Marta在第三首歌的时候开始哭了。不是因为悲伤——你知道她哭是因为好听到受不了。她抓着你的手，力道很大。"我女儿小时候也在合唱团，"她用气声说。"她唱歌的声音——跟天使一样。后来长大了就不唱了。"Marta擦了擦眼泪。"我想打电话给她。散场以后能陪我打吗？"你说当然。你陪着Marta在教堂台阶上给波兰打了十五分钟电话。她用波兰语说了很多。你一个字没听懂。但你听到了她女儿在电话那头笑。',
+        ibrahim: 'Ibrahim坐在大教堂里听基督教传统的合唱，你有一瞬间觉得有点微妙。但他的表情完全平静——甚至虔诚。唱到一首舒伯特的圣母颂的时候，他轻声说："美不需要翻译。"你点了点头。散场后他说他在摩洛哥的时候也去过教堂——"声音是一样的。不管你信什么，好的声音都指向同一个方向。"你觉得这是Ibrahim说过的最长的一段话。',
+      },
+    },
+    show_orchestra: {
+      solo: '你听了德沃夏克《自新世界》的第二乐章——「回家」。英国管的旋律响起来的时候，你想到了很远的地方。不是你的老家——是一个模糊的、不存在的「家」。但你坐在这里，在一千个陌生人中间听同一首曲子，觉得这也算一种回家。散场后指挥谢了三次幕。你鼓掌鼓到手疼。',
+      normal: (n) => `你和${n.name}一起听了《自新世界》。你不确定自己听懂了多少——但第二乐章响起来的时候你看了一眼${n.name}，${n.name}也正好看向你。你们同时笑了。也许懂不懂不重要。重要的是你们在同一个时刻感受到了同一种东西。`,
+      best: {
+        yuki: 'Yuki闭着眼睛听了整场音乐会。你不确定她有没有睡着。但到了第四乐章那个著名的主题，你看到她的手指在膝盖上飞速移动——她在"弹"。你想她脑子里大概有一架永远在运行的钢琴。散场后她睁开眼睛，平静地说："我想回去练琴。"你说好。你送她走到家门口。她在门口鞠躬说谢谢，然后轻声补了一句："下次——一起听马勒。"你觉得这是Yuki版的邀约——克制但确定。',
+        suchi: '苏迟全程在看总谱——他居然带了一本口袋版的总谱。你靠过去看了一眼——密密麻麻的符号，你一个都看不懂。但你看到他用铅笔在某一页画了一个圈。你问他圈的是什么。他说："一个被大部分指挥忽略的中提琴声部。德沃夏克在这里写了一句——只给中提琴的——像是在说一句只有一个人能听到的悄悄话。"你突然觉得音乐比你以为的深得多。',
+        tomas: 'Tomás在听音乐会的时候拿出了速写本。你以为他在画舞台。他不是——他在画声音。你看了一眼：纸上是一些抽象的线条和色块——他用不同的颜色画不同的乐器。弦乐是蓝色的，铜管是红色的，木管是绿色的。到了第二乐章他放下笔，只是听。然后他用一种很轻的颜色——你觉得那是米白色——画了一条线。他说："这是英国管的solo。它不是一种颜色。是一种光。"',
+        lena: 'Lena说她小时候在东柏林听过一次《自新世界》。"柏林墙倒的前一年。我妈带我去的。我那时候不懂什么叫「新世界」。后来墙倒了——我懂了。"她看着舞台说："德沃夏克写这首曲子的时候在美国。他想家。但他写的不是「旧世界」——他写的是「新世界」。他在一个陌生的地方找到了一首回家的歌。"你觉得Lena在说德沃夏克，也在说自己。也在说你。',
+      },
+    },
+    show_flamenco: {
+      solo: '弗拉门戈在一个洞穴酒吧里——真的是洞穴，石头墙壁，低矮的天花板，昏暗的灯光。舞者离你一米。她的鞋跟敲在地板上的声音像心跳加速。吉他手的手指在弦上飞。歌手唱出来的声音嘶哑得像在燃烧。你不懂弗拉门戈但你的身体懂——你的心跳跟着节奏走了。散场以后你走到外面，夜风吹在脸上，你觉得你需要冷却一下。',
+      normal: (n) => `你和${n.name}挤在洞穴酒吧的小桌子旁边。弗拉门戈开始的时候${n.name}的眼睛亮了。舞者的裙子在一米外旋转——你差点被裙摆扫到。吉他的声音在石头墙壁之间反弹。到了最激烈的部分，${n.name}跟着全场一起喊了一声"olé"。你也跟着喊了。你从来没在公共场合这么大声过。散场以后你们一路聊着走回家——聊的不是弗拉门戈，是「什么东西能让人忘记矜持」。`,
+      best: {
+        carlos: 'Carlos说他在巴西的时候看过弗拉门戈——"但在西班牙看不一样。这是它长出来的土地。"洞穴酒吧里弗拉门戈开始的时候Carlos的整个身体都在跟着动——不是舞蹈，是一种本能的回应。到了快结束的时候舞者走到观众席，伸手——Carlos没犹豫就站起来了。他们即兴跳了三十秒。全场疯了。你拍的视频后来在合唱团群里播放了至少五十遍。Carlos回来以后脸红了。你说"你什么时候学的弗拉门戈"。他说"没学过。它自己来的。"',
+        sofia: 'Sofia说她妈妈年轻时候学过弗拉门戈。"她是里斯本人——葡萄牙有自己的舞，叫fado。但她说弗拉门戈更像火。"演出开始后Sofia紧紧盯着舞者的脚——那双鞋跟敲出来的节奏像机关枪。到了一段独舞的时候Sofia的眼里有泪光。你没问为什么。有些艺术让人流泪不是因为悲伤——是因为美到承受不了。',
+        nico: 'Nico在整场弗拉门戈里拍了大概六十张照片。但最后一段的时候她放下手机，只是看。你看到她的嘴唇微微张开——Nico安静下来的时候比任何时候都好看。散场后她说："我以后也要学。"你说"你想学什么"。她说"我不确定——也许是那种「能把自己完全交出去」的能力。弗拉门戈就是那种。合唱也是。"你觉得Nico比她自己以为的要深刻得多。',
+        tomas: 'Tomás看弗拉门戈的时候一直在画——在餐巾纸上。你旁边能看到他画的是舞者的脚——一笔又一笔的弧线，快到像速写。演出结束他把那张餐巾纸翻过来给你看——几十条线汇成了一个模糊但有力的形状。你说"这是什么"。他说"这是四分钟的运动。如果你把所有动作叠在一起，它就长这样。"你觉得Tomás看世界的方式让一切都变成了艺术。',
+      },
+    },
+    show_jazz: {
+      solo: '码头边的小酒馆又暗又窄。你点了一杯啤酒坐在角落里。爵士三重奏开始了——钢琴、贝斯、鼓。他们不说话，只是用音乐对话。你不懂爵士。但你懂那种「几个人在一起，不用说话就知道下一步往哪走」的默契。你想到了合唱团。你觉得所有好的音乐都是这样——不是表演，是对话。',
+      normal: (n) => `你和${n.name}在码头边的酒馆里听爵士。灯光昏暗，你们面前各一杯酒。钢琴手弹了一段solo——很长，很自由，像一个人在自言自语。你偷偷看了一眼${n.name}——${n.name}在跟着点头。你也开始跟着点头。你们的节奏对上了。你觉得这是一种很特别的亲密——不用碰到彼此，只是在同一个节奏里。`,
+      best: {
+        nico: 'Nico在爵士酒馆里意外地安静。你从来没见过她这样。她窝在角落里的沙发上，双腿抱在胸前，眼睛盯着钢琴手的手指。到了鼓手solo的时候她轻声说："我小时候想学鼓。我妈说女孩子不学鼓。"她的声音没有生气——只是一种很淡的遗憾。你说"你现在也可以学"。她想了想说"也许吧"。你觉得今晚你看到了一个平时藏在Nico所有热闹后面的Nico。',
+        ibrahim: 'Ibrahim说他爸爸听爵士乐。"在家里——他有一箱黑胶唱片。Miles Davis，Coltrane，Bill Evans。我小时候不懂。但那些声音陪我长大了。"贝斯手弹了一段很低很沉的即兴。Ibrahim的表情没变但你看到他的手指在桌上轻轻敲着。你觉得你又了解了Ibrahim一点——他的安静下面有很多声音。',
+        aoife: 'Aoife说爱尔兰也有自己的即兴音乐传统——"叫session。在酒吧里，谁来了谁加入，没有乐谱，用耳朵和直觉。跟爵士很像。"她听得很入迷。到了钢琴和贝斯的一段对话——两个乐手在眼神交流中同时转了调——Aoife小声说："看到了吗？他们什么都没说。但他们都知道。"她看了你一眼。你也什么都没说。但你也知道了。',
+        carlos: 'Carlos在爵士酒馆里找到了他的人生乐趣——跟贝斯手聊天。散场后他拉着贝斯手聊了二十分钟，话题从即兴技巧聊到了巴西的bossa nova，再到彼此的食谱。你在旁边听着。Carlos做了什么你不知道的事——他邀请贝斯手下周来合唱团做客座乐手。Dietrich后来知道了，沉默了三秒说了一句："行吧。"',
+      },
+    },
+    show_play: {
+      solo: '《等待戈多》在大学剧场里演了两个小时。两个流浪汉在一棵树下等一个不来的人。你看到一半觉得困了。看到最后觉得醒了。你不确定你看懂了什么。但你记住了一句台词："我们等着吧。"你走出剧场的时候觉得——也许你一直在等的东西，已经在等你了。',
+      normal: (n) => `你和${n.name}一起看了《等待戈多》。灯光暗了两个小时。出来以后${n.name}说："你看懂了吗？"你说："好像懂了，但我说不出来。"${n.name}说："大概这就是看懂了。"你们在剧场外面的长椅上坐了十分钟。什么都没说。就像那两个等戈多的人——但你们等到的好像是对方。`,
+      best: {
+        suchi: '苏迟看《等待戈多》的时候嘴角微微上扬——这大概是他的版本的"开心到不行"。散场以后他罕见地话多了起来："贝克特写这个的时候在巴黎——他是爱尔兰人。用法语写的。然后自己翻译成英语。他说法语让他更精确。"你说"你跟Aoife说过这个吗"。他想了想说"没有。她可能会打我——因为贝克特离开了爱尔兰。"他笑了——那种很轻的、只有嘴角动了的笑。你觉得跟苏迟看话剧就像读一本脚注比正文还多的书——脚注总是比较有趣的那部分。',
+        aoife: 'Aoife说贝克特是爱尔兰的骄傲也是爱尔兰的叛徒。"他离开都柏林去了巴黎。然后用法语写了这部戏。这对爱尔兰人来说是——"她停了一下。"是一种背叛也是一种自由。有时候你必须离开一个地方才能写出关于它的东西。"你看了看她。你觉得她在说贝克特，也在说自己——一个离开爱尔兰来到地中海的翻译官。',
+        lena: 'Lena看完以后说了一句："这部戏在东德被禁过。因为当局觉得它在讽刺社会主义——人们等一个不来的人，就像等一个不会实现的承诺。"她的声音平静。"我妈妈那一代人等了四十年。最后墙倒了。她说——原来戈多不是不来，是换了一种方式来。"你觉得Lena的每一句话后面都有一个你没有经历过的世界。',
+        marta: 'Marta看《等待戈多》的时候一直在点头——你不确定她是同意还是在打瞌睡。但散场后她说了一段很长的话："波兰有一个传统——等待。等战争结束，等占领结束，等自由来。我外婆等了一辈子。我妈妈等了半辈子。我不想等了——所以我来了这里。"她看着你："你呢？你在等什么？"你想了想说："我好像不等了。我好像找到了。"Marta笑了。',
+      },
+    },
+  };
+  const t = showTexts[show.id];
+  let text;
+  if (!companion) {
+    text = t.solo;
+  } else if (isBest && t.best[companion.id]) {
+    text = t.best[companion.id];
+  } else {
+    text = t.normal(companion);
+  }
+  const statText = companion
+    ? `心情 +${moodBonus} · 社交 +5 · ${companion.name} 好感度 +${isBest ? 8 : 4} · 花费 ${show.price}€`
+    : `心情 +${moodBonus} · 花费 ${show.price}€`;
+  showNarrative([
+    { text },
+    { type: 'stat-up', text: statText },
+  ]);
+  adjustStat('vocal', 1);
+  renderStatus();
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+// --- Commercial performances (商演) ---
+function sceneCommercialGig(gigType) {
+  const gigs = {
+    wedding: {
+      pay: 60,
+      texts: [
+        '一对本地情侣的婚礼——在海边的小教堂。你们唱了三首歌。新娘哭了。新郎哭了。你旁边的Marta也哭了。你勉强忍住了。',
+        '唱完以后新郎走过来用力握你的手："谢谢你们。我太太说——你们唱的比DJ好一万倍。"Carlos在后面大声说："当然！"Dietrich微微点头。你觉得这是Dietrich版本的"我们确实厉害"。',
+        '宴会上你吃了三块蛋糕。新娘的妈妈坚持要你再吃一块。你推辞不了。你觉得这场商演最大的收获不是钱——是蛋糕。',
+      ],
+    },
+    festival: {
+      pay: 80,
+      texts: [
+        '城市文化节的开幕式。你们在市政厅广场上唱歌。台下大概三百个人——你紧张了大概十秒钟，然后Dietrich的手抬起来，你就什么都不想了。',
+        '你们唱了五首。最后一首是那首加泰罗尼亚民歌——台下有人跟着唱了起来。先是几个人，然后越来越多。到了最后一段，整个广场都在唱。Dietrich放下了手——他不需要指挥了。音乐自己在走。',
+        '市长在台上致辞的时候提到了你们——"这座城市最好听的声音"。Carlos拍了你一下："嘿——市长说我们了！"你说"他说的是城市，不是你"。Carlos说"城市就是我们"。你觉得他说得对。',
+      ],
+    },
+    corporate: {
+      pay: 100,
+      texts: [
+        '一家酒店的圣诞晚宴。你们穿了正装——你借了Nico的一件黑衬衫，袖子有点短。宴会厅很大，水晶吊灯亮得你眯眼。',
+        '你们唱了平安夜和几首古典合唱。台下的人在吃饭聊天——一半的人没在听。但另一半在听。你注意到角落里一个独自坐着的老太太，她放下了刀叉，一直在看你们。唱完以后她走过来对Dietrich说了一句话。你没听到。但Dietrich的表情说明那句话很重要。',
+        '酒店经理递过一个信封——报酬。然后他说："明年还请你们。"Dietrich说："要看我们的日程。"经理走了以后你问Dietrich"我们有日程吗"。他说："没有。但得让他觉得我们很忙。"你第一次看到Dietrich在商业方面的精明。',
+      ],
+    },
+    charity: {
+      pay: 30,
+      texts: [
+        '流浪狗收容基地的慈善筹款音乐会。观众是捐款人和志愿者们。场地是收容基地的院子——周围是狗舍，有几只狗跟着你们的歌一起嚎了起来。',
+        '你以为会很尴尬。但Dietrich——你从来没想到——笑了。真的笑了。他把那几只狗的嚎叫称为"自由即兴声部"。全场大笑。你觉得Dietrich可能是全世界唯一一个能把狗叫变成音乐术语的人。',
+        '钱不多——但你们帮收容基地筹到了下个月的狗粮钱。那个在你第一次去时接待你的工作人员走过来抱了你一下。她说："音乐能干很多事——包括喂狗。"你觉得这句话可以印在T恤上。',
+      ],
+    },
+    private: {
+      pay: 120,
+      texts: [
+        '一位退休企业家的私人晚宴——他每年生日都请一个合唱团来唱歌。他的别墅在山上，花园里摆了长桌，烛光映在葡萄架上。',
+        '你们站在花园的石台上唱歌。远处能看到整座城市的灯火和黑色的海。这大概是你唱歌以来背景最美的一次。',
+        '老人家听完以后站起来鼓掌——他的手抖得很厉害，但掌声很用力。他走过来对Dietrich说："我八十二岁了。今天是我听到的最好的生日礼物。"他的眼里有光。Dietrich握了他的手。你看到Dietrich也有点红眼睛了——你没告诉别人。',
+        '报酬丰厚——但你觉得真正的报酬是那个八十二岁的老人的表情。有些东西不是钱能衡量的。但钱也确实很好。',
+      ],
+    },
+  };
+  const gig = gigs[gigType];
+  S.money += gig.pay;
+  adjustStat('mood', 10); adjustStat('social', 5); adjustStat('vocal', 1); advanceTime(); renderStatus();
+  showNarrative([
+    ...gig.texts.map(t => ({ text: t })),
+    { type: 'stat-up', text: `心情 +10 · 社交 +5 · 歌唱 +1 · 获得 ${gig.pay}€` },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
 // --- Instrument practice ---
