@@ -613,6 +613,15 @@ const NPC_EVENTS = {
         '吃的时候你被辣到了——你说你能吃辣，但你吃的是四川的辣，这个是不一样的辣。Sofia笑得快从椅子上掉下来。她给你倒了一杯牛奶。"你的脸红得像我的辣椒酱。"',
         '你喝着牛奶想：你可以为了这道菜学会不怕这种辣。',
       ], {social:5, mood:10}, true) },
+    { id: 'sf9', affinity: 50, label: 'Sofia带你去收容所做志愿者', time: [0,1],
+      scene: () => npcEvent('sofia','sf9', [
+        'Sofia问你周末有没有空。你说有。她说："我要去流浪动物收容所做半天志愿者。你来吗？"',
+        '收容所在城郊，一栋不大的平房，院子里有十几只狗。Sofia跟管理员打了招呼——她显然是常客。管理员给了你们手套和水管。',
+        '你们帮忙清理狗舍、换水、梳毛。有一只三条腿的老狗一直跟着Sofia转。她说："这是Luna。车祸后被人送来的。性格特别好。"Luna用鼻子拱Sofia的手掌，她蹲下来抱了抱它。',
+        '你在给一只幼犬梳毛的时候它突然舔了你的脸。你吓了一跳。Sofia在旁边看到了，笑着拍了张照片。"以后可以给你看——你被一只两个月大的狗吓到的样子。"',
+        '收工的时候你们坐在院子的台阶上。Sofia说她在墨西哥的时候家里养了三只狗。"我走的时候它们追着车跑了很远。我妈说它们等了一个星期才不去门口趴着。"',
+        '你说："你想它们吗？"她说："每天都想。所以我来这里。这些狗也在等人来。"她看着院子里的狗，眼睛很亮。你觉得Sofia是那种会记住所有被忘记的东西的人。',
+      ], {social:8, mood:10}, true) },
     { id: 'sf10', affinity: 82, label: '💙 Sofia给你织了一条围巾', time: [1,2],
       scene: () => npcEvent('sofia','sf10', [
         '你下课回来的时候门口放着一个纸袋。里面是一条手织围巾——深蓝色，不太整齐，有些地方松了有些地方紧了。纸条上写着："冬天快到了。别感冒。——S"',
@@ -631,15 +640,6 @@ const NPC_EVENTS = {
       ], {mood:15, social:5}, true) },
     { id: 'sf_confess', affinity: 102, label: '❤️ Sofia：烤箱旁的距离', time: [1,2],
       scene: () => sceneSofiaConfess() },
-    { id: 'sf9', affinity: 50, label: 'Sofia带你去收容所做志愿者', time: [0,1],
-      scene: () => npcEvent('sofia','sf9', [
-        'Sofia问你周末有没有空。你说有。她说："我要去流浪动物收容所做半天志愿者。你来吗？"',
-        '收容所在城郊，一栋不大的平房，院子里有十几只狗。Sofia跟管理员打了招呼——她显然是常客。管理员给了你们手套和水管。',
-        '你们帮忙清理狗舍、换水、梳毛。有一只三条腿的老狗一直跟着Sofia转。她说："这是Luna。车祸后被人送来的。性格特别好。"Luna用鼻子拱Sofia的手掌，她蹲下来抱了抱它。',
-        '你在给一只幼犬梳毛的时候它突然舔了你的脸。你吓了一跳。Sofia在旁边看到了，笑着拍了张照片。"以后可以给你看——你被一只两个月大的狗吓到的样子。"',
-        '收工的时候你们坐在院子的台阶上。Sofia说她在墨西哥的时候家里养了三只狗。"我走的时候它们追着车跑了很远。我妈说它们等了一个星期才不去门口趴着。"',
-        '你说："你想它们吗？"她说："每天都想。所以我来这里。这些狗也在等人来。"她看着院子里的狗，眼睛很亮。你觉得Sofia是那种会记住所有被忘记的东西的人。',
-      ], {social:8, mood:10}, true) },
   ],
   suchi: [
     { id: 'sc1', affinity: 5, label: '给苏迟发消息', time: [0,1,2],
@@ -1270,6 +1270,11 @@ function getAvailableNPCVisits() {
       if (npc.events.includes(ev.id)) continue; // already done
       if (npc.affinity < ev.affinity) continue; // not enough affinity
       if (!ev.time.includes(time)) continue; // wrong time of day
+      if (ev.id.endsWith('_confess')) {
+        if (!npc.romance) continue; // confess requires romance (暧昧) first
+        if (S.confirmedPartner && S.confirmedPartner !== npcId) continue;
+        if (ev.id === 'nc_confess' && !S.rockBarUnlocked) continue;
+      }
       visits.push({ text: ev.label, cost: `体力-5 · ${npc.name}`, action: ev.scene });
       break; // only show the next available event per NPC
     }
@@ -4998,6 +5003,7 @@ function sceneMusicAngel3() {
 // --- Nico: Confession on Stage ---
 function sceneNicoConfess() {
   if (!S.rockBarUnlocked || !S.npcs.nico.romance) { sceneDailyMenu(); return; }
+  if (S.confirmedPartner && S.confirmedPartner !== 'nico') { sceneDailyMenu(); return; }
   const npc = S.npcs.nico;
   npc.talked++; npc.events.push('nc_confess'); npc.affinity += 20;
   adjustStat('energy', -5); advanceTime(); renderStatus();
