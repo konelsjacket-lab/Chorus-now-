@@ -305,6 +305,10 @@ const S = {
   competitionAnnounced: false,
   repertoire: [],
   sectionalCount: 0,
+  barcelonaArrivalDay: 0,
+  bcnBusked: {}, bcnSights: {}, bcnChoirs: {}, bcnRehearsals: 0,
+  bcnFriendEvents: {},
+  dogBoarded: false,
   npcs: {}
 };
 
@@ -1985,6 +1989,10 @@ function sceneFirstNight() {
 // ========== DAILY MENU ==========
 function sceneDailyMenu() {
   renderStatus(); showNPCPanel();
+  if (S.choirDrama.barcelonaTrip && !S.choirDrama.finalsComplete) {
+    sceneBcnDailyMenu();
+    return;
+  }
   const dow = dayOfWeek(), time = S.timeSlot;
   const paras = [];
 
@@ -2626,6 +2634,13 @@ function sceneRehearsal() {
 
   } else if (S.choirPhase === 4 && !S.choirDrama.barcelonaTrip) {
     S.choirDrama.barcelonaTrip = true;
+    S.barcelonaArrivalDay = S.day;
+    if (S.hasDog && !S.dogBoarded) {
+      S.dogBoarded = true;
+      paras.push({ text: `出发前一天。你站在客厅里看着${S.dogName}。它不知道你要走。它趴在沙发上打盹，尾巴偶尔动一下。你蹲下来摸了摸它的头。它睁开眼睛看你，尾巴摇了两下。` });
+      paras.push({ text: '你把它送到了面包店阿姨那里。阿姨说：「放心去吧！我给它加餐！」你把狗粮、它最喜欢的球和你穿过的一件旧T恤——据说有你味道的东西能让它安心——都交给了阿姨。' });
+      paras.push({ text: `${S.dogName}被阿姨抱着的时候回头看了你一眼。你的眼眶热了。你说：「乖，我很快回来。」阿姨说：「快走吧，别让它看到你哭。」你转身走了。你没有回头。但你在街角停了三秒钟。` });
+    }
     paras.push({ text: '凌晨五点半的火车站。你拖着行李箱下了出租车。天还没亮，空气是冷的。你在月台上看到了他们——所有人。' });
     paras.push({ text: 'Nico穿了一件印着「CHOIR OR DIE」的T恤，你不知道她从哪弄来的。Carlos带了一个巨大的保温壶——"自制咖啡，够全车厢喝的"。Marta在检查她的行李清单，嘴里在数数。Ibrahim站在最远的柱子旁边，看着铁轨。苏迟背着他的双肩包，里面塞满了谱子和笔记本。Lena在打电话——大概在跟巴塞罗那的联系人确认什么。Aoife看到你冲你挥了挥手。Yuki坐在行李箱上，戴着耳机，在听什么。' });
     paras.push({ text: 'Dietrich最后到的。他提着一个很旧的皮箱。你看到皮箱上贴了很多贴纸——不同城市、不同合唱节的。你心想：他带着这个箱子去过多少地方了。' });
@@ -2638,61 +2653,12 @@ function sceneRehearsal() {
     paras.push({ text: 'Nico举起Carlos的咖啡杯："干杯！"Carlos说："那是我的——"太迟了。所有人碰杯了。你也碰了。你的纸杯碰到苏迟的纸杯的时候发出了一声很轻的响。他看了你一眼。你笑了。' });
     paras.push({ type: 'system', text: '你到巴塞罗那了。后天就是演出。你紧张。你兴奋。你不知道哪个更多。' });
     adjustStat('mood', 15); adjustStat('social', 5);
-
-  } else if (S.choirPhase === 4 && S.choirDrama.barcelonaTrip && !S.choirDrama.barcelonaWalk) {
-    S.choirDrama.barcelonaWalk = true;
-    paras.push({ text: '演出前一天的傍晚。排练结束了——明天的排练已经排满了，但今天Dietrich只排了一个小时就放人了。他说："去逛逛。这是巴塞罗那。别浪费它。"' });
-    paras.push({ text: '你们一起走在兰布拉大道上。游客很多，街头艺人很多。一个画活人画像的老头冲你们喊："合唱团？唱一首我给你们画！"Nico转头看Dietrich。Dietrich说："你们想唱就唱。"' });
-    paras.push({ text: 'Nico不需要被说第二次。她拉着大家站到了人行道上。你们就在兰布拉大道的人群中间，唱了一首《El Cant dels Ocells》——在巴塞罗那唱加泰罗尼亚民歌。' });
-    paras.push({ text: '路人停下来了。先是三五个，然后是十几个，然后是一圈。Ibrahim的独唱段开始的时候，一个老太太停下了脚步——你看到她的眼睛里有什么在闪。一个骑自行车的年轻人停下来录像。一个推着婴儿车的妈妈站在原地听完了整首。' });
-    paras.push({ text: '唱完的时候台下——不是台下，是人行道——鼓掌了。不是礼貌的掌声，是那种被打动了的掌声。那个老太太走过来用加泰罗尼亚语说了一段话——你一个字也听不懂。Aoife翻译了："她说——你们唱得像是这里的人。"' });
-    paras.push({ text: '你们不是这里的人。你们来自罗马尼亚、约旦、巴西、波兰、德国、爱尔兰、日本、智利、中国。你们没有一个是加泰罗尼亚人。但你们唱了他们的歌，站在他们的街上，一个老太太说你们像是这里的人。' });
-    paras.push({ text: '你的喉咙紧了。你看了一眼苏迟——他低着头，但你看到他的嘴角。他也被打动了。你想：这才是合唱的意义。不是唱得好不好。是用别人的语言说出所有人都听得懂的东西。' });
-    paras.push({ text: '那个画像老头真的画了你们。画得很潦草，但你能认出每一个人。Nico花了五欧把画买了下来。她说要裱起来挂在hostel里。你觉得这幅画比任何奖杯都好。' });
-    paras.push({ type: 'system', text: '你们在巴塞罗那的街头唱了一首歌。一个老太太说你们像是这里的人。' });
-    adjustStat('mood', 15); adjustStat('vocal', 3); adjustStat('social', 5);
-
-  } else if (S.choirPhase === 4 && S.choirDrama.barcelonaWalk && !S.choirDrama.competitionDay1) {
-    S.choirDrama.competitionDay1 = true;
-    paras.push({ text: 'Europa Cantat开幕日。' });
-    paras.push({ text: '你早上五点就醒了。不是闹钟——是紧张。你躺在上铺听着心跳。下面Yuki在翻身。Nico打呼。Aoife的手机亮了一下——她妈发的"good luck"。' });
-    paras.push({ text: '你爬下床，去洗手间的路上碰到了Ibrahim。他站在走廊的窗边。你说："你也睡不着？"他说："我在祈祷。"你点了点头。你不祈祷，但你理解那种需要在大事之前跟什么东西说说话的感觉。你在心里默默说了一句：妈，今天看着我。' });
-    paras.push({ text: '开幕式在巴塞罗那音乐宫。你们到的时候被惊到了——到处都是合唱团。穿着各种颜色的统一服装，拿着旗帜，说着你听不懂的语言。你看到一个冰岛合唱团穿着毛衣，一个巴西合唱团在角落里轻声热身——那个和声让你腿软了一下。' });
-    paras.push({ text: '「一百四十七个合唱团。」Dietrich说。他站在大厅中央，环顾四周，表情像在下棋。「三十二个国家。」' });
-    paras.push({ text: 'Nico说："那我们排第几？"Dietrich说："排名在海选之后才有意义。"Nico说："你就不能说一次鼓励的话吗？"Dietrich说："我刚才说了。意义。这就是鼓励。"' });
-    paras.push({ text: '你在人群中穿行的时候——' });
-    paras.push({ text: '你听到了中文。' });
-    paras.push({ text: '你愣了。回头看——是一个合唱团，穿着深蓝色的西装外套和白衬衫，胸口绣着一个校徽。你认出了那个校徽。你大脑短路了两秒。' });
-    paras.push({ text: '那是你爸妈城市的大学教师合唱团。' });
-    paras.push({ text: '你还没反应过来，一个阿姨认出了你。「哎？你是……你是不是李老师家的孩子？」你说：「阿姨好。」你的声音有点抖。那个阿姨拉过旁边的人：「看！这是小李！在这边留学的那个！也参加合唱团了！」' });
-    paras.push({ text: '然后你被一群叔叔阿姨围住了。他们太热情了——问你吃得好不好，住得惯不惯，有没有交到朋友。你用中文回答着，忽然觉得鼻子一酸。你有多久没有被这么多人用中文关心过了？' });
-    paras.push({ text: '苏迟走过来了。他的表情很微妙——一种「同是天涯沦落人」的了然。一个叔叔看到他："小伙子也是中国人？哪里的？"苏迟说："南京。"叔叔说："好地方！我去过！"然后他们聊起了南京的鸭血粉丝汤。你觉得很超现实——在巴塞罗那的音乐宫里讨论鸭血粉丝汤。' });
-    paras.push({ text: '你跟教师合唱团交换了微信群。一个阿姨说"我给你妈发消息了，她特别激动"。你想：妈，我在欧洲最大的合唱比赛上遇到了你们城市的人。这个世界好小。' });
-    paras.push({ text: '走远了以后苏迟说："你的表情好像回了一趟国。"你说："差不多吧。你呢？"他想了想："我爸的同事如果也来了，他大概会远远地看我一眼，然后假装没看见。"你不知道该说什么。他笑了笑："没事。我习惯了。走吧，Carlos好像遇到人了。"' });
-    paras.push({ text: '果然——Carlos在另一头站着不动了，像被定住了。一个穿红色polo衫的高个男人正朝他走过来。那个人的表情和Carlos一模一样——不是惊喜，是更深的什么东西。' });
-    paras.push({ text: '「Marco？」Carlos说。声音里有裂缝。' });
-    paras.push({ text: '「Carlos。」' });
-    paras.push({ text: '他们盯着彼此看了三秒。然后同时笑了。Carlos一把抱住了那个人，那种男人之间用力拍后背的拥抱。你听到Carlos用葡萄牙语快速地说着什么——你一个词也听不懂，但你听得出那种激动。' });
-    paras.push({ text: 'Marta走过来问你们怎么了。你说Carlos遇到了认识的人。Marta看了一眼："那个人的合唱团叫什么？"你看了看对方的旗帜——「Coral de São Paulo」。圣保罗合唱团。' });
-    paras.push({ text: 'Carlos回来的时候眼眶红了。他说Marco是他的发小，从小一起踢球、一起逃课、一起在贫民区的教堂里唱歌。十五年没见了。Marco现在在圣保罗教音乐，带了自己的合唱团来参赛。Carlos说："我们可能要在比赛里碰到。"Marta说："那你要怎么办？"Carlos说："赢他。然后请他喝酒。"' });
-    paras.push({ text: '开幕式上，一百四十七面小旗插在舞台上。主持人念到你们合唱团名字的时候，Nico发出了一声只有她能发出的尖叫。Dietrich用眼神杀死了她。但你看到他嘴角动了一下。' });
-    paras.push({ text: '海选的赛程公布了。明天开始。每组十个合唱团，唱一首歌，取前四晋级小组赛。你们抽到了第七组。' });
-    paras.push({ type: 'system', text: 'Europa Cantat开幕。你们遇到了家乡的合唱团，Carlos遇到了发小Marco。明天海选。' });
-    adjustStat('mood', 10); adjustStat('social', 5);
     showNarrative(paras);
-    showChoices([{ text: '准备海选', action: sceneHeats }]);
+    showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
     return;
 
-  } else if (S.choirPhase === 4 && S.choirDrama.competitionDay1 && !S.choirDrama.heatsComplete) {
-    sceneHeats();
-    return;
-
-  } else if (S.choirPhase === 4 && S.choirDrama.heatsComplete && !S.choirDrama.groupStageComplete) {
-    sceneGroupStage();
-    return;
-
-  } else if (S.choirPhase === 4 && S.choirDrama.groupStageComplete && !S.choirDrama.finalsComplete) {
-    sceneFinalPrep();
+  } else if (S.choirPhase === 4 && S.choirDrama.barcelonaTrip) {
+    sceneBcnDailyMenu();
     return;
 
   } else if (S.choirPhase >= 2) {
@@ -5345,6 +5311,565 @@ function sceneTomasInsecure2() {
   showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
+// ========== BARCELONA FREE TIME ==========
+
+function sceneBcnDailyMenu() {
+  renderStatus(); showNPCPanel();
+  const time = S.timeSlot;
+  const bcnDay = S.day - S.barcelonaArrivalDay;
+  const paras = [];
+
+  if (S.energy < 20) paras.push({ type: 'system', text: '你累得不行了。比赛可不等人。' });
+
+  if (time === 0) {
+    paras.push({ text: pick([
+      '巴塞罗那的早晨。旅舍上铺很硬，但窗外的阳光让你忘了这件事。',
+      '你是被隔壁房间一个意大利合唱团的热身声吵醒的。六点半就练音阶。',
+      '旅舍早餐是硬面包、黄油和很浓的咖啡。周围是穿各色团服的合唱团成员。',
+      'Nico从上铺翻下来的时候踩到了你的手。「对不起！」「没事。」「你的手好软。」「……谢谢？」',
+    ]) });
+  } else if (time === 1) {
+    paras.push({ text: pick([
+      '巴塞罗那的午后热得发晕。高迪的建筑在阳光下像融化的糖果。',
+      '兰布拉大道上游客比上午还多。你听到至少五种语言。',
+      '午后一个街头艺人在弹弗拉明戈吉他，指法快得像变魔术。',
+    ]) });
+  } else if (time === 2) {
+    paras.push({ text: pick([
+      '傍晚的巴塞罗那。天空染成玫瑰色。圣家堂在落日中像一座金色的森林。',
+      '巴塞罗那的傍晚比你住的小城更吵、更亮、更热闹。你有一点想家。',
+      '暮色降临。到处飘着烤肉和海鲜的香味。远处有人在唱歌。',
+    ]) });
+  } else {
+    paras.push({ text: pick([
+      '巴塞罗那的夜才刚开始。这座城市凌晨两点都不会安静。',
+      '深夜了。旅舍走廊上还能听到各种语言的聊天声。',
+      '从旅舍天台看出去，整个城市亮着灯。圣家堂的塔尖在夜空里发光。',
+    ]) });
+  }
+
+  // Auto-trigger mandatory competition events
+  if (!S.choirDrama.barcelonaWalk && bcnDay >= 1 && time === 2) {
+    paras.push({ type: 'system', text: 'Dietrich说：「去逛逛。这是巴塞罗那。别浪费它。」' });
+    showNarrative(paras);
+    showChoices([{ text: '跟大家一起出去', action: sceneBcnWalk }]);
+    return;
+  }
+  if (S.choirDrama.barcelonaWalk && !S.choirDrama.competitionDay1 && bcnDay >= 2 && time === 0) {
+    paras.push({ type: 'system', text: 'Europa Cantat开幕日。' });
+    showNarrative(paras);
+    showChoices([{ text: '去音乐宫', action: sceneBcnOpeningDay }]);
+    return;
+  }
+  if (S.choirDrama.competitionDay1 && !S.choirDrama.heatsComplete && bcnDay >= 3 && time === 0) {
+    paras.push({ type: 'system', text: '海选日到了。' });
+    showNarrative(paras);
+    showChoices([{ text: '去赛场', action: sceneHeats }]);
+    return;
+  }
+  if (S.choirDrama.heatsComplete && !S.choirDrama.groupStageComplete && bcnDay >= 5 && time === 0) {
+    paras.push({ type: 'system', text: '小组赛日。' });
+    showNarrative(paras);
+    showChoices([{ text: '去赛场', action: sceneGroupStage }]);
+    return;
+  }
+  if (S.choirDrama.groupStageComplete && !S.choirDrama.finalsComplete && bcnDay >= 7 && time === 0) {
+    paras.push({ type: 'system', text: '决赛准备日。' });
+    showNarrative(paras);
+    showChoices([{ text: '开始决赛准备', action: sceneFinalPrep }]);
+    return;
+  }
+
+  showNarrative(paras);
+  const choices = [];
+
+  if (time === 3) {
+    choices.push({ text: '睡觉', cost: '结束这一天', action: () => { advanceTime(); sceneBcnDailyMenu(); } });
+    if (S.mood < 40) choices.push({ text: '失眠了，比赛压力太大', cost: '心情-5', action: () => {
+      adjustStat('mood', -5); S.energy = clamp(S.energy-15); advanceTime(); sceneBcnDailyMenu();
+    }});
+    if (S.choirDrama.competitionDay1 && !S.bcnFriendEvents.rooftop)
+      choices.push({ text: '🌙 去旅舍天台坐坐', cost: '心情+5', action: sceneBcnRooftop });
+  } else {
+    // Street busking
+    if (time >= 1 && time <= 2)
+      choices.push({ text: '🎵 去街头卖唱', cost: '体力-15，+钱', action: sceneBcnBuskingMenu });
+
+    // Sightseeing
+    if (time <= 2 && Object.keys(S.bcnSights).length < 5)
+      choices.push({ text: '🏛 逛巴塞罗那景点', cost: '体力-10，心情+8', action: sceneBcnSightsMenu });
+
+    // Competition rehearsal
+    if (time <= 2 && S.choirDrama.barcelonaWalk)
+      choices.push({ text: '🎤 竞赛排练', cost: '体力-15，声乐+3', action: sceneBcnRehearsal });
+
+    // Meet other choirs
+    if (time >= 1 && S.choirDrama.competitionDay1 && Object.keys(S.bcnChoirs).length < 4)
+      choices.push({ text: '🌍 认识别的合唱团', cost: '体力-5，社交+5', action: sceneBcnMeetChoirsMenu });
+
+    // Barcelona friendship events
+    if (S.choirDrama.competitionDay1 && !S.bcnFriendEvents.marketRun && time <= 1)
+      choices.push({ text: '🧺 跟Carlos去波盖利亚市场', cost: '体力-5，心情+8', action: sceneBcnMarketRun });
+    if (S.choirDrama.heatsComplete && !S.bcnFriendEvents.nicoExplore && time >= 1 && time <= 2)
+      choices.push({ text: '🎸 跟Nico去探索街头音乐', action: sceneBcnNicoExplore });
+    if (S.choirDrama.heatsComplete && !S.bcnFriendEvents.suchiBookshop && time <= 2 && S.metSuChi)
+      choices.push({ text: '📚 跟苏迟去逛旧书店', action: sceneBcnSuchiBookshop });
+    if (S.choirDrama.competitionDay1 && !S.bcnFriendEvents.ibrahimMosque && time === 0)
+      choices.push({ text: '🕌 Ibrahim邀你去看清真寺', action: sceneBcnIbrahimMosque });
+
+    // Phone
+    if (time <= 2 && (S.day - S.lastParentCall >= 2 || !S.calledParents))
+      choices.push({ text: '📱 给家里打电话', cost: '心情+8', action: sceneCallParents });
+
+    // Rest
+    choices.push({ text: '休息一下', cost: '体力+20', action: () => { adjustStat('energy',20); advanceTime(); sceneBcnDailyMenu(); } });
+  }
+  showChoices(choices);
+}
+
+// --- Barcelona Walk (extracted from sceneRehearsal) ---
+function sceneBcnWalk() {
+  S.choirDrama.barcelonaWalk = true;
+  advanceTime(); adjustStat('mood', 15); adjustStat('vocal', 3); adjustStat('social', 5); renderStatus();
+  showNarrative([
+    { text: '演出前一天的傍晚。排练结束了——明天的排练已经排满了，但今天Dietrich只排了一个小时就放人了。他说：「去逛逛。这是巴塞罗那。别浪费它。」' },
+    { text: '你们一起走在兰布拉大道上。游客很多，街头艺人很多。一个画活人画像的老头冲你们喊：「合唱团？唱一首我给你们画！」Nico转头看Dietrich。Dietrich说：「你们想唱就唱。」' },
+    { text: 'Nico不需要被说第二次。她拉着大家站到了人行道上。你们就在兰布拉大道的人群中间，唱了一首《El Cant dels Ocells》——在巴塞罗那唱加泰罗尼亚民歌。' },
+    { text: '路人停下来了。先是三五个，然后是十几个，然后是一圈。Ibrahim的独唱段开始的时候，一个老太太停下了脚步——你看到她的眼睛里有什么在闪。一个骑自行车的年轻人停下来录像。一个推着婴儿车的妈妈站在原地听完了整首。' },
+    { text: '唱完的时候人行道上鼓掌了。不是礼貌的掌声，是那种被打动了的掌声。那个老太太走过来用加泰罗尼亚语说了一段话——你一个字也听不懂。Aoife翻译了：「她说——你们唱得像是这里的人。」' },
+    { text: '你们不是这里的人。你们来自罗马尼亚、约旦、巴西、波兰、德国、爱尔兰、日本、智利、中国。你们没有一个是加泰罗尼亚人。但你们唱了他们的歌，站在他们的街上，一个老太太说你们像是这里的人。' },
+    { text: '那个画像老头真的画了你们。画得很潦草，但你能认出每一个人。Nico花了五欧把画买了下来。她说要裱起来挂在hostel里。你觉得这幅画比任何奖杯都好。' },
+    { type: 'system', text: '你们在巴塞罗那的街头唱了一首歌。一个老太太说你们像是这里的人。' },
+    { type: 'stat-up', text: '心情 +15 · 声乐 +3 · 社交 +5' },
+  ]);
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+// --- Barcelona Opening Day (extracted from sceneRehearsal) ---
+function sceneBcnOpeningDay() {
+  S.choirDrama.competitionDay1 = true;
+  advanceTime(); adjustStat('mood', 10); adjustStat('social', 5); renderStatus();
+  showNarrative([
+    { text: 'Europa Cantat开幕日。' },
+    { text: '你早上五点就醒了。不是闹钟——是紧张。你躺在上铺听着心跳。下面Yuki在翻身。Nico打呼。Aoife的手机亮了一下——她妈发的「good luck」。' },
+    { text: '你爬下床，去洗手间的路上碰到了Ibrahim。他站在走廊的窗边。你说：「你也睡不着？」他说：「我在祈祷。」你在心里默默说了一句：妈，今天看着我。' },
+    { text: '开幕式在巴塞罗那音乐宫。你们到的时候被惊到了——到处都是合唱团。穿着各种颜色的统一服装，拿着旗帜，说着你听不懂的语言。你看到一个冰岛合唱团穿着毛衣，一个巴西合唱团在角落里轻声热身——那个和声让你腿软了一下。' },
+    { text: '「一百四十七个合唱团。」Dietrich说。他站在大厅中央，环顾四周，表情像在下棋。「三十二个国家。」' },
+    { text: 'Nico说：「那我们排第几？」Dietrich说：「排名在海选之后才有意义。」Nico说：「你就不能说一次鼓励的话吗？」Dietrich说：「我刚才说了。意义。这就是鼓励。」' },
+    { text: '你在人群中穿行的时候——你听到了中文。' },
+    { text: '你愣了。回头看——是一个合唱团，穿着深蓝色的西装外套和白衬衫，胸口绣着一个校徽。你认出了那个校徽。你大脑短路了两秒。那是你爸妈城市的大学教师合唱团。' },
+    { text: '一个阿姨认出了你。「哎？你是……你是不是李老师家的孩子？」你说：「阿姨好。」你的声音有点抖。然后你被一群叔叔阿姨围住了。他们太热情了——问你吃得好不好，住得惯不惯。你用中文回答着，忽然觉得鼻子一酸。你有多久没有被这么多人用中文关心过了？' },
+    { text: '苏迟走过来了。一个叔叔看到他：「小伙子也是中国人？哪里的？」苏迟说：「南京。」叔叔说：「好地方！」然后他们聊起了鸭血粉丝汤。你觉得很超现实——在巴塞罗那的音乐宫里讨论鸭血粉丝汤。' },
+    { text: '果然——Carlos在另一头站着不动了。一个穿红色polo衫的高个男人正朝他走过来。「Marco？」Carlos说。声音里有裂缝。他们盯着彼此看了三秒。然后同时笑了，用力拥抱。十五年没见的发小。' },
+    { text: 'Carlos回来的时候眼眶红了。Marco现在在圣保罗教音乐，带了自己的合唱团来参赛。Carlos说：「我们可能要在比赛里碰到。」Marta问：「那你要怎么办？」Carlos说：「赢他。然后请他喝酒。」' },
+    { text: '开幕式上，一百四十七面小旗插在舞台上。主持人念到你们名字的时候，Nico发出了一声尖叫。Dietrich用眼神杀死了她。但你看到他嘴角动了一下。' },
+    { text: '海选赛程公布了。明天开始。你们抽到了第七组。' },
+    { type: 'system', text: 'Europa Cantat开幕。你们遇到了家乡的合唱团，Carlos遇到了发小Marco。明天海选。' },
+    { type: 'stat-up', text: '心情 +10 · 社交 +5' },
+  ]);
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+// --- Street Busking ---
+function sceneBcnBuskingMenu() {
+  adjustStat('energy', -15); advanceTime(); renderStatus();
+  const choices = [];
+  if (!S.bcnBusked.solo)
+    choices.push({ text: '一个人唱', cost: '30-50€', action: () => sceneBcnBusking('solo') });
+  if (!S.bcnBusked.nico)
+    choices.push({ text: '跟Nico一起（吉他+人声）', cost: '50-70€', action: () => sceneBcnBusking('nico') });
+  if (!S.bcnBusked.carlos)
+    choices.push({ text: '跟Carlos和Ibrahim一起', cost: '60-80€', action: () => sceneBcnBusking('carlos') });
+  if (!S.bcnBusked.group)
+    choices.push({ text: '全员出动！', cost: '100-150€', action: () => sceneBcnBusking('group') });
+  if (!S.bcnBusked.opera)
+    choices.push({ text: '在歌剧院门口唱歌剧', cost: '40-60€', action: () => sceneBcnBusking('opera') });
+  if (choices.length === 0) {
+    showNarrative([{ text: '你已经把巴塞罗那能卖唱的地方都唱遍了。路人开始认出你了。' }]);
+    showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+    return;
+  }
+  showNarrative([{ text: '巴塞罗那的街头是天然的舞台。你想怎么唱？' }]);
+  choices.push({ text: '算了，不唱了', action: () => { adjustStat('energy', 15); sceneBcnDailyMenu(); } });
+  showChoices(choices);
+}
+
+function sceneBcnBusking(type) {
+  S.bcnBusked[type] = true;
+  const earn = { solo: 40, nico: 60, carlos: 70, group: 120, opera: 50 }[type];
+  adjustStat('money', earn); adjustStat('social', 3); adjustStat('vocal', 2); renderStatus();
+  const scenes = {
+    solo: [
+      { text: '你找了一个兰布拉大道的拐角，放下帽子，开始唱。一开始只有自己的声音和远处的车声。你唱了一首《El Cant dels Ocells》——在巴塞罗那唱这首有一种特别的意义。' },
+      { text: '慢慢有人停下来了。一个背着吉他的年轻人竖起了大拇指。一个带孩子的妈妈放了两欧在你帽子里。一个老头听完了整首，用加泰罗尼亚语说了句什么——你猜是夸你。' },
+      { text: '唱了一个小时，帽子里有了' + earn + '欧。你的嗓子有点哑了，但心情很好。你想：原来你的声音值钱。' },
+      { type: 'stat-up', text: `收入 +${earn}€ · 声乐 +2 · 社交 +3` },
+    ],
+    nico: [
+      { text: 'Nico抱着吉他，你站在她旁边。你们在哥特区的一个小广场上摆好了「阵型」——她坐在喷泉边弹，你站着唱。' },
+      { text: '她弹了一首Fleetwood Mac的《Dreams》的改编。你跟着唱。你的声音和吉他在石头墙壁之间回荡，效果意外地好。一群喝啤酒的大学生鼓掌了。' },
+      { text: 'Nico越弹越兴奋，开始加即兴段落。你跟不上了——但她冲你使了个眼色，意思是「随便唱，跟着感觉走」。你试了。声音歪歪扭扭的，但莫名其妙地好听。观众笑了，是那种喜欢的笑。' },
+      { text: '收摊的时候Nico数钱：「' + earn + '欧！够吃一顿好的了！」她把吉他甩到背上，「明天还来？」' },
+      { type: 'stat-up', text: `收入 +${earn}€ · 声乐 +2 · 社交 +3 · Nico好感度 +3` },
+    ],
+    carlos: [
+      { text: 'Carlos从旅舍厨房借了两个锅盖当打击乐。Ibrahim看着锅盖沉默了三秒，然后说：「我来唱。」你：「我也唱。」就这样，你们三个人组成了巴塞罗那最不正规的街头乐队。' },
+      { text: 'Carlos的节奏感是天生的——他用锅盖、膝盖和旅舍的折叠椅打出了一套完整的桑巴节奏。Ibrahim唱了一首约旦民歌，那个旋律在巴塞罗那的阳光下听起来既遥远又温暖。你负责和声。' },
+      { text: '一个路过的西班牙老头停下来看了五分钟，然后从口袋里掏出一个口琴加入了你们。你们四个互相不认识、说着不同的语言、用完全不搭的乐器和声音，在一个巴塞罗那的街角即兴了二十分钟。那个老头走的时候拥抱了Carlos，说了一句话。Carlos翻译：「他说音乐是唯一不需要翻译的语言。」' },
+      { type: 'stat-up', text: `收入 +${earn}€ · 声乐 +2 · 社交 +3 · Carlos好感度 +3` },
+    ],
+    group: [
+      { text: 'Nico在旅舍群里发了一条消息：「谁想去卖唱？在大厅集合。」五分钟后全员到齐了——连Dietrich都来了。他说：「我不唱。我指挥。」' },
+      { text: '你们占领了兰布拉大道和加泰罗尼亚广场交界处的一块空地。Dietrich站在一个翻过来的箱子上——你觉得这是他指挥生涯中最不正式的一次。但他的手势和在排练室里一样精确。' },
+      { text: '你们唱了三首：一首莫扎特，一首加泰民歌，一首The Singularity。最后一首的时候围观的人已经有五六十个了。身体打击的节奏让整个广场跟着震动。有人录像。有人跟着拍手。一个小女孩骑在爸爸肩上鼓掌。' },
+      { text: '唱完以后掌声像潮水。有人往Carlos的帽子里塞钱。最后数了数——' + earn + '欧。Nico说：「我们是不是该考虑转行？」Dietrich说：「不。你们刚才的第二声部在副歌处晚了半拍。」大家笑了。有些东西永远不会变。' },
+      { type: 'stat-up', text: `收入 +${earn}€ · 声乐 +2 · 社交 +3 · 全员好感度 +2` },
+    ],
+    opera: [
+      { text: '你有一个疯狂的想法：去利塞乌大剧院门口唱歌剧。就是那个曾经被烧毁又重建的歌剧院。你一个人去了。' },
+      { text: '你站在大剧院华丽的正门前，感觉自己像一个笑话——一个连五线谱都是最近才学会看的人，在欧洲最有名的歌剧院之一门口唱歌剧。但你还是唱了。你选了《费加罗的婚礼》里那段你跟着Dietrich学的选段。' },
+      { text: '你的声音在大理石柱子之间回荡。你唱得不完美——气息不够长、高音有点紧——但你唱完了。一个穿西装的中年男人停下来听完了全程。他走过来用英语说：「我在这个剧院工作了二十年。你的技术需要打磨，但你的勇气值五颗星。」他放了20欧在你面前。' },
+      { text: '你蹲在地上数钱的时候觉得眼眶热了。不是因为钱。是因为你一年前还不敢开口唱歌。' },
+      { type: 'stat-up', text: `收入 +${earn}€ · 声乐 +2 · 社交 +3` },
+    ],
+  };
+  showNarrative(scenes[type]);
+  if (type === 'nico') S.npcs.nico.affinity += 3;
+  if (type === 'carlos') { S.npcs.carlos.affinity += 3; S.npcs.ibrahim.affinity += 3; }
+  if (type === 'group') { Object.values(S.npcs).forEach(n => { if (n.talked > 0) n.affinity += 2; }); }
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+// --- Barcelona Sightseeing ---
+function sceneBcnSightsMenu() {
+  const sights = [
+    { id: 'sagrada', name: '圣家堂', desc: '高迪的未完成杰作' },
+    { id: 'guell', name: '古埃尔公园', desc: '马赛克长椅和彩色蜥蜴' },
+    { id: 'boqueria', name: '波盖利亚市场', desc: '兰布拉大道上的百年市场' },
+    { id: 'gothic', name: '哥特区', desc: '中世纪迷宫般的小巷' },
+    { id: 'beach', name: '巴塞罗内塔海滩', desc: '地中海的沙滩' },
+  ];
+  const available = sights.filter(s => !S.bcnSights[s.id]);
+  if (available.length === 0) {
+    showNarrative([{ text: '你已经把巴塞罗那的主要景点都逛过了。这座城市的轮廓已经印在你的记忆里。' }]);
+    showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+    return;
+  }
+  showNarrative([{ text: '巴塞罗那有太多值得看的地方。今天去哪？' }]);
+  const choices = available.map(s => ({
+    text: `${s.name}（${s.desc}）`, action: () => sceneBcnSightCompanion(s.id, s.name)
+  }));
+  choices.push({ text: '算了，不逛了', action: sceneBcnDailyMenu });
+  showChoices(choices);
+}
+
+function sceneBcnSightCompanion(sightId, sightName) {
+  const companions = [];
+  const npcNames = { nico: 'Nico', suchi: '苏迟', carlos: 'Carlos', aoife: 'Aoife', yuki: 'Yuki', ibrahim: 'Ibrahim', marta: 'Marta' };
+  for (const [id, name] of Object.entries(npcNames)) {
+    if (S.npcs[id] && S.npcs[id].talked > 0) companions.push({ id, name });
+  }
+  if (S.metTomás && S.npcs.tomas) companions.push({ id: 'tomas', name: 'Tomás' });
+
+  showNarrative([{ text: `去${sightName}！带谁一起？` }]);
+  const choices = [];
+  const sightNpcs = {
+    sagrada: ['suchi', 'yuki', 'ibrahim'],
+    guell: ['nico', 'tomas', 'aoife'],
+    boqueria: ['carlos', 'marta', 'nico'],
+    gothic: ['suchi', 'aoife', 'tomas'],
+    beach: ['nico', 'carlos', 'ibrahim'],
+  }[sightId];
+  for (const npcId of sightNpcs) {
+    const c = companions.find(c => c.id === npcId);
+    if (c) choices.push({ text: `约${c.name}`, action: () => sceneBcnSight(sightId, sightName, c.id) });
+  }
+  choices.push({ text: '约所有人一起去', action: () => sceneBcnSight(sightId, sightName, 'all') });
+  choices.push({ text: '一个人去', action: () => sceneBcnSight(sightId, sightName, 'solo') });
+  showChoices(choices);
+}
+
+function sceneBcnSight(sightId, sightName, companion) {
+  S.bcnSights[sightId] = true;
+  adjustStat('energy', -10); adjustStat('mood', 8); advanceTime(); renderStatus();
+  const paras = [];
+
+  if (sightId === 'sagrada') {
+    paras.push({ text: '圣家堂。你站在门口仰头看了整整三十秒。你见过照片，但照片完全没有传达出这个东西的——荒谬感。它太大了、太复杂了、太不像人能造出来的东西了。它像一棵石头长成的树，树枝上开满了圣经故事。' });
+    if (companion === 'suchi') {
+      paras.push({ text: '苏迟站在你旁边，手插在口袋里，仰着头。安静了很久。然后他说：「高迪知道自己看不到它完工的那天。但他还是每天来工地。」你说：「你在说高迪还是在说别的什么？」他看了你一眼，没回答。' });
+      paras.push({ text: '你们在光之森林里走了很久。阳光透过彩色玻璃在地板上铺出万花筒一样的光斑。苏迟忽然说：「这个空间的声学一定很好。」你说：「你是不是看到什么都想着唱歌。」他说：「只有在这里。因为这个地方本身就是一首歌。」' });
+      S.npcs.suchi.affinity += 5;
+    } else if (companion === 'yuki') {
+      paras.push({ text: 'Yuki在圣家堂里拍了很多照片——不是拍建筑，是拍光。阳光透过彩色玻璃在柱子上投射出的色彩让她停下来看了很久。她说：「这让我想起日本的寺庙。不一样的美，但同样让人安静。」' });
+      S.npcs.yuki.affinity += 5;
+    } else if (companion === 'ibrahim') {
+      paras.push({ text: 'Ibrahim站在圣家堂的穹顶下面，仰着头，安静了很久。你问他在想什么。他说：「这里的建筑师用了一辈子建一个他知道自己看不到完工的东西。」他顿了一下，「我爷爷也是。他在安曼盖了一座清真寺，盖到一半走了。我爸接着盖。」' });
+      paras.push({ text: '你说：「盖完了吗？」他说：「盖完了。但我爸说还差一样东西。」你问是什么。他笑了：「我爷爷的声音。他每天在工地上唱歌。那些石头是听着歌长起来的。」' });
+      S.npcs.ibrahim.affinity += 5;
+    } else if (companion === 'all') {
+      paras.push({ text: '全员出动。进了圣家堂以后所有人都安静了——包括Nico。光之森林的穹顶把每个人都变小了。Carlos在角落里偷偷抹眼泪被Marta看到了。Marta递了张纸巾然后假装在看别的。你想：这群人真好。' });
+      Object.values(S.npcs).forEach(n => { if (n.talked > 0) n.affinity += 2; });
+    } else {
+      paras.push({ text: '你一个人在圣家堂里走了两个小时。光之森林、受难立面、诞生立面。你想起一年前你还什么都不是——不会唱歌，不认识任何人。现在你站在全世界最疯狂的教堂里，后天要参加欧洲最大的合唱比赛。高迪用了一辈子建一个教堂。你用了一年建了一个完全不同的自己。' });
+    }
+  } else if (sightId === 'guell') {
+    paras.push({ text: '古埃尔公园在山上。你爬上去的时候已经出了一身汗。但到了观景台——整个巴塞罗那铺在你脚下，蓝色的海在远处闪着光。马赛克长椅上坐满了游客。那条著名的彩色蜥蜴比你想象的要小。' });
+    if (companion === 'nico') {
+      paras.push({ text: 'Nico坐在马赛克长椅上，把脚翘上来，宣布：「这是世界上最好看的椅子。如果我有钱我要在家里装一个一模一样的。」然后她掏出手机自拍了二十张。' });
+      paras.push({ text: '她拉着你去找那条蜥蜴。你们在蜥蜴前面合了影——Nico做了一个非常夸张的表情。她把照片发到团群里。Carlos回了一个哭笑不得的emoji。Dietrich没回——他大概不看群。' });
+      S.npcs.nico.affinity += 5;
+    } else if (companion === 'tomas') {
+      paras.push({ text: 'Tomás在古埃尔公园里停下来的次数比你走的步数还多。他在速写本上画马赛克的纹路、柱廊的曲线、光影在碎瓷砖上的变化。你坐在旁边等他，看他画。他画画的时候整个人安静得像另一个人。' });
+      paras.push({ text: '他画完一页抬起头：「高迪是用建筑在画画。看这些曲线——没有一条直线。自然界没有直线。他懂这个。」他把速写本递给你看。你看到他画的不只是建筑——他在每个拱门和柱子里都画了人。你们合唱团的人。Nico坐在马赛克长椅上，Ibrahim站在柱廊下面，你站在观景台上看海。' });
+      S.npcs.tomas.affinity += 5;
+    } else if (companion === 'aoife') {
+      paras.push({ text: 'Aoife一路在给你讲高迪的故事——她翻译过一本关于加泰罗尼亚建筑的书。「高迪晚年每天从家走到圣家堂工地，有一天被电车撞了。因为穿得太破，没人认出他是高迪，送到了穷人医院。」你说：「然后呢？」她说：「死了。全城出殡。」' });
+      S.npcs.aoife.affinity += 5;
+    } else if (companion === 'all') {
+      paras.push({ text: '十几个人浩浩荡荡地爬上了古埃尔公园。Carlos气喘吁吁地说「我要死在这个坡上了」。到了以后Nico和Aoife抢马赛克长椅的最佳位置拍照。Ibrahim安静地站在一边看城市全景。苏迟坐在台阶上看书——他在哪都能看书。你觉得你们像一个奇怪的旅行团。' });
+      Object.values(S.npcs).forEach(n => { if (n.talked > 0) n.affinity += 2; });
+    } else {
+      paras.push({ text: '你一个人坐在马赛克长椅上看了半小时的风景。巴塞罗那铺在脚下。你想起家乡。也是一个大城市，但没有海。你在这里快一年了。你变了很多。你拍了一张照发给妈妈。她秒回：「好漂亮！多拍点！妈想看！」' });
+    }
+  } else if (sightId === 'boqueria') {
+    paras.push({ text: '波盖利亚市场——兰布拉大道上的百年市场。一走进去你就被颜色淹没了：红的番茄、黄的柠檬、粉的火腿、绿的橄榄、紫的葡萄。空气里混着海鲜、香料和水果的味道。' });
+    if (companion === 'carlos') {
+      paras.push({ text: 'Carlos在市场里如鱼得水。他跟每个摊贩都聊——用西班牙语、葡萄牙语、手语和微笑。他买了一堆东西：伊比利亚火腿、manchego奶酪、一袋橄榄、三种不同的辣椒。「今晚我做饭！」他宣布。你问做什么。他说「不知道，看食材跟我说什么」。' });
+      paras.push({ text: '他带你去了一个海鲜摊。摊主是个壮硕的大叔，Carlos跟他讨价还价了五分钟。最后大叔笑着多送了一把虾。Carlos转头跟你说：「买东西的秘诀是让对方觉得你是他朋友。」你说：「你好像跟所有人都是朋友。」他笑了：「因为我妈教我——每个人都有故事。你只要愿意听。」' });
+      S.npcs.carlos.affinity += 5;
+    } else if (companion === 'marta') {
+      paras.push({ text: 'Marta在市场里变成了一个质检员。她捏每一颗番茄，闻每一块奶酪，对着火腿的纹理看了三十秒。「太肥了。」「这个颜色不对。」「这家的橄榄油才是好的。」你跟在她后面，觉得自己像跟着一个美食侦探。' });
+      paras.push({ text: '她在一个糖果摊前停下来了。你看到她的表情变了——柔软了。她买了一小袋杏仁糖。「我妈也做这个，」她说，声音比平时轻。「用杏仁和蜂蜜。波兰的冬天很长，圣诞节的时候整个厨房都是这个味道。」你说：「你想家了？」她说：「不。我只是想让厨房里有那个味道。」' });
+      S.npcs.marta.affinity += 5;
+    } else if (companion === 'nico') {
+      paras.push({ text: 'Nico在市场里买了一杯鲜榨果汁——石榴、芒果和不知道什么的混合。她喝了一口，眼睛亮了：「这个！这个就是巴塞罗那的味道！」然后她给你也买了一杯。你们边走边喝，像两个逃学的小孩。她在一个卖辣椒的摊前停下来，用她那个很烂的西班牙语跟摊主聊天。摊主听了半天，最后送了她一根免费的辣椒。Nico很得意。' });
+      S.npcs.nico.affinity += 5;
+    } else if (companion === 'all') {
+      paras.push({ text: '全员逛市场。Carlos当向导，Marta当质检员，Nico当试吃员。你们买了一堆东西回旅舍，Carlos在公共厨房做了一顿西班牙海鲜饭。味道不太正宗——他加了巴西香料——但所有人都吃光了。' });
+      Object.values(S.npcs).forEach(n => { if (n.talked > 0) n.affinity += 2; });
+    } else {
+      paras.push({ text: '你一个人在市场里逛了一个小时。买了一杯鲜榨橙汁和一小盒伊比利亚火腿。坐在市场角落的高脚凳上慢慢吃。周围是热闹的叫卖声和各种语言。你觉得这就是旅行——在一个陌生的地方，用味道认识一个城市。' });
+    }
+  } else if (sightId === 'gothic') {
+    paras.push({ text: '哥特区。中世纪的石头小巷像迷宫一样弯弯绕绕。你走了十分钟就不知道自己在哪了。但每一个转角都有惊喜——一扇雕花的木门、一个种满花的小阳台、一面贴满涂鸦的墙壁。' });
+    if (companion === 'suchi') {
+      paras.push({ text: '苏迟在哥特区里走得很慢。他在看每一面墙。你问他在看什么。他说：「石头的年龄。你看这面墙——下面的石头是十三世纪的，上面的是十八世纪翻修的。颜色不一样。」你从来没注意过石头有不同的颜色。' });
+      paras.push({ text: '你们走到了一个很小的广场。中间有一棵橘子树。苏迟在树下的石凳上坐下来。你在他旁边坐下。安静了一会儿。他说：「你有没有觉得，这座城市跟我们住的小城很像？」你说：「怎么会，这里大多了。」他说：「不是大小。是——它也是很多层叠在一起的。罗马人的、中世纪的、现代的。我们的合唱团也是。每个人都是一层。叠在一起才成了现在这个东西。」' });
+      paras.push({ text: '你看着他。阳光透过橘子树的叶子在他脸上落下光斑。你想说什么但你不知道该说什么。最后你说：「苏迟，你有时候说的话像诗。」他说：「我只是说话慢。说话慢的人听起来都像在写诗。」' });
+      S.npcs.suchi.affinity += 5;
+    } else if (companion === 'aoife') {
+      paras.push({ text: 'Aoife在哥特区如鱼得水。她给你讲每一条巷子的历史——这里是犹太人住过的区域，那里是中世纪的行会所在地。「我翻译过一本关于巴塞罗那哥特区的旅行指南，」她说，「所以我基本上白来了，因为没有惊喜了。」但你看到她在一个古老的教堂前面停下来的时候，眼睛还是亮了。' });
+      S.npcs.aoife.affinity += 5;
+    } else if (companion === 'tomas') {
+      paras.push({ text: 'Tomás在哥特区每走三步就停下来画画。他画老窗户、生锈的铁阳台、巷子里的猫。他说：「这里的光最好。阳光只有在窄巷子里才会被切成这么锐利的形状。」你走在他旁边，觉得通过他的眼睛你看到了一个完全不同的城市。' });
+      S.npcs.tomas.affinity += 5;
+    } else if (companion === 'all') {
+      paras.push({ text: '全员在哥特区迷路了。Carlos坚持他知道路。Marta说「你从来不知道路」。最后是Yuki拿出手机导航才把大家带出来。你们在一个巷子里发现了一家很小的冰淇淋店，买了一轮。坐在台阶上吃冰淇淋，看着头顶窄窄的天空。' });
+      Object.values(S.npcs).forEach(n => { if (n.talked > 0) n.affinity += 2; });
+    } else {
+      paras.push({ text: '你一个人在哥特区迷路了两次。但迷路是这个地方最好的打开方式。你在一个安静的小广场上找了一家咖啡店，坐了一个小时。看着行人来来往往。一只猫从你脚边走过，连看都没看你一眼。你想：这就是巴塞罗那。连猫都很有态度。' });
+    }
+  } else if (sightId === 'beach') {
+    paras.push({ text: '巴塞罗内塔海滩。地中海的海水比你住的小城附近的还要蓝。沙滩上满是人——晒太阳的、踢球的、卖首饰的、弹吉他的。你脱了鞋走到海水边。凉的。很舒服。' });
+    if (companion === 'nico') {
+      paras.push({ text: 'Nico穿着一件「CHOIR OR DIE」的背心在沙滩上跑了一圈。然后她冲进海里——衣服都没脱。你在岸上喊「你疯了吗！」她在水里回头笑：「来啊！」你犹豫了三秒。然后你也冲了进去。海水灌进你的鞋子。你不在乎了。' });
+      paras.push({ text: '你们在海里泡了二十分钟。上来以后浑身湿透了，坐在沙滩上晒太阳。Nico把湿T恤拧干了搭在肩上。她说：「你知道吗，在布加勒斯特是看不到海的。我第一次看到海是到这边以后。」你说：「什么感觉？」她说：「自由。」' });
+      S.npcs.nico.affinity += 5;
+    } else if (companion === 'carlos') {
+      paras.push({ text: 'Carlos在沙滩上开始踢足球——加入了一群巴西人的野球局。十分钟后他已经跟所有人交上朋友了。你坐在旁边看他踢。他踢得很好——比你想象的好。一个巴西小伙喊了一句什么，Carlos回了一句葡萄牙语，然后两个人都笑了。你想：Carlos走到哪里都是自己人。' });
+      S.npcs.carlos.affinity += 5;
+    } else if (companion === 'ibrahim') {
+      paras.push({ text: 'Ibrahim在海滩上很安静。他坐在沙滩上看海，看了很久。你在他旁边坐下。他说：「约旦没有这种海。我们有死海——你不能在里面游泳，只能漂着。」你说：「那也很特别啊。」他笑了：「很特别。但我更喜欢能游泳的海。」' });
+      paras.push({ text: '他从口袋里掏出手机，给你看了一张照片——他的妹妹们，三个小女孩，站在一片荒漠前面笑着。「她们没见过海，」他轻声说。你说：「总有一天。」他点了点头：「总有一天。」' });
+      S.npcs.ibrahim.affinity += 5;
+    } else if (companion === 'all') {
+      paras.push({ text: '全员海滩日。Nico第一个冲进水里。Carlos紧随其后——他在水里试图把Nico举起来，被她踢了一脚。Ibrahim在沙滩上铺了条毛巾安静地晒太阳。苏迟坐在最远的地方看书——海风不断地翻他的页。Marta在涂防晒霜，涂得非常认真。Aoife和Yuki在海边散步。你在所有这些人中间，觉得幸福。' });
+      Object.values(S.npcs).forEach(n => { if (n.talked > 0) n.affinity += 2; });
+    } else {
+      paras.push({ text: '你一个人躺在沙滩上看天。海鸥在头顶飞。太阳晒得你昏昏欲睡。你闭上眼睛听海浪的声音。你想：一年前你不敢想象自己会在巴塞罗那的海滩上躺着。你来的时候什么都没有。现在你有了一个合唱团、一群朋友，后天你要站在决赛的舞台上。你闭着眼笑了。' });
+    }
+  }
+
+  paras.push({ type: 'stat-up', text: '心情 +8 · 体力 -10' + (companion !== 'solo' ? ' · 好感度提升' : '') });
+  showNarrative(paras);
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+// --- Competition Rehearsal ---
+function sceneBcnRehearsal() {
+  S.bcnRehearsals++;
+  adjustStat('energy', -15); adjustStat('vocal', 3); adjustStat('social', 2); advanceTime(); renderStatus();
+  const texts = [
+    [
+      { text: '旅舍的公共空间被改成了临时排练室。Dietrich用椅子围了一个半圆。隔壁爱沙尼亚团的人探头看了一眼——Dietrich一个眼神把他们瞪回去了。' },
+      { text: '排练了两个小时。Dietrich把The Singularity的身体打击段落拆开，一拍一拍地对。「这里——」他拍了一下桌子，「你们的跺脚晚了0.2秒。0.2秒在台上就是混乱和精准的区别。」' },
+      { text: '你累了。但你知道这种累是有意义的。你的身体在记住每一个节奏、每一次换气。比赛的时候你不用想——身体会替你记得。' },
+      { type: 'stat-up', text: '声乐 +3 · 社交 +2' },
+    ],
+    [
+      { text: '今天Dietrich把你和苏迟单独叫出来练和声。他让你们两个面对面唱同一个乐句——一遍，两遍，三遍。他在旁边闭着眼听。第四遍的时候他说：「对了。就是这个。你们两个的声音刚好差半个泛音，叠在一起会产生第三个声音。」' },
+      { text: '你不懂什么是泛音。但你听到了——你的声音和苏迟的声音融合的时候，确实有一个你们两个都没唱的音在空气中响。像鬼魂。像光。苏迟也听到了。你看到他的表情——很少见的惊讶。' },
+      { type: 'stat-up', text: '声乐 +3 · 社交 +2' },
+    ],
+    [
+      { text: '今天排练了El Cant dels Ocells的新结尾——Dietrich改编的「瞬间切断」。十几个人同时在最强音上停止。试了六遍。前五遍都是灾难。第六遍——咔嗒。安静了。绝对的安静。' },
+      { text: 'Dietrich没说话。他闭着眼站了三秒。然后点了点头。这大概是他的最高评价了。' },
+      { text: 'Nico小声说：「我们是不是刚才真的做到了？」Carlos说：「我觉得是。」Ibrahim什么都没说，但他的嘴角弯了一下。' },
+      { type: 'stat-up', text: '声乐 +3 · 社交 +2' },
+    ],
+    [
+      { text: '今天韩国团的指挥来旁听了。那个银发的六十多岁女人安静地坐在角落看完了整场排练。排练结束她走到Dietrich面前说了几句话。你听不懂韩语。旁边的翻译说：「她说你的声部平衡做得比昨天好了。但男低音在副歌段需要更暗的音色。」' },
+      { text: 'Dietrich点了点头——对手的指挥专门来给你们提意见，这要么是友善要么是心理战。你看不出是哪个。但Dietrich回去以后真的改了男低音的处理。你想：不管对方什么意思，好的建议就是好的建议。' },
+      { type: 'stat-up', text: '声乐 +3 · 社交 +2' },
+    ],
+  ];
+  showNarrative(texts[Math.min(S.bcnRehearsals - 1, texts.length - 1)]);
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+// --- Meet Other Choirs ---
+function sceneBcnMeetChoirsMenu() {
+  adjustStat('energy', -5); adjustStat('social', 5); advanceTime(); renderStatus();
+  const choirs = [
+    { id: 'brazil', name: '圣保罗合唱团（巴西）', desc: 'Carlos的发小Marco的团' },
+    { id: 'korea', name: '首尔青年合唱团（韩国）', desc: '银发女指挥的精英团' },
+    { id: 'china', name: '大学教师合唱团（中国）', desc: '爸妈城市来的叔叔阿姨们' },
+    { id: 'estonia', name: '塔林室内合唱团（爱沙尼亚）', desc: '没有指挥的泛音奇迹' },
+  ];
+  const available = choirs.filter(c => !S.bcnChoirs[c.id]);
+  if (available.length === 0) {
+    showNarrative([{ text: '你已经把主要的对手团都认识了一遍。你开始觉得合唱比赛跟战争完全不同——对手也可以是朋友。' }]);
+    showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+    return;
+  }
+  showNarrative([{ text: '旅舍的大厅里、排练场的走廊上、附近的酒吧里，到处都是来自世界各地的合唱团。你想跟谁聊聊？' }]);
+  const choices = available.map(c => ({
+    text: `${c.name}`, cost: c.desc, action: () => sceneBcnMeetChoir(c.id)
+  }));
+  choices.push({ text: '算了', action: sceneBcnDailyMenu });
+  showChoices(choices);
+}
+
+function sceneBcnMeetChoir(choirId) {
+  S.bcnChoirs[choirId] = true;
+  const scenes = {
+    brazil: [
+      { text: 'Carlos带你去见Marco。Marco比Carlos高一个头，笑起来声音更大。他一见你就用力握手：「Carlos的朋友就是我的朋友！」他的英语带着浓重的葡萄牙口音。' },
+      { text: '他带你们去了圣保罗团的排练。你被震撼了——他们的节奏感不是练出来的，是长在骨头里的。身体打击的段落比你们的整齐十倍。一个叫Rafael的男低音独唱的时候你觉得地板在震。' },
+      { text: 'Marco和Carlos坐在角落里聊了很久。你听到了一些碎片——里约的贫民区、教堂唱诗班、一个叫Paulo的人。Carlos的眼眶红了。Marco拍了拍他的肩。你走开了——有些对话不需要第三个人。' },
+      { text: '走的时候Marco叫住你。他递给你一条巴西国旗配色的手编手链：「给你的合唱团每人一条。我们巴西人相信——如果你在比赛前跟对手交换信物，不管谁赢了，那个友谊都是金奖。」' },
+      { type: 'stat-up', text: '社交 +5 · Carlos好感度 +3' },
+    ],
+    korea: [
+      { text: '首尔青年合唱团的成员大多是音乐学院的学生。他们的平均年龄比你们小五岁，但专业程度让你心里发慌。你在走廊上跟他们的一个女高音聊了几句——她叫Jihye，英语很好。' },
+      { text: '「你们的Singularity编曲很有趣，」Jihye说。你问她怎么知道你们的曲目的。她笑了：「我们的指挥Kim老师会研究每一个对手。她说你们是最不可预测的团。」' },
+      { text: '你说：「这是夸我们还是骂我们？」Jihye想了想：「Kim老师的原话是——这些人不按牌理出牌，这很危险。」你不知道该高兴还是紧张。' },
+      { text: 'Kim老师路过，看了你一眼。她的眼神像X光——你觉得她在三秒内评估了你的音域、气息和心理状态。她用韩语对Jihye说了一句话。Jihye翻译：「她说你的眼神不像业余的。」你不确定这是什么意思，但你觉得这可能是Kim老师能给的最高评价了。' },
+      { type: 'stat-up', text: '社交 +5' },
+    ],
+    china: [
+      { text: '你去找了大学教师合唱团。那些叔叔阿姨一看到你就高兴得不行。「来来来，我们这有茶！」一个叔叔从行李箱里掏出了一罐铁观音——他从国内背过来的。你接过纸杯的时候闻到了那个味道——那个属于家的味道。' },
+      { text: '一个阿姨拉着你问东问西。她说你妈妈给她看了你的照片。「你妈可骄傲了。在朋友圈发了好几条。」你说：「发了什么？」阿姨给你看了手机——你妈发的朋友圈：「我家孩子在欧洲唱歌！」配了三个大拇指emoji和五个爱心。你的鼻子酸了。' },
+      { text: '教师合唱团的指挥是个退休的音乐老师，姓王。王老师听说你才学了一年就参加Europa Cantat，沉默了三秒，然后说了一句让你记了很久的话：「一年的热爱比十年的习惯更值钱。你记住。」' },
+      { text: '走的时候叔叔阿姨们塞了一堆零食给你——老干妈、旺旺仙贝、一包话梅。你拎着这袋来自家乡的零食走回旅舍的时候，眼眶热热的。苏迟在大厅看到你手里的东西，表情裂开了：「……那是旺旺仙贝吗？」你从来没见过苏迟这么激动。你分了他半包。他吃的时候一句话没说。但你看到他低着头笑了。' },
+      { type: 'stat-up', text: '社交 +5 · 心情 +5 · 苏迟好感度 +3' },
+    ],
+    estonia: [
+      { text: '爱沙尼亚的塔林室内合唱团只有十二个人。没有指挥。他们在旅舍的楼梯间里排练——因为楼梯间的回声最好。你经过的时候被声音钉在了原地。' },
+      { text: '那个声音——你没有办法用语言描述。十二个人站成半圆，互相看着，唱一首你不认识的歌。但那个和声——不是十二个声部，是更多。回声从墙壁上折回来，跟原声叠在一起，产生了不存在的声部。像幽灵在跟他们一起唱。' },
+      { text: '你听完了整首歌。他们的一个团员看到你了——一个金发男生，很瘦，眼睛很蓝。他用英语说：「你是那个来自地中海小城的合唱团的？」你说是。他说：「我们听过你们排练。你们的Singularity很有趣。那个身体打击的段落——很大胆。」' },
+      { text: '你问他们怎么做到没有指挥。他笑了：「我们在一起唱了十五年了。每个人知道其他十一个人的呼吸。」他顿了一下。「你们在一起多久了？」你说：「不到一年。」他愣了一下。然后他说了一句你没有预料到的话：「那更了不起。」' },
+      { type: 'stat-up', text: '社交 +5 · 声乐 +2' },
+    ],
+  };
+  showNarrative(scenes[choirId]);
+  if (choirId === 'brazil') S.npcs.carlos.affinity += 3;
+  if (choirId === 'china' && S.npcs.suchi) S.npcs.suchi.affinity += 3;
+  if (choirId === 'estonia') adjustStat('vocal', 2);
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+// --- Barcelona Friendship Events ---
+function sceneBcnMarketRun() {
+  S.bcnFriendEvents.marketRun = true;
+  adjustStat('energy', -5); adjustStat('mood', 8); advanceTime(); renderStatus();
+  showNarrative([
+    { text: 'Carlos一大早就在旅舍大厅喊：「谁跟我去波盖利亚市场买菜！今晚我做饭！」你举了手。Marta也举了手——她说「我不信任你一个人买菜」。' },
+    { text: '三个人在市场里逛了一个上午。Carlos像回到了里约的菜市场一样兴奋。他跟鱼贩用手语讨价还价。他让Marta闻每一种奶酪。他在一个香料摊前站了十分钟，最后买了一种他说「像我妈做的farofa」的东西。' },
+    { text: '回去的路上Carlos忽然安静了。他说：「你们知道吗，Marco跟我说他差点没来。圣保罗团的经费不够，是他自己贴了钱。」你说：「就像Dietrich。」Carlos看了你一眼：「什么意思？」你说：「Lena说过，合唱团的很多钱是Dietrich自己贴的。」' },
+    { text: 'Carlos沉默了。然后他说：「做音乐的人都疯了。我们明明可以去做别的更赚钱的事情。但是我们不。」Marta说：「因为别的事情不能让你在菜市场里这么开心。」Carlos笑了。他笑的时候整个人都在发光。' },
+    { type: 'stat-up', text: '心情 +8 · Carlos好感度 +5 · Marta好感度 +3' },
+  ]);
+  S.npcs.carlos.affinity += 5; S.npcs.marta.affinity += 3;
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+function sceneBcnNicoExplore() {
+  S.bcnFriendEvents.nicoExplore = true;
+  adjustStat('energy', -5); adjustStat('mood', 5); adjustStat('social', 3); advanceTime(); renderStatus();
+  showNarrative([
+    { text: 'Nico说：「我发现了一条街，全是街头音乐人。走！」她拉着你就跑了出去。' },
+    { text: '那条街在哥特区深处。你们沿着走——第一个是弗拉明戈吉他手，手指在弦上像闪电。第二个是一个二胡演奏者——你愣了，在巴塞罗那听到二胡。第三个是一个手风琴老人，拉的是musette华尔兹。第四个是一个beatbox小伙子，用嘴巴模拟了一整个乐队。' },
+    { text: 'Nico在每一个人面前都停下来认真听完。她不是听好玩——她在学。你看到她的手指在空气中跟着弗拉明戈吉他手的节奏动。她的脚在跟着beatbox的节拍点地。' },
+    { text: '走完那条街以后Nico坐在一个台阶上。她说：「你知道我为什么喜欢街头音乐吗？」你说不知道。她说：「因为他们不需要任何人的许可。不需要舞台、不需要门票、不需要评委打分。他们站在街上就开始唱。这是最纯粹的东西。」' },
+    { text: '她顿了一下：「我在布加勒斯特也是这样开始的。在地铁站里弹吉他。有人给钱，有人不给。有人停下来听，有人走过去连头都不回。但我唱了。这就够了。」' },
+    { type: 'stat-up', text: '心情 +5 · 社交 +3 · Nico好感度 +5' },
+  ]);
+  S.npcs.nico.affinity += 5;
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+function sceneBcnSuchiBookshop() {
+  S.bcnFriendEvents.suchiBookshop = true;
+  adjustStat('energy', -5); adjustStat('mood', 5); advanceTime(); renderStatus();
+  showNarrative([
+    { text: '苏迟在旅舍公告板上发现了一家旧书店的传单。他看了看你——不算邀请，但你认识那个眼神。你说：「一起去？」他点了点头。' },
+    { text: '书店在一条你完全没去过的小街上。推开门的时候——书的味道。旧纸、灰尘和时间的味道。书架从地板堆到天花板，过道窄得两个人侧身才能走过。一只花猫趴在最高的书架上睡觉。' },
+    { text: '苏迟在书店里变了一个人。不是更开朗——是更放松。他的肩膀放下来了。他的手指在书脊上滑过，像在弹一架无声的钢琴。你跟在他后面，看他拿起一本放下，再拿起另一本。' },
+    { text: '他在音乐区停下来了。他翻开一本老版的《和声学》，是法语的。他看了半页，忽然说：「这本书跟我爸书架上那本一样。我偷偷看过。」你等着他继续。他说：「他发现以后把书锁起来了。他觉得我应该学经济。」' },
+    { text: '你说：「但你还是学了音乐。」他合上书：「我没学。我逃了。来了这里。然后在一个橘子树下面的旧仓库里遇到了——」他没说完。他把那本书放回去了。' },
+    { text: '你们在书店待了两个小时。他买了一本加缪的西班牙语版《异乡人》。你问他不是已经有法语版了吗。他说：「我想看不同的翻译怎么处理第一句话。」你有时候真的不太理解苏迟。但你喜欢不理解他。' },
+    { type: 'stat-up', text: '心情 +5 · 苏迟好感度 +5' },
+  ]);
+  S.npcs.suchi.affinity += 5;
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+function sceneBcnIbrahimMosque() {
+  S.bcnFriendEvents.ibrahimMosque = true;
+  adjustStat('energy', -5); adjustStat('mood', 8); adjustStat('social', 3); advanceTime(); renderStatus();
+  showNarrative([
+    { text: 'Ibrahim在早餐时问你：「你想不想去看巴塞罗那的大清真寺？」你有点意外——Ibrahim很少主动邀请人。你说好。' },
+    { text: '清真寺在Raval区。从外面看不太起眼，但走进去的时候你愣了——很安静。安静到你能听到自己的呼吸。地板铺着红色的地毯。穹顶上写着你看不懂的阿拉伯文。阳光透过几何图案的窗户照进来，在地上画出复杂的光影。' },
+    { text: 'Ibrahim在门口脱了鞋。你也脱了。他走到一个角落，朝着麦加的方向站了一会儿。没有跪下、没有念经——只是站着，闭着眼。你在远处等他，不说话。' },
+    { text: '出来以后他说：「谢谢你来。」你说：「谢谢你带我。」他沉默了一会儿，然后说了一段你没想到的话。' },
+    { text: '「在约旦的时候，清真寺是最安全的地方。什么都在变——政治在变、家人在变、未来在变——但清真寺里的祈祷声是一样的。」他顿了一下，「后来我到了欧洲。很长一段时间找不到清真寺。我以为我会失去那个安全的感觉。」' },
+    { text: '他看了你一眼：「然后我走进了合唱团。第一次排练的时候Dietrich让大家闭上眼睛唱。我闭上眼睛——我听到了所有人的声音——我忽然觉得：这里也是安全的。不同的声音，同一种安静。」' },
+    { text: '你说不出话。你觉得Ibrahim用两分钟告诉了你一些人用一辈子都说不清楚的东西——关于归属，关于声音，关于在陌生的地方找到家。' },
+    { type: 'stat-up', text: '心情 +8 · 社交 +3 · Ibrahim好感度 +8' },
+  ]);
+  S.npcs.ibrahim.affinity += 8;
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+function sceneBcnRooftop() {
+  S.bcnFriendEvents.rooftop = true;
+  adjustStat('mood', 5); renderStatus();
+  showNarrative([
+    { text: '你睡不着。你穿上外套去了旅舍天台。' },
+    { text: '天台上已经有人了。Yuki坐在水箱旁边，戴着耳机，看着城市的灯光。她看到你来了，摘了一只耳机递给你。' },
+    { text: '你戴上。是一首你没听过的日文歌——旋律很简单，像摇篮曲，但有什么东西让你的心揪了一下。' },
+    { text: '歌放完了。你把耳机还给她。她说：「这是我高中时候乐队排的第一首歌。」你想起她cosplay过少女乐队——花園たえ。你说：「你以前也在乐队里？」' },
+    { text: '她点了点头。「键盘。四个女生。我们叫StellaRise。」她笑了一下，「只存在了两年。高考的时候散了。」你问：「你想她们吗？」她说：「每天。但是——」她看着巴塞罗那的夜景，「如果StellaRise没有散，我就不会来欧洲。不会遇到这个合唱团。不会在巴塞罗那的天台上跟你听歌。」' },
+    { text: '她把耳机收起来了。「Dietrich说过一句话我一直记得——每一首歌都有终止符，但音乐不会停。一首歌结束了，下一首就开始了。」' },
+    { text: '你们在天台上坐了很久。你看着巴塞罗那的灯光，想着明天的比赛，想着家，想着这一年发生的所有事情。你觉得Yuki说得对——每一首歌都有终止符，但音乐不会停。' },
+    { type: 'stat-up', text: '心情 +5 · Yuki好感度 +5' },
+  ]);
+  S.npcs.yuki.affinity += 5;
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
 // --- Competition Arc: Act 1 - Heats ---
 function sceneHeats() {
   if (S.choirDrama.heatsComplete) { sceneDailyMenu(); return; }
@@ -5373,7 +5898,7 @@ function sceneHeats() {
     { type: 'stat-up', text: '心情 +8 · 声乐 +3' },
   ]);
   adjustStat('mood', 8); adjustStat('vocal', 3);
-  showChoices([{ text: '小组赛', action: sceneGroupStage }]);
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
 }
 
 // --- Competition Arc: Act 2 - Group Stage ---
@@ -5418,7 +5943,7 @@ function sceneGroupStage() {
   ]);
   S.choirDrama.groupStageComplete = true;
   adjustStat('mood', 10); adjustStat('vocal', 3); adjustStat('social', 5);
-  showChoices([{ text: '准备决赛', action: sceneFinalPrep }]);
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
 }
 
 // --- Competition Arc: Act 3 - Finals ---
