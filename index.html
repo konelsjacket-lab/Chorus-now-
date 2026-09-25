@@ -297,6 +297,8 @@ const S = {
   metAtRehearsal: {},
   sideStories: {},
   groupEvents: {},
+  confirmedPartner: null,
+  musicAngelPhase: 0,
   competitionAnnounced: false,
   repertoire: [],
   sectionalCount: 0,
@@ -586,6 +588,24 @@ const NPC_EVENTS = {
         '吃的时候你被辣到了——你说你能吃辣，但你吃的是四川的辣，这个是不一样的辣。Sofia笑得快从椅子上掉下来。她给你倒了一杯牛奶。"你的脸红得像我的辣椒酱。"',
         '你喝着牛奶想：你可以为了这道菜学会不怕这种辣。',
       ], {social:5, mood:10}, true) },
+    { id: 'sf10', affinity: 82, label: '💙 Sofia给你织了一条围巾', time: [1,2],
+      scene: () => npcEvent('sofia','sf10', [
+        '你下课回来的时候门口放着一个纸袋。里面是一条手织围巾——深蓝色，不太整齐，有些地方松了有些地方紧了。纸条上写着："冬天快到了。别感冒。——S"',
+        '你拿着围巾去敲Sofia的门。她开门的时候手上有毛线缠着。你举起围巾说："你织的？"她的脸红了："你别看太仔细。漏了好多针。Marta教我的，但我学得不好。"',
+        '你说："Marta给Dietrich也织过围巾。"Sofia愣了一下。你赶紧说："我不是说——我是说Marta手艺好——不是说你不好——"你越说越乱。Sofia看着你手忙脚乱的样子笑了——那种没有防备的、从肚子里出来的笑。',
+        '你把围巾围上了。她看了看，帮你调整了一下。她的手指碰到你的脖子——凉的。你没躲。她也没收回去。你们站在走廊上，走廊的灯一闪一闪的，该换了。',
+        '她说："合不合适？"你说："很合适。"你不确定你说的是围巾。',
+      ], {mood:12, social:5}, true) },
+    { id: 'sf11', affinity: 93, label: '💙 Sofia和你在阳台上', time: [2,3],
+      scene: () => npcEvent('sofia','sf11', [
+        '夜里你在阳台上发呆。Sofia也在她的阳台上——你们的阳台只隔了一面矮墙。她手里端着一杯什么。你们隔着矮墙看着同一片海。',
+        '她说："你还记得你搬来第一天吗？"你说："记得。我烧焦了面条。"她笑了："整栋楼都知道。"',
+        '你们聊了很久。聊这座城市，聊合唱团，聊以后。她说她护理课快毕业了。你问她毕业以后怎么办。她安静了一下。"也许回去。也许不回去。"她看了你一眼。"要看情况。"',
+        '你问"什么情况"。她没回答。她把杯子放下，双手撑在矮墙上，看着你。月光照在她脸上。你们之间只有一面矮墙——半米高。你可以跨过去。你想跨过去。你没有动。',
+        '她说："你为什么不过来？"声音很轻。你跨过了矮墙。你站在她的阳台上，离她很近。她的眼睛在月光下亮得像星星。你说了一句很蠢的话："你的阳台比我的干净。"她笑了。然后她靠过来，额头轻轻碰了一下你的肩膀。她没说话。你也没说话。你们站在阳台上，听海。',
+      ], {mood:15, social:5}, true) },
+    { id: 'sf_confess', affinity: 102, label: '❤️ Sofia：烤箱旁的距离', time: [1,2],
+      scene: () => sceneSofiaConfess() },
     { id: 'sf9', affinity: 50, label: 'Sofia带你去收容所做志愿者', time: [0,1],
       scene: () => npcEvent('sofia','sf9', [
         'Sofia问你周末有没有空。你说有。她说："我要去流浪动物收容所做半天志愿者。你来吗？"',
@@ -717,6 +737,8 @@ const NPC_EVENTS = {
       ], {mood:20, social:5}, true) },
     { id: 'sc_moon', affinity: 100, label: '🌙 苏迟：月亮从未落山', time: [2,3],
       scene: () => sceneSuChiMoon() },
+    { id: 'sc_confess', affinity: 102, label: '☔ 苏迟：电话亭里的雨', time: [0,1,2],
+      scene: () => sceneSuChiConfess() },
   ],
   nico: [
     { id: 'nc1', affinity: 5, label: '回复Nico的群消息', time: [0,1,2],
@@ -776,6 +798,25 @@ const NPC_EVENTS = {
       scene: () => sceneNicoRockBar1() },
     { id: 'nc6', affinity: 70, label: '🎸 Nico：Fire! Burning Fire!', time: [2,3],
       scene: () => sceneNicoRockBar2() },
+    { id: 'nc7', affinity: 85, label: '💙 Nico教你弹吉他', time: [1,2],
+      scene: () => npcEvent('nico','nc7', [
+        'Nico说她要教你弹吉他。你说你不会。她说"废话，所以才要教"。她把她那把被贴满贴纸的吉他塞到你手里。',
+        '你的手指按在弦上——疼。她说："前三天都疼。第四天就不疼了。因为你的指尖会长茧。"你说："你的茧呢？"她举起手给你看——指尖硬硬的。她说："这是我最骄傲的东西。比任何文凭都有用。"',
+        '她教你弹了一个C和弦。你按了五分钟才按对。她说："你手太小了。"你说："你手也不大。"她说："但我手有劲。"她握了一下你的手——确实很有劲。你的脸有点热。',
+        '她教你弹了四个和弦以后说你可以弹三千首歌了。你说"我现在只能弹噪音"。她笑了——然后她把手覆在你的手上，帮你换和弦。你感觉到她的手指引导你的手指在弦上滑动。',
+        '她突然说了一句："你知道吗，我教过很多人弹吉他。但从来没有一个人让我这么——"她没说完。她把手收回去，假装去调弦。你看到她耳朵红了。Nico的耳朵会红——这是你新发现的事。',
+      ], {mood:12, vocal:3}, true) },
+    { id: 'nc8', affinity: 95, label: '💙 Nico在INFERNO后台', time: [2,3],
+      scene: () => npcEvent('nico','nc8', [
+        '你和Nico去了INFERNO。这次不是看她唱——是她拉你去后台。后台只有一个破沙发和一面涂满涂鸦的墙。',
+        '她坐在沙发上，抱着吉他，看着墙上的涂鸦。上面有人用马克笔写了各种乐队名和歌词和爱情宣言。她指着一处："看——「Ana & Nico forever」。我刚来这里驻唱第一天写的。"你说："你写给你妹的？"她说："嗯。我想让她的名字也在这里。就算她本人不在。"',
+        '她弹了一段很轻的旋律。你没听过。她说："我在写一首新歌。"你问是什么。她不说。她只是弹着，然后开始轻轻哼。没有歌词——只有旋律。很温柔，跟INFERNO平时的风格完全不一样。',
+        '她停下来。看着你。她的眼睛在后台昏暗的灯光下很亮。她说："这首歌——我还没写完。因为我不知道结局。"你问"什么结局"。',
+        '她把吉他放下。她说："就是——故事的结局。一个人遇到另一个人，然后她不知道那个人会不会一直在。她很想知道。但她又怕问。因为如果答案是不会，她宁可不知道。"',
+        '你的心跳很快。你说："那个人会在的。"你说这话的时候声音有点抖。她看了你三秒。然后她笑了——不是平时的大笑，是那种脆弱的、被风一吹就散的笑。她说："你怎么知道。"你说："因为那个人现在就在。"',
+      ], {mood:15, social:5}, true) },
+    { id: 'nc_confess', affinity: 102, label: '🔥 Nico：舞台上的告白', time: [2,3],
+      scene: () => sceneNicoConfess() },
   ],
   carlos: [
     { id: 'ca1', affinity: 8, label: '去Carlos的餐厅坐坐', time: [1,2],
@@ -1097,6 +1138,16 @@ const NPC_EVENTS = {
       ], {social:5, mood:12}, true) },
     { id:'tm6', affinity:85, label:'💙 Tomás：那幅没有展出的画', time:[2,3],
       scene: () => sceneTomasPainting() },
+    { id:'tm7', affinity:95, label:'💙 Tomás教你调色', time:[1,2],
+      scene: () => npcEvent('tomas','tm7', [
+        'Tomás说今天不画画了——今天教你调色。他在画室里铺了一张大纸，挤了六种颜料在调色板上。你看着那些颜料觉得很漂亮，但你不知道怎么调。',
+        '他说："所有的颜色都从三个来——红、黄、蓝。其他的都是对话。红和黄说话变成橙。蓝和黄说话变成绿。"他把刷子递给你。你混了红和蓝——变成了一种脏脏的紫色。你说："这个颜色像被打了的茄子。"他笑了。',
+        '他站在你身后指导你，手臂从你旁边伸过来握着你的手带你搅颜料。你感觉到他呼吸的热度在你的耳边。他说："慢一点。颜色也需要时间融合。"你的心跳在加速但你的手在慢下来。',
+        '最后你们调出了一种你从来没见过的颜色——介于橙色和粉色之间，像日落最后三十秒的天空。Tomás看了很久，说："这个颜色很像你。"你说："我？"他说："温暖的、在变化的、看起来不够浓烈但其实很持久的。"',
+        '你觉得Tomás总是用画画的语言说一些不是在说画画的话。你看着调色板上那团你们一起调出的颜色。你说："那你呢？你是什么颜色？"他想了想："靛蓝。沉默的颜色。但如果你把靛蓝和你那个橙粉色放在一起——"他在纸上并排画了两笔。你看了——那两个颜色在一起好看得让你想哭。他说："看到了吗。互补色。分开都不够完整。在一起就是一幅画。"',
+      ], {mood:15, social:5}, true) },
+    { id:'tm_confess', affinity:102, label:'🎨 Tomás：那本素描本', time:[1,2],
+      scene: () => sceneTomasConfess() },
   ],
 };
 
@@ -1119,10 +1170,17 @@ function npcEvent(npcId, eventId, texts, stats, romantic, romanceChoice) {
   showNarrative(paras);
   
   if (romanceChoice) {
-    showChoices([
-      { text: '（心里有什么东西在动）', cost: '进入暧昧', action: () => { npc.romance = true; npc.affinity += 10; sceneDailyMenu(); } },
-      { text: '（当作普通朋友）', action: sceneDailyMenu },
-    ]);
+    if (S.confirmedPartner && S.confirmedPartner !== npcId) {
+      showChoices([
+        { text: '（心里有什么东西在动……但你已经有了确定的人）', cost: '保持暧昧', action: () => { npc.romance = true; npc.affinity += 5; sceneDailyMenu(); } },
+        { text: '（当作普通朋友）', action: sceneDailyMenu },
+      ]);
+    } else {
+      showChoices([
+        { text: '（心里有什么东西在动）', cost: '进入暧昧', action: () => { npc.romance = true; npc.affinity += 10; sceneDailyMenu(); } },
+        { text: '（当作普通朋友）', action: sceneDailyMenu },
+      ]);
+    }
   } else {
     showChoices([{ text: '继续', action: sceneDailyMenu }]);
   }
@@ -1914,6 +1972,14 @@ function sceneDailyMenu() {
     // Instrument practice at home
     if (S.ownedInstruments.length > 0 && time <= 2)
       choices.push({ text: '🎸 练习乐器', cost: '体力-10，声乐+3，视谱+2', action: sceneInstrumentPractice });
+
+    // Music Angel (imaginary friend, tied to sightRead)
+    if (S.sightRead >= 10 && S.musicAngelPhase === 0)
+      choices.push({ text: '🪽 脑海里有一个声音在跟你说话……', action: sceneMusicAngel1 });
+    if (S.sightRead >= 22 && S.musicAngelPhase === 1)
+      choices.push({ text: '🪽 音乐小天使又出现了', action: sceneMusicAngel2 });
+    if (S.sightRead >= 35 && S.musicAngelPhase === 2)
+      choices.push({ text: '🪽 音乐小天使：最后的课', action: sceneMusicAngel3 });
 
     // Shopping options (appear when money >= 200)
     if (S.money >= 80 && time >= 1 && time <= 2)
@@ -4722,6 +4788,339 @@ function sceneTomasPainting3() {
   showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
+// --- Music Angel (Imaginary Friend) ---
+function sceneMusicAngel1() {
+  S.musicAngelPhase = 1;
+  adjustStat('energy', -5); adjustStat('sightRead', 3); adjustStat('mood', 8); advanceTime(); renderStatus();
+  showNarrative([
+    { text: '你坐在阳台上看谱子——Dietrich布置的视谱练习。你盯着那些密密麻麻的音符，试着在心里唱出来。第一行还行，第二行开始你就卡住了——一个升号跳到一个降号，你的脑子像堵车了。' },
+    { text: '然后你听到了一个声音。' },
+    { text: '不是从外面来的。是从你脑子里。一个清亮的、没有性别的声音，像铃铛被敲了一下。' },
+    { text: '「那个升F不是跳上去的，是滑上去的。你试试看——从E开始，不要想音高，想方向。往上。轻轻地往上。」' },
+    { text: '你愣了一下。你环顾四周——阳台上只有你和那盆天竺葵。你以为自己幻听了。但那个声音又说了一遍：' },
+    { text: '「试试看嘛。」语气像一个很有耐心的小老师。' },
+    { text: '你照着做了。从E开始，不想音高，想方向。你闭上眼睛——那个升F居然出来了。准的。你愣住了。' },
+    { text: '「看吧，」那个声音说，听起来很得意，「你不是不会，你只是想太多了。音乐不是数学题——它是呼吸。你会呼吸吧？那你就会唱谱。」' },
+    { text: '你不确定这是幻觉还是你的潜意识在跟你对话。但你决定——管它呢。你给这个声音取了个名字：音乐小天使。' },
+    { text: '你继续看谱。每次卡住的时候音乐小天使就冒出来说一句。有时候有用（「这里是模进，跟前面一样只是高了一个全音」），有时候没用（「你饿了吧？饿了就唱不好」）。但你发现——有一个声音在陪你看谱，哪怕是想象出来的，都比一个人盯着纸页好太多了。' },
+    { text: '太阳落下去的时候你把谱子合上了。你视读了三页——以前你一天最多看半页。你对着空气说了一句："谢谢。"' },
+    { text: '没有回答。你以为音乐小天使走了。然后你听到很轻很轻的一声：' },
+    { text: '「不客气。明天见。」' },
+    { type: 'stat-up', text: '视谱 +3 · 心情 +8 · 解锁：音乐小天使' },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneMusicAngel2() {
+  S.musicAngelPhase = 2;
+  adjustStat('energy', -5); adjustStat('sightRead', 4); adjustStat('mood', 10); adjustStat('vocal', 2); advanceTime(); renderStatus();
+  showNarrative([
+    { text: '你在排练室里独自练习。大家都走了，只剩你和一架旧钢琴和窗外的海风。你打开一首你从来没见过的合唱曲——四声部的，很密。' },
+    { text: '你试着视读你的声部。前八小节还行——然后你遇到了一段转调。从大调突然滑进了小调，像一句话说到一半突然改变了语气。你卡住了。' },
+    { text: '「小调不是悲伤，」音乐小天使的声音又出现了，「小调是复杂。就像人——不是只有开心和难过两种状态。中间有很多灰色地带。那些灰色的音就是小调的灵魂。」' },
+    { text: '你说（对，你现在已经会出声跟一个想象中的声音说话了）："那我怎么唱灰色？"' },
+    { text: '「你不需要唱灰色。你需要感受灰色。想一个时刻——你不是开心也不是难过的时刻。比如……下雨天，你站在窗边，看雨。不想做任何事。也不想停止看雨。就那种感觉。」' },
+    { text: '你闭上眼，想了一下。然后你唱了那段转调。' },
+    { text: '你的声音在小调和大调之间滑动。你听到了——那个灰色。不是技术上的正确，是一种情感上的准确。你第一次觉得自己在跟乐谱对话而不是在读乐谱。' },
+    { text: '「好多了，」音乐小天使说，「你知道吗，每个人心里都有一个小天使。只不过大部分人不听。他们太忙了——忙着数拍子、忙着怕出错、忙着跟别人比。你比较特别。你会停下来听。」' },
+    { text: '你说："你不是我自己想象出来的吗？"' },
+    { text: '音乐小天使安静了一秒。然后它说了一句让你起鸡皮疙瘩的话：' },
+    { text: '「也许是。也许不是。但你的视谱能力是真的在进步。这个不是想象出来的。」' },
+    { text: '你继续练了一个小时。期间音乐小天使教你怎么数复合拍子（「不要数1234，数长-短-长-短，像呼吸」），怎么预读后面的音符（「看谱要像看路——不是看脚下，是看前面三步」），还纠正了你一个一直以来的坏习惯（「你唱高音的时候下巴会抬。不要抬。声音往上走，身体往下扎根」）。' },
+    { text: '走出排练室的时候天已经黑了。你觉得今天学到的东西比过去一个月加起来都多。你在心里说："你下次什么时候来？"' },
+    { text: '「当你准备好的时候。」' },
+    { type: 'stat-up', text: '视谱 +4 · 声乐 +2 · 心情 +10' },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneMusicAngel3() {
+  S.musicAngelPhase = 3;
+  adjustStat('energy', -10); adjustStat('sightRead', 5); adjustStat('mood', 15); adjustStat('vocal', 3); advanceTime(); renderStatus();
+  showNarrative([
+    { text: '凌晨三点。你睡不着。你爬起来，拿了谱子，坐在地板上。你不知道为什么——就是觉得今晚你需要跟音符在一起。' },
+    { text: '你打开了一首你一直不敢碰的曲子——巴赫的B小调弥撒。Dietrich说过这是人类写过的最伟大的合唱作品。你以前试过视读，第三小节就放弃了。' },
+    { text: '今晚你从第一个音符开始。一个一个地读。很慢，像在学一门新的语言——不，像在学一种新的呼吸方式。' },
+    { text: '音乐小天使没有出声。你读了一页。两页。三页。你的脑子里开始出现声音——不是小天使的声音，是你自己的。你在心里唱着巴赫。你能听到——也许不是每个音都对——但你能听到那些声部怎么交织，怎么追逐，怎么在一个点上汇合又分开。像好几条河流进同一片海。' },
+    { text: '你读到Kyrie的最后一段。那些声部从四面八方涌来，叠在一起，越来越密，越来越亮——然后突然全部静止在一个和弦上。你的眼泪掉下来了。你不知道为什么。你只是在心里读了几页音符。但你哭了。' },
+    { text: '「因为你听到了。」' },
+    { text: '音乐小天使的声音很轻。你分不清它是从你脑子里来的还是从你心里来的。也许没有区别。' },
+    { text: '「这就是视谱真正的意思。不是认识音符——是听到那些写在纸上的声音。巴赫在两百多年前写下这些音符的时候，他也在凌晨三点，一个人，听到了什么。现在你也听到了。跨越了两百多年。」' },
+    { text: '你说："你会一直在吗？"' },
+    { text: '安静了很久。窗外有一只鸟在叫——不知名的鸟，叫了三声就停了。然后音乐小天使说：' },
+    { text: '「我一直都在。我就是你会唱歌的那部分自己。以前你不认识我——现在你认识了。以后你不需要特意来找我了。你打开任何一份乐谱，我就在那里。」' },
+    { text: '你把谱子合上。窗外的天开始变灰了。你觉得今晚你失去了一个想象中的朋友。但你得到了一个真实的能力。' },
+    { text: '你想：也许这就是长大。学会了一样东西，然后那个教你的声音就消失了。但它留下的东西是永远的。' },
+    { type: 'system', text: '音乐小天使完成了它的使命。从今以后，你打开乐谱就能听到声音。' },
+    { type: 'stat-up', text: '视谱 +5 · 声乐 +3 · 心情 +15 · 音乐小天使离开了（但它从未真正离开）' },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+// --- Nico: Confession on Stage ---
+function sceneNicoConfess() {
+  if (!S.rockBarUnlocked || !S.npcs.nico.romance) { sceneDailyMenu(); return; }
+  const npc = S.npcs.nico;
+  npc.talked++; npc.events.push('nc_confess'); npc.affinity += 20;
+  adjustStat('energy', -5); advanceTime(); renderStatus();
+
+  showNarrative([
+    { type: 'deco', items: ['fire','fire','fire'] },
+    { text: 'Nico发了一条消息："今晚INFERNO。来。有事。"没有emoji。你知道这意味着这件事很重要。' },
+    { text: '你到INFERNO的时候已经挤满了人。灯光是红色的，Bass在墙壁里震。你挤到前排。Nico在台上——今晚她穿了一件你没见过的黑色皮夹克，头发扎得很高，耳朵上多了一排你没见过的耳钉。' },
+    { text: '她看到你了。她对你笑了一下——不是舞台上那种笑，是只给你一个人的笑。然后她转向话筒。' },
+    { text: '「今晚最后一首歌，」她说，声音被音响放大了十倍，「是新歌。没有人听过。包括我自己——因为我昨天凌晨四点才写完。」' },
+    { text: '台下有人吹口哨。她没理。她深吸了一口气。' },
+    { text: '「这首歌叫——」她顿了一下。然后她直直地看着你。「叫《你在的时候我可以安静》。」' },
+  ]);
+  showChoices([{ text: '……', action: sceneNicoConfess2 }]);
+}
+
+function sceneNicoConfess2() {
+  showNarrative([
+    { text: '她开始弹了。吉他前奏很轻，不像INFERNO平时的风格——没有失真，没有重音，是纯粹的木吉他声。周围的人安静下来了。你听到自己的心跳。' },
+    { text: '她唱了。' },
+    { text: '罗马尼亚语。你一个词都不懂。但你不需要懂——旋律本身就是翻译。她唱的是一个人在异国他乡遇到另一个人的故事。一个永远很吵的人遇到了一个能让她安静下来的人。她唱的是——她唱的是你们。' },
+    { text: '到了副歌的部分她的声音升上去了——高到整个酒吧都在震。不是摇滚的那种震——是从心脏深处共振出来的。你看到台下有人在擦眼睛。你自己的眼睛也热了。' },
+    { text: '唱到最后一段的时候她放下了吉他。她不弹了。她走到舞台的最前面——你的正前方。' },
+    { text: '她蹲下来。台上台下的距离只有半米。她伸出手——你伸出手——她拉你上台了。' },
+    { text: '灯光很刺眼。你站在一百多个人面前。你的脑子一片空白。但Nico握着你的手，很紧。' },
+    { text: '她没有对着话筒说。她凑到你耳边——在一百多个人面前——用只有你听得到的音量说：' },
+    { text: '「我想了很久要不要说。后来我想——在舞台上说。因为舞台上的每一句话我都当真的。」' },
+    { text: '她退开一步，看着你。红色的灯光照在她脸上。她的眼睛是亮的，亮得像有火在烧。她用话筒说了一句中文——你教过她的那句——发音歪歪扭扭的但你听懂了：' },
+    { text: '「我喜欢你。」' },
+    { text: '全场安静了两秒。然后爆发出一阵口哨和尖叫。' },
+  ]);
+  showChoices([
+    { text: '拉她过来（接受告白）', action: sceneNicoConfessAccept },
+    { text: '（说不出话，摇头）', action: () => { showNarrative([{ text: 'Nico看着你。她的笑容没有消失——只是变了一种形状。她说："没关系。这首歌还是你的。"她重新拿起吉他弹了一段很轻的旋律。你从台上走下来。你的心很疼。但你知道你做了对的选择。' }, { type: 'stat-up', text: '心情 -10' }]); adjustStat('mood', -10); showChoices([{ text: '继续', action: sceneDailyMenu }]); } },
+  ]);
+}
+
+function sceneNicoConfessAccept() {
+  S.confirmedPartner = 'nico';
+  S.npcs.nico.romance = true;
+  adjustStat('mood', 25);
+  renderStatus();
+
+  showNarrative([
+    { text: '你没有说话。你拉住她的手——在台上、在灯光下、在一百多个陌生人面前——你把她拉过来。' },
+    { text: '你吻了她。' },
+    { text: '全场疯了。口哨声、掌声、有人在敲桌子、有人在喊。但你什么都听不到。你只听到她的呼吸——很近、很快、很热。她的嘴唇尝起来像啤酒和薄荷和一些你说不出名字的东西。' },
+    { text: '她退开的时候眼睛是红的——不是难过的红，是一种你从来没见过的、快要溢出来的红。她笑了——是平时那种大笑，但湿的。她对着话筒说：' },
+    { text: '「好了，节目结束了！下一杯酒我请！」' },
+    { text: '台下又是一阵欢呼。你们从台上走下来。她一直握着你的手。从台上到吧台到门口到外面的巷子里。她的手很热，比你的手热。' },
+    { text: '巷子里很安静。INFERNO的音乐变成了闷闷的低音透过墙壁传出来。她靠在墙上，看着你。你也靠在墙上，看着她。你们都在笑。你说："你刚才用中文说了什么？"她说："你明明听到了。"你说："我想再听一次。"' },
+    { text: '她凑过来，贴在你耳边，用那个歪歪扭扭的中文又说了一遍：「我喜欢你。」然后她在你耳朵上亲了一下。你的耳朵烧起来了。你觉得你整个人都烧起来了。' },
+    { text: '你说："Nico。"她说："嗯。"你说："我也喜欢你。"' },
+    { text: '她说："我知道。"她的语气非常Nico。你笑了。她也笑了。你们在INFERNO门口的巷子里笑了很久。' },
+    { type: 'system', text: 'Nico在舞台上告白了。你在一百多个人面前吻了她。从今以后，你和Nico确立了恋爱关系。' },
+    { type: 'stat-up', text: '心情 +25 · Nico好感度大幅提升 · 确立关系：Nico' },
+  ]);
+  showChoices([{ text: '牵着手走回家', action: sceneDailyMenu }]);
+}
+
+// --- Su Chi: Rainy Phone Booth Confession ---
+function sceneSuChiConfess() {
+  if (!S.npcs.suchi.romance) { sceneDailyMenu(); return; }
+  const npc = S.npcs.suchi;
+  npc.talked++; npc.events.push('sc_confess'); npc.affinity += 20;
+  adjustStat('energy', -5); advanceTime(); renderStatus();
+
+  showNarrative([
+    { type: 'deco', items: ['rain','rain','rain'] },
+    { text: '这座城市下雨的日子不多。但今天下了——不是毛毛雨，是那种突然倒下来的、像有人把天掀翻了的暴雨。' },
+    { text: '你在旧城区，没带伞。你跑了三条巷子——全身湿透了。你拐进一条窄巷想找地方避雨——看到了一个电话亭。' },
+    { text: '旧的，蓝色的，玻璃有一半碎了。但勉强能遮雨。你钻进去，喘着气。' },
+    { text: '然后你听到脚步声——有人也在跑。' },
+    { text: '苏迟。' },
+    { text: '他也没带伞。他的亚麻衬衫湿得贴在身上，头发贴在额头上，手里还紧紧抱着他的包——你知道里面有他的笔记本和那份手写曲谱。他看到你的一瞬间愣了一下——然后他也钻进了电话亭。' },
+    { text: '电话亭很小。非常小。你们面对面站着，距离不到二十厘米。你能看到他睫毛上的雨水。你能感觉到他的呼吸——快的，热的。' },
+  ]);
+  showChoices([{ text: '……', action: sceneSuChiConfess2 }]);
+}
+
+function sceneSuChiConfess2() {
+  showNarrative([
+    { text: '外面的雨更大了。雨打在电话亭的金属顶上，像有人在敲鼓。你们被困住了。' },
+    { text: '苏迟先开口了——他的声音很轻，你差点被雨声盖过去：' },
+    { text: '「你知道——我以前觉得这种事只会发生在小说里。两个人偶然躲进同一个地方。」' },
+    { text: '你说："这不是偶然。这条巷子只有这一个电话亭。"' },
+    { text: '他笑了——那种很轻的、被雨水模糊了的笑。然后他的表情变了。变得认真了。比你见过的任何时候都认真。' },
+    { text: '「我想了很久，」他说，「从那天在山上——不，从更早——从火车上那次说漏嘴——不，更早——从你第一次在Carlos店里坐到我旁边——」他深吸了一口气，「我想了很久要不要跟你说。我不擅长这个。你知道的。我擅长分析和声走向但我不擅长——这个。」' },
+    { text: '你的心跳快得你觉得他一定听得到——这么近的距离。你说："说什么？"' },
+    { text: '他看着你。雨水从他额头上滑下来。电话亭里的光很暗——只有外面路灯透过碎玻璃照进来的一点。但他的眼睛很亮。' },
+    { text: '「你——是我的月亮。」' },
+    { text: '你说："你已经给我唱过这个了。"' },
+    { text: '他摇头。「不是那首歌。那首歌说的是——月亮很远。很美。但很远。我现在说的是——」他停了一下，好像在跟自己搏斗——「我现在说的是，我不想你远了。我想你近。像现在这样近。一直这样近。」' },
+    { text: '雨声很大。你的眼泪和雨水混在一起——你分不清了。你说："苏迟，你在表白吗？"他的耳朵红了——在这么暗的光线里你都看得到。他说：' },
+    { text: '「……是。很不优雅的表白。在一个破电话亭里。我准备了三百种说法，现在一种都说不出来——」' },
+  ]);
+  showChoices([
+    { text: '吻他', action: sceneSuChiConfessAccept },
+    { text: '（摇头，退后一步）', action: () => { showNarrative([{ text: '你退了一步——在电话亭里一步就到了背后的玻璃。苏迟看着你。他的表情没有变——但他的眼睛里有什么灭了。他轻轻说："我明白了。"雨停的时候他先走了。你在电话亭里站了很久。' }, { type: 'stat-up', text: '心情 -10' }]); adjustStat('mood', -10); showChoices([{ text: '继续', action: sceneDailyMenu }]); } },
+  ]);
+}
+
+function sceneSuChiConfessAccept() {
+  S.confirmedPartner = 'suchi';
+  S.npcs.suchi.romance = true;
+  adjustStat('mood', 25);
+  renderStatus();
+
+  showNarrative([
+    { text: '你没有让他说完。' },
+    { text: '你踮起脚——在这个二十厘米都嫌多的电话亭里——你吻了他。' },
+    { text: '他愣了一秒。然后他的手——那只写了无数乐评、画了无数声部走向图、指尖有铅笔茧的手——轻轻地、试探地、好像怕碰碎什么一样地——搂住了你的腰。' },
+    { text: '他的嘴唇是凉的。雨水的味道。还有一点点咖啡的苦。但很快就变暖了。你们在一个破旧的蓝色电话亭里接吻，外面是暴雨，碎玻璃上有雨水滑下来，路灯忽明忽暗。不优雅。不体面。很苏迟——不，很不苏迟。是你把他变成了这样。' },
+    { text: '你退开一点。他的额头贴着你的额头。他闭着眼睛。你看到他嘴角在抖——不是紧张，是在忍笑。你说："你笑什么。"' },
+    { text: '他睁开眼。他的眼睛在这么近的距离下是深棕色的，里面有光。他说："我在想——加缪的《局外人》第一句话是「今天，妈妈死了」。我想改成——「今天，在一个电话亭里，我被吻了。」"' },
+    { text: '你说："苏迟你不要在接吻以后引用加缪。"' },
+    { text: '他说："习惯了。"' },
+    { text: '雨小了。你们从电话亭里出来。整个世界被洗过了——石板路上全是水洼，映着路灯的金色。你们牵着手走在雨后的旧城区。他的手紧紧握着你的手，好像松开了你就会被风吹走。' },
+    { text: '你说："你准备的三百种说法呢？"他说："作废了。"你说："一种都不告诉我？"他想了想。然后他很轻很轻地说：' },
+    { text: '「你是我唯一想写在正文里的人。其他人都在脚注。」' },
+    { text: '你说："这也很俗。"他说："但你在笑。"你确实在笑。你在雨后的街道上笑着。牵着苏迟的手。' },
+    { type: 'system', text: '在一个暴雨天的旧电话亭里，苏迟用了三百种说法中的零种表了白。你吻了他。从今以后，你和苏迟确立了恋爱关系。' },
+    { type: 'stat-up', text: '心情 +25 · 苏迟好感度大幅提升 · 确立关系：苏迟' },
+  ]);
+  showChoices([{ text: '牵着手走回家', action: sceneDailyMenu }]);
+}
+
+// --- Tomás: The Special Sketchbook ---
+function sceneTomasConfess() {
+  if (!S.npcs.tomas.romance) { sceneDailyMenu(); return; }
+  const npc = S.npcs.tomas;
+  npc.talked++; npc.events.push('tm_confess'); npc.affinity += 20;
+  adjustStat('energy', -5); advanceTime(); renderStatus();
+
+  showNarrative([
+    { type: 'deco', items: ['palette','palette','palette'] },
+    { text: '你在回家的路上经过广场的长椅。Tomás经常在这里画画——但今天长椅上没有Tomás。只有一个东西。' },
+    { text: '一本素描本。' },
+    { text: '不是他平时用的那本——那本是深绿色的，封面有油漆的痕迹。这本不一样。这本是深红色的，很旧，封面磨得发亮，边角卷起来。你拿起来——很轻。你犹豫了一秒要不要打开。' },
+    { text: '封面内侧用铅笔写着一行字：「给她看的那天才打开。」' },
+    { text: '你的心跳快了。你打开了。' },
+  ]);
+  showChoices([{ text: '翻开', action: sceneTomasConfess2 }]);
+}
+
+function sceneTomasConfess2() {
+  showNarrative([
+    { text: '第一页。日期是你来这座城市的第三周。画的是Carlos咖啡馆的窗户——窗户后面有一个模糊的人影在喝咖啡。你认出了那个人影的轮廓。是你。角落里写着：「今天她又来了。她喝espresso但加了三包糖。」' },
+    { text: '第二页。日期往后一个月。画的是排练厅。你的侧脸——嘴微微张着，在唱歌。笔触比第一页精细了很多。写着：「她唱歌的时候不知道自己在发光。」' },
+    { text: '第三页。你和Sofia在海边走的背影。他画了两个人的影子在沙滩上延伸。写着：「我在远处画她。她没看到我。」' },
+    { text: '你一页一页地翻。每一页都是你。你在买菜。你在遛狗。你在笑。你在发呆。你在雨天撑着伞跑。你在排练结束后坐在台阶上看天。你在吃Marta的蛋糕。你在跟苏迟聊天。你在阳台上浇花。' },
+    { text: '他画了你几十次。你一次都不知道。' },
+    { text: '翻到最后一页。日期是昨天。画的是——你的手。但这次不是静物画。你的手旁边画了另一只手——他的手。两只手的指尖快要碰到了。还没碰到。写着：' },
+    { text: '「我画了所有我看到的她。但我画不出来我看到她的时候我的样子。也许这就是——」' },
+    { text: '句子在这里断了。没有写完。铅笔的痕迹在最后一个字上停住了，像是写到一半被什么打断了。或者他不敢写完。' },
+  ]);
+  showChoices([{ text: '抱着素描本去找他', action: sceneTomasConfess3 }]);
+}
+
+function sceneTomasConfess3() {
+  showNarrative([
+    { text: '你在画室里找到了他。他站在窗户旁边，背对着门。他听到你进来的时候转过身——看到你手里的素描本，他的脸色变了。' },
+    { text: '「你——」他的声音断了，「那本——我忘在长椅上了——你——」' },
+    { text: '你举起素描本。你说："最后一页。你没写完。"' },
+    { text: '他的脸红到了耳朵。他低下头。他的手插在口袋里——你认得这个动作，这是他紧张到极点的动作。' },
+    { text: '他说："我不是故意让你看到的。那本——那本是——"他深吸了一口气。"好吧。那本是我从来没给任何人看过的。从你来的第一天我就开始画了。每天。你不知道的时候。"' },
+    { text: '你说："我知道了。"你走到他面前。他还在低着头。你说："看着我。"' },
+    { text: '他抬起头。他的眼睛是湿的。他说："最后那句——我写不完——因为我不知道那个词是什么。我查了字典——西班牙语叫amor，英语叫love，但都不对——都不够准确——" ' },
+    { text: '你说："你不用写完。"' },
+  ]);
+  showChoices([
+    { text: '吻他', action: sceneTomasConfessAccept },
+    { text: '（把素描本还给他，退后一步）', action: () => { showNarrative([{ text: '你把素描本递给他。他接过去的时候手指在抖。你说："画得很好。每一张都很好。"然后你转身走了。你听到身后什么东西掉在地上的声音——也许是铅笔。你没回头。' }, { type: 'stat-up', text: '心情 -10' }]); adjustStat('mood', -10); showChoices([{ text: '继续', action: sceneDailyMenu }]); } },
+  ]);
+}
+
+function sceneTomasConfessAccept() {
+  S.confirmedPartner = 'tomas';
+  S.npcs.tomas.romance = true;
+  adjustStat('mood', 25);
+  renderStatus();
+
+  showNarrative([
+    { text: '你把素描本放在旁边的桌子上。你伸出手——不是握手，不是碰指尖——你把他的脸捧起来了。' },
+    { text: '他的眼睛在你手心里。湿的。棕色的。里面有你。你在他的瞳孔里看到了自己——像他画里的你，但更近。真实的。三维的。会呼吸的。' },
+    { text: '你吻了他。很轻。像他画第一笔的时候——试探的、怕弄错的、但一旦落下就不收回来了。' },
+    { text: '他整个人僵住了一秒。然后他的手——那只沾着颜料的、画了几十页你的手——慢慢地搂住了你。他搂得很轻。像在抱一幅他怕弄坏的画。' },
+    { text: '你退开一点。他的额头贴着你的额头。他的呼吸在抖。他说了一句话——声音细得像铅笔在纸上的声音：' },
+    { text: '「我想到了。最后一页——那个词。」' },
+    { text: '你说："是什么。"' },
+    { text: '他说："是「家」。也许那个词是——我看到你的时候的感觉就像——到家了。」' },
+    { text: '你的眼泪掉下来了。你说："Tomás。"他说："嗯。"你说："你不是说你不会说漂亮话吗。"他说："这不是漂亮话。这是实话。"' },
+    { text: '画室的窗户开着。海风吹进来，翻动了桌上的素描本。那些画——几十页的你——在风里一页一页地翻过去。每一页都是他爱你的证据。你想：一个人可以用这么多安静的方式爱另一个人。' },
+    { type: 'system', text: 'Tomás用一本素描本说出了他画不完的那个句子。从今以后，你和Tomás确立了恋爱关系。' },
+    { type: 'stat-up', text: '心情 +25 · Tomás好感度大幅提升 · 确立关系：Tomás' },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+// --- Sofia: Oven Burn Confession ---
+function sceneSofiaConfess() {
+  if (!S.npcs.sofia.romance) { sceneDailyMenu(); return; }
+  const npc = S.npcs.sofia;
+  npc.talked++; npc.events.push('sf_confess'); npc.affinity += 20;
+  adjustStat('energy', -5); advanceTime(); renderStatus();
+
+  showNarrative([
+    { text: 'Sofia说她要试一个新食谱——她外婆菜谱本最后几页里一道从来没做过的甜点。她需要帮手。你说好。' },
+    { text: '你在Sofia的厨房里。桌上铺着面粉，空气里是黄油和香草的味道。她在揉面，你在切苹果。一切都很平常——除了烤箱预热的温度灯一直在闪。' },
+    { text: '甜点进了烤箱。你们在等。Sofia靠在料理台上翻菜谱本。你站在她旁边——厨房很小，两个人站在里面总是会不小心碰到。' },
+    { text: '计时器响了。Sofia戴上隔热手套去开烤箱——一股热浪涌出来。她把烤盘端出来放在台面上。你凑过去看——' },
+    { text: '你的手碰到了烤盘的边缘。' },
+  ]);
+  showChoices([{ text: '——！', action: sceneSofiaConfess2 }]);
+}
+
+function sceneSofiaConfess2() {
+  showNarrative([
+    { text: '「啊——！」你缩回手。手背上一道红印——不重，但烫得你整个人弹了一下。' },
+    { text: 'Sofia立刻放下手套。她说「给我看」的时候语气变了——不是平时那个会开玩笑的Sofia，是护理专业实习过的Sofia。她拿过你的手，翻过来，看了看。' },
+    { text: '「没起泡。冲水。」她把你拉到水龙头下面，打开冷水。你的手在水流里——冰凉的，疼。她握着你的手腕固定住。' },
+    { text: '冲了两分钟她关了水。她从柜子里翻出一管药膏——「芦荟的，护理课老师推荐的」。她把你带到客厅坐下来。她坐在你对面，拿过你的手，开始涂药。' },
+    { text: '她涂得很慢。很仔细。像她做菜的时候一样——不急，不漏。你看着她的手指在你的手背上轻轻画圈，把药膏均匀地涂开。' },
+    { text: '她涂着涂着——她的手指停住了。' },
+    { text: '你抬头看她。她也在看你。你们的距离——你不知道什么时候变得这么近的。你能看到她睫毛上残留的一点面粉。你能闻到她身上黄油和香草和Sofia的味道。' },
+    { text: '她的手指还搭在你的手背上。你的手背已经不疼了——但你的心跳很疼。一种好的疼。' },
+    { text: '她的声音很轻。像是说给空气听的：' },
+    { text: '「你每次受伤我都比你紧张。你知道吗。从你第一次切到手指那天开始——」' },
+    { text: '她没说完。她在看你的嘴唇。你知道她在看你的嘴唇因为她的眼睛往下移了一下。然后她赶紧移回来。她的脸红了。' },
+    { text: '你说："Sofia。"' },
+    { text: '她说："嗯。"声音小到你差点没听到。' },
+    { text: '你说："你刚才在看——"' },
+    { text: '她说："没有！我在看你的伤口好了没——"' },
+  ]);
+  showChoices([
+    { text: '吻她', action: sceneSofiaConfessAccept },
+    { text: '（把手收回来）', action: () => { showNarrative([{ text: '你把手收回来了。Sofia愣了一下。然后她笑了——那种很Sofia的、把什么都包在笑容里的笑。"药膏半小时以后洗掉就行了。"她站起来去了厨房。你听到她在洗手。水开了很久。' }, { type: 'stat-up', text: '心情 -10' }]); adjustStat('mood', -10); showChoices([{ text: '继续', action: sceneDailyMenu }]); } },
+  ]);
+}
+
+function sceneSofiaConfessAccept() {
+  S.confirmedPartner = 'sofia';
+  S.npcs.sofia.romance = true;
+  adjustStat('mood', 25);
+  renderStatus();
+
+  showNarrative([
+    { text: '你没有让她说完那句「我在看你的伤口」。' },
+    { text: '你俯过身去——只是一点点距离，十厘米，五厘米——然后你的嘴唇碰到了她的。' },
+    { text: '她整个人僵住了。你以为你搞砸了——然后她的手从你的手背上滑到了你的手心。她握住了你的手。她的手指嵌进你的指缝里。她在回应。' },
+    { text: '这个吻尝起来像黄油和香草和药膏。很Sofia。你后来跟她说这件事的时候她打了你一下："谁接吻的时候品味道啊！"但你知道她也记得。' },
+    { text: '你们分开的时候她的眼睛亮晶晶的。她说："你的手还疼吗？"你说："什么手？"她笑了——那种从肚子里出来的、没有防备的笑。你觉得世界上最好听的声音不是合唱，是Sofia笑。' },
+    { text: '她靠在你肩上。客厅里弥漫着烤箱的香气。甜点——你们差点忘了那个甜点。她跳起来冲进厨房——没有糊。她把甜点端出来，你们坐在客厅的地板上吃。' },
+    { text: '她喂了你一口。你说："你外婆的食谱真的很好。"她说："外婆说了——最好的调味料不在菜谱里。"你说："是什么？"她看了你一眼。你说："好好好，我知道了。"她靠过来，在你脸颊上亲了一下。有药膏的味道。' },
+    { text: '你说："Sofia。"她说："嗯？"你说："你是我在这个城市里最好的意外。"她说："你每次说这种话我都不知道怎么接。"你说："那你不用接。"她把头埋在你的颈窝里。她小小声地说了一句什么。你没听清。你说"你说什么"。她说"不翻译"。你笑了。' },
+    { type: 'system', text: '在Sofia家的客厅里，一次烤箱烫伤变成了一次告白。从今以后，你和Sofia确立了恋爱关系。' },
+    { type: 'stat-up', text: '心情 +25 · Sofia好感度大幅提升 · 确立关系：Sofia' },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
 // --- Competition Arc: Act 1 - Heats ---
 function sceneHeats() {
   if (S.choirDrama.heatsComplete) { sceneDailyMenu(); return; }
@@ -5032,12 +5431,12 @@ function sceneVictory3() {
 
 // --- Romance Epilogue ---
 function sceneRomanceEpilogue() {
-  const romanticNpc = ['suchi','sofia','nico','tomas'].find(id => S.npcs[id] && S.npcs[id].romance);
-  if (romanticNpc) {
-    if (romanticNpc === 'suchi') sceneRomanceSuchi();
-    else if (romanticNpc === 'sofia') sceneRomanceSofia();
-    else if (romanticNpc === 'nico') sceneRomanceNico();
-    else if (romanticNpc === 'tomas') sceneRomanceTomas();
+  const partner = S.confirmedPartner || ['suchi','sofia','nico','tomas'].find(id => S.npcs[id] && S.npcs[id].romance);
+  if (partner) {
+    if (partner === 'suchi') sceneRomanceSuchi();
+    else if (partner === 'sofia') sceneRomanceSofia();
+    else if (partner === 'nico') sceneRomanceNico();
+    else if (partner === 'tomas') sceneRomanceTomas();
   } else {
     sceneEpilogue();
   }
