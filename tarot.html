@@ -1,60 +1,65 @@
 <title>Tarot Draw</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
-
   :root {
-    --bg: #EDF4FC;
+    --bg: #F0F5FA;
     --surface: #FFFFFF;
-    --primary: #4A90D9;
-    --primary-deep: #2E6DB4;
-    --primary-light: #B8D4F0;
-    --primary-pale: #D9EAFB;
-    --text: #1A3A5C;
-    --text-secondary: #5A7A9A;
-    --card-back: linear-gradient(135deg, #4A90D9 0%, #2E6DB4 100%);
-    --shadow: rgba(74, 144, 217, 0.15);
-    --border: #C8DDF2;
-    --danger: #E8636F;
+    --primary: #3D8AC4;
+    --primary-deep: #1E5A8A;
+    --primary-light: #A8CDE8;
+    --primary-pale: #DBE9F5;
+    --accent: #C47A3D;
+    --text: #1C3448;
+    --text-secondary: #6B8BA8;
+    --card-back: linear-gradient(145deg, #3D8AC4 0%, #1E5A8A 60%, #163F62 100%);
+    --shadow: rgba(30, 90, 138, 0.1);
+    --border: #C4D8EA;
+    --danger: #C45A5A;
+    --summary-bg: #F6FAFE;
     color-scheme: light;
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #0F1A2E;
-      --surface: #1A2A42;
-      --primary: #5A9FE8;
-      --primary-deep: #7AB4F0;
-      --primary-light: #253A55;
-      --primary-pale: #1E3050;
-      --text: #D0E0F0;
-      --text-secondary: #8AA0BA;
-      --card-back: linear-gradient(135deg, #2E5A8A 0%, #1A3A5C 100%);
+      --bg: #0E1B28;
+      --surface: #162638;
+      --primary: #5AA0D8;
+      --primary-deep: #8CC4F0;
+      --primary-light: #1E3A52;
+      --primary-pale: #1A3048;
+      --accent: #D89A5A;
+      --text: #D0DEE8;
+      --text-secondary: #7A9AB4;
+      --card-back: linear-gradient(145deg, #1E4A6A 0%, #0E2A40 60%, #091C2E 100%);
       --shadow: rgba(0, 0, 0, 0.3);
-      --border: #2A4060;
-      --danger: #F07080;
+      --border: #243848;
+      --danger: #E07070;
+      --summary-bg: #1A3048;
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #0F1A2E;
-    --surface: #1A2A42;
-    --primary: #5A9FE8;
-    --primary-deep: #7AB4F0;
-    --primary-light: #253A55;
-    --primary-pale: #1E3050;
-    --text: #D0E0F0;
-    --text-secondary: #8AA0BA;
-    --card-back: linear-gradient(135deg, #2E5A8A 0%, #1A3A5C 100%);
+    --bg: #0E1B28;
+    --surface: #162638;
+    --primary: #5AA0D8;
+    --primary-deep: #8CC4F0;
+    --primary-light: #1E3A52;
+    --primary-pale: #1A3048;
+    --accent: #D89A5A;
+    --text: #D0DEE8;
+    --text-secondary: #7A9AB4;
+    --card-back: linear-gradient(145deg, #1E4A6A 0%, #0E2A40 60%, #091C2E 100%);
     --shadow: rgba(0, 0, 0, 0.3);
-    --border: #2A4060;
-    --danger: #F07080;
+    --border: #243848;
+    --danger: #E07070;
+    --summary-bg: #1A3048;
     color-scheme: dark;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Nunito', sans-serif;
     background: var(--bg);
     color: var(--text);
     padding-inline: 16px;
@@ -63,72 +68,79 @@
   }
 
   .container {
-    max-width: 800px;
+    max-width: 720px;
     margin: 0 auto;
   }
 
   h1 {
     text-align: center;
-    font-size: 1.8rem;
-    font-weight: 700;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 600;
     color: var(--primary-deep);
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     text-wrap: balance;
+    letter-spacing: 0.04em;
   }
 
   .subtitle {
     text-align: center;
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin-bottom: 32px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
   }
 
   .section {
     background: var(--surface);
-    border-radius: 16px;
+    border-radius: 14px;
     padding: 24px;
     margin-bottom: 24px;
     border: 1px solid var(--border);
-    box-shadow: 0 2px 12px var(--shadow);
+    box-shadow: 0 1px 8px var(--shadow);
   }
 
   .section-title {
-    font-size: 1.2rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem;
     font-weight: 700;
     color: var(--primary-deep);
-    margin-bottom: 16px;
+    margin-bottom: 18px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
 
   .section-title .icon {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     background: var(--primary-pale);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    color: var(--primary);
   }
 
   .mode-selector {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   .mode-btn {
-    font-family: 'Quicksand', sans-serif;
-    padding: 8px 18px;
+    font-family: 'Nunito', sans-serif;
+    padding: 7px 18px;
     border-radius: 20px;
-    border: 2px solid var(--primary-light);
+    border: 1.5px solid var(--primary-light);
     background: transparent;
     color: var(--text);
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.88rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
   }
@@ -148,66 +160,70 @@
     display: none;
     align-items: center;
     gap: 10px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .custom-input-row.show { display: flex; }
 
   .custom-input-row input {
-    font-family: 'Quicksand', sans-serif;
-    width: 80px;
-    padding: 8px 12px;
-    border: 2px solid var(--primary-light);
+    font-family: 'Nunito', sans-serif;
+    width: 72px;
+    padding: 7px 10px;
+    border: 1.5px solid var(--primary-light);
     border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 700;
     color: var(--text);
     background: var(--bg);
     text-align: center;
     outline: none;
   }
 
-  .custom-input-row input:focus {
-    border-color: var(--primary);
-  }
+  .custom-input-row input:focus { border-color: var(--primary); }
 
   .custom-input-row label {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-secondary);
+    font-weight: 600;
   }
 
   .draw-btn {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Nunito', sans-serif;
     display: block;
     width: 100%;
-    padding: 14px;
+    padding: 13px;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--card-back);
     color: #fff;
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
     transition: opacity 0.2s, transform 0.1s;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
   }
 
-  .draw-btn:hover { opacity: 0.9; }
+  .draw-btn:hover { opacity: 0.92; }
   .draw-btn:active { transform: scale(0.98); }
 
   .results-area {
     margin-top: 20px;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-    justify-content: center;
+    justify-items: center;
+  }
+
+  @media (max-width: 420px) {
+    .results-area { grid-template-columns: repeat(3, 1fr); gap: 8px; }
   }
 
   .tarot-card {
-    width: 110px;
-    height: 170px;
+    width: 100%;
+    max-width: 140px;
+    aspect-ratio: 5 / 8;
     perspective: 600px;
-    cursor: default;
+    cursor: pointer;
   }
 
   .tarot-card-inner {
@@ -222,6 +238,9 @@
   .tarot-card.unrevealed .tarot-card-inner {
     transform: rotateY(0deg);
   }
+
+  .tarot-card.unrevealed { cursor: pointer; }
+  .tarot-card:not(.unrevealed) { cursor: default; }
 
   .tarot-card-front, .tarot-card-back {
     position: absolute;
@@ -238,15 +257,15 @@
 
   .tarot-card-back {
     background: var(--card-back);
-    border: 2px solid var(--primary-light);
-    box-shadow: 0 2px 8px var(--shadow);
+    border: 1.5px solid var(--primary-light);
+    box-shadow: 0 2px 10px var(--shadow);
   }
 
   .tarot-card-back-pattern {
-    width: 70%;
-    height: 70%;
-    border: 2px solid rgba(255,255,255,0.25);
-    border-radius: 8px;
+    width: 65%;
+    height: 65%;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    border-radius: 6px;
     position: relative;
     display: flex;
     align-items: center;
@@ -256,28 +275,28 @@
   .tarot-card-back-pattern::before {
     content: '';
     position: absolute;
-    width: 85%;
-    height: 85%;
-    border: 1px solid rgba(255,255,255,0.15);
+    width: 80%;
+    height: 80%;
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 50%;
   }
 
   .tarot-card-back-pattern::after {
     content: '';
     position: absolute;
-    width: 40%;
-    height: 40%;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 4px;
+    width: 36%;
+    height: 36%;
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 3px;
     transform: rotate(45deg);
   }
 
   .tarot-card-front {
     background: var(--surface);
-    border: 2px solid var(--border);
-    box-shadow: 0 2px 8px var(--shadow);
+    border: 1.5px solid var(--border);
+    box-shadow: 0 2px 10px var(--shadow);
     transform: rotateY(180deg);
-    gap: 4px;
+    gap: 3px;
     text-align: center;
   }
 
@@ -286,29 +305,31 @@
   }
 
   .card-suit-icon {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     line-height: 1;
   }
 
   .card-number {
-    font-size: 0.75rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.8rem;
     font-weight: 700;
     color: var(--primary-deep);
   }
 
   .card-name {
-    font-size: 0.72rem;
-    font-weight: 600;
+    font-size: 0.7rem;
+    font-weight: 700;
     color: var(--text);
-    line-height: 1.2;
+    line-height: 1.25;
   }
 
   .card-orientation {
-    font-size: 0.65rem;
-    font-weight: 600;
+    font-size: 0.6rem;
+    font-weight: 700;
     padding: 2px 8px;
-    border-radius: 8px;
+    border-radius: 6px;
     margin-top: 2px;
+    letter-spacing: 0.04em;
   }
 
   .card-orientation.upright {
@@ -318,34 +339,92 @@
 
   .card-orientation.reversed-tag {
     color: var(--danger);
-    background: rgba(232, 99, 111, 0.1);
+    background: rgba(196, 90, 90, 0.1);
+  }
+
+  .summary-box {
+    margin-top: 18px;
+    background: var(--summary-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: none;
+  }
+
+  .summary-box.show { display: block; }
+
+  .summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .summary-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary-deep);
+  }
+
+  .copy-btn {
+    font-family: 'Nunito', sans-serif;
+    padding: 4px 14px;
+    border: 1.5px solid var(--primary-light);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover {
+    background: var(--primary-pale);
+    border-color: var(--primary);
+  }
+
+  .copy-btn.copied {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  .summary-text {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--text);
+    white-space: pre-wrap;
+    user-select: text;
+    -webkit-user-select: text;
   }
 
   .dragon-placeholder {
     text-align: center;
     padding: 32px 16px;
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    font-size: 0.92rem;
   }
 
   .dragon-placeholder .dragon-icon {
-    font-size: 2.4rem;
-    margin-bottom: 12px;
-    opacity: 0.6;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    opacity: 0.5;
   }
 
   .reset-btn {
-    font-family: 'Quicksand', sans-serif;
-    margin-top: 16px;
+    font-family: 'Nunito', sans-serif;
+    margin-top: 14px;
     display: block;
     width: 100%;
     padding: 10px;
-    border: 2px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: 10px;
     background: transparent;
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.88rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
   }
@@ -355,22 +434,20 @@
     color: var(--primary);
   }
 
-  @media (max-width: 500px) {
-    .tarot-card {
-      width: 90px;
-      height: 140px;
-    }
-    .card-suit-icon { font-size: 1.3rem; }
-    .card-name { font-size: 0.65rem; }
-    .card-number { font-size: 0.68rem; }
+  @media (max-width: 420px) {
+    h1 { font-size: 1.8rem; }
+    .tarot-card { max-width: 100px; }
+    .card-suit-icon { font-size: 1.2rem; }
+    .card-name { font-size: 0.62rem; }
+    .card-number { font-size: 0.7rem; }
+    .card-orientation { font-size: 0.55rem; padding: 2px 6px; }
   }
 </style>
 
 <div class="container">
   <h1>Tarot Draw</h1>
-  <p class="subtitle">78 cards / upright & reversed</p>
+  <p class="subtitle">78 cards &middot; upright & reversed</p>
 
-  <!-- Daily Draw -->
   <div class="section">
     <div class="section-title">
       <span class="icon">&#9788;</span>
@@ -388,10 +465,16 @@
     </div>
     <button class="draw-btn" id="dailyDraw">抽取</button>
     <div class="results-area" id="dailyResults"></div>
+    <div class="summary-box" id="summaryBox">
+      <div class="summary-header">
+        <span class="summary-label">抽取结果</span>
+        <button class="copy-btn" id="copyBtn">复制</button>
+      </div>
+      <div class="summary-text" id="summaryText"></div>
+    </div>
     <button class="reset-btn" id="dailyReset" style="display:none;">重新抽取</button>
   </div>
 
-  <!-- Dragon -->
   <div class="section">
     <div class="section-title">
       <span class="icon">&#128009;</span>
@@ -469,41 +552,46 @@
   function createCardEl(card) {
     const el = document.createElement('div');
     el.className = 'tarot-card unrevealed' + (card.reversed ? ' reversed' : '');
-
-    el.innerHTML = `
-      <div class="tarot-card-inner">
-        <div class="tarot-card-back">
-          <div class="tarot-card-back-pattern"></div>
-        </div>
-        <div class="tarot-card-front">
-          <span class="card-suit-icon">${card.icon}</span>
-          <span class="card-number">${card.number}</span>
-          <span class="card-name">${card.name}</span>
-          <span class="card-orientation ${card.reversed ? 'reversed-tag' : 'upright'}">
-            ${card.reversed ? '逆位' : '正位'}
-          </span>
-        </div>
-      </div>
-    `;
-
-    el.addEventListener('click', function () {
-      el.classList.remove('unrevealed');
-    });
-
+    el.innerHTML =
+      '<div class="tarot-card-inner">' +
+        '<div class="tarot-card-back"><div class="tarot-card-back-pattern"></div></div>' +
+        '<div class="tarot-card-front">' +
+          '<span class="card-suit-icon">' + card.icon + '</span>' +
+          '<span class="card-number">' + card.number + '</span>' +
+          '<span class="card-name">' + card.name + '</span>' +
+          '<span class="card-orientation ' + (card.reversed ? 'reversed-tag' : 'upright') + '">' +
+            (card.reversed ? '逆位' : '正位') +
+          '</span>' +
+        '</div>' +
+      '</div>';
+    el.addEventListener('click', function () { el.classList.remove('unrevealed'); });
     return el;
   }
 
-  // Mode selection
+  function buildSummaryText(cards) {
+    return cards.map(function (c, i) {
+      var orient = c.reversed ? '逆位' : '正位';
+      return (i + 1) + '. ' + c.name + ' (' + orient + ')';
+    }).join('\n');
+  }
+
   let currentCount = 1;
+  let lastDrawnCards = [];
   const modeButtons = document.querySelectorAll('#dailyModes .mode-btn');
   const customRow = document.getElementById('customRow');
   const customInput = document.getElementById('customCount');
+  const dailyDrawBtn = document.getElementById('dailyDraw');
+  const dailyResults = document.getElementById('dailyResults');
+  const dailyReset = document.getElementById('dailyReset');
+  const summaryBox = document.getElementById('summaryBox');
+  const summaryText = document.getElementById('summaryText');
+  const copyBtn = document.getElementById('copyBtn');
 
-  modeButtons.forEach(btn => {
+  modeButtons.forEach(function (btn) {
     btn.addEventListener('click', function () {
-      modeButtons.forEach(b => b.classList.remove('active'));
+      modeButtons.forEach(function (b) { b.classList.remove('active'); });
       btn.classList.add('active');
-      const val = btn.dataset.count;
+      var val = btn.dataset.count;
       if (val === 'custom') {
         customRow.classList.add('show');
         currentCount = Math.min(78, Math.max(1, parseInt(customInput.value) || 5));
@@ -515,43 +603,69 @@
   });
 
   customInput.addEventListener('input', function () {
-    let v = parseInt(customInput.value);
+    var v = parseInt(customInput.value);
     if (isNaN(v) || v < 1) v = 1;
     if (v > 78) v = 78;
     currentCount = v;
   });
 
-  // Draw
-  const dailyDrawBtn = document.getElementById('dailyDraw');
-  const dailyResults = document.getElementById('dailyResults');
-  const dailyReset = document.getElementById('dailyReset');
-
   dailyDrawBtn.addEventListener('click', function () {
-    const activeBtn = document.querySelector('#dailyModes .mode-btn.active');
+    var activeBtn = document.querySelector('#dailyModes .mode-btn.active');
     if (activeBtn && activeBtn.dataset.count === 'custom') {
       currentCount = Math.min(78, Math.max(1, parseInt(customInput.value) || 5));
     }
-    const cards = drawCards(currentCount);
+    var cards = drawCards(currentCount);
+    lastDrawnCards = cards;
     dailyResults.innerHTML = '';
-    cards.forEach((card, i) => {
-      const el = createCardEl(card);
+    cards.forEach(function (card, i) {
+      var el = createCardEl(card);
       el.style.opacity = '0';
-      el.style.transform = 'translateY(20px)';
+      el.style.transform = 'translateY(16px)';
       dailyResults.appendChild(el);
-      setTimeout(() => {
+      setTimeout(function () {
         el.style.transition = 'opacity 0.3s, transform 0.3s';
         el.style.opacity = '1';
         el.style.transform = 'translateY(0)';
-      }, i * 80);
+      }, i * 70);
     });
+    summaryText.textContent = buildSummaryText(cards);
+    summaryBox.classList.add('show');
+    copyBtn.classList.remove('copied');
+    copyBtn.textContent = '复制';
     dailyDrawBtn.style.display = 'none';
     dailyReset.style.display = 'block';
   });
 
   dailyReset.addEventListener('click', function () {
     dailyResults.innerHTML = '';
+    summaryBox.classList.remove('show');
     dailyDrawBtn.style.display = 'block';
     dailyReset.style.display = 'none';
+    lastDrawnCards = [];
   });
+
+  copyBtn.addEventListener('click', function () {
+    var text = summaryText.textContent;
+    try {
+      navigator.clipboard.writeText(text).then(function () {
+        copyBtn.classList.add('copied');
+        copyBtn.textContent = '已复制';
+        setTimeout(function () {
+          copyBtn.classList.remove('copied');
+          copyBtn.textContent = '复制';
+        }, 1500);
+      }).catch(fallbackSelect);
+    } catch (e) {
+      fallbackSelect();
+    }
+  });
+
+  function fallbackSelect() {
+    var range = document.createRange();
+    range.selectNodeContents(summaryText);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
 })();
 </script>
