@@ -1,0 +1,557 @@
+<title>Tarot Draw</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #EDF4FC;
+    --surface: #FFFFFF;
+    --primary: #4A90D9;
+    --primary-deep: #2E6DB4;
+    --primary-light: #B8D4F0;
+    --primary-pale: #D9EAFB;
+    --text: #1A3A5C;
+    --text-secondary: #5A7A9A;
+    --card-back: linear-gradient(135deg, #4A90D9 0%, #2E6DB4 100%);
+    --shadow: rgba(74, 144, 217, 0.15);
+    --border: #C8DDF2;
+    --danger: #E8636F;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1A2E;
+      --surface: #1A2A42;
+      --primary: #5A9FE8;
+      --primary-deep: #7AB4F0;
+      --primary-light: #253A55;
+      --primary-pale: #1E3050;
+      --text: #D0E0F0;
+      --text-secondary: #8AA0BA;
+      --card-back: linear-gradient(135deg, #2E5A8A 0%, #1A3A5C 100%);
+      --shadow: rgba(0, 0, 0, 0.3);
+      --border: #2A4060;
+      --danger: #F07080;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1A2E;
+    --surface: #1A2A42;
+    --primary: #5A9FE8;
+    --primary-deep: #7AB4F0;
+    --primary-light: #253A55;
+    --primary-pale: #1E3050;
+    --text: #D0E0F0;
+    --text-secondary: #8AA0BA;
+    --card-back: linear-gradient(135deg, #2E5A8A 0%, #1A3A5C 100%);
+    --shadow: rgba(0, 0, 0, 0.3);
+    --border: #2A4060;
+    --danger: #F07080;
+    color-scheme: dark;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding-inline: 16px;
+    padding-block: 24px;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-deep);
+    margin-bottom: 8px;
+    text-wrap: balance;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 32px;
+  }
+
+  .section {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-deep);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title .icon {
+    width: 28px;
+    height: 28px;
+    background: var(--primary-pale);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  .mode-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .mode-btn {
+    font-family: 'Quicksand', sans-serif;
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 2px solid var(--primary-light);
+    background: transparent;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mode-btn:hover {
+    border-color: var(--primary);
+    background: var(--primary-pale);
+  }
+
+  .mode-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+  }
+
+  .custom-input-row {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .custom-input-row.show { display: flex; }
+
+  .custom-input-row input {
+    font-family: 'Quicksand', sans-serif;
+    width: 80px;
+    padding: 8px 12px;
+    border: 2px solid var(--primary-light);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--bg);
+    text-align: center;
+    outline: none;
+  }
+
+  .custom-input-row input:focus {
+    border-color: var(--primary);
+  }
+
+  .custom-input-row label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .draw-btn {
+    font-family: 'Quicksand', sans-serif;
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: var(--card-back);
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.02em;
+  }
+
+  .draw-btn:hover { opacity: 0.9; }
+  .draw-btn:active { transform: scale(0.98); }
+
+  .results-area {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .tarot-card {
+    width: 110px;
+    height: 170px;
+    perspective: 600px;
+    cursor: default;
+  }
+
+  .tarot-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    transform: rotateY(180deg);
+  }
+
+  .tarot-card.unrevealed .tarot-card-inner {
+    transform: rotateY(0deg);
+  }
+
+  .tarot-card-front, .tarot-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .tarot-card-back {
+    background: var(--card-back);
+    border: 2px solid var(--primary-light);
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+
+  .tarot-card-back-pattern {
+    width: 70%;
+    height: 70%;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tarot-card-back-pattern::before {
+    content: '';
+    position: absolute;
+    width: 85%;
+    height: 85%;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+  }
+
+  .tarot-card-back-pattern::after {
+    content: '';
+    position: absolute;
+    width: 40%;
+    height: 40%;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    transform: rotate(45deg);
+  }
+
+  .tarot-card-front {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    box-shadow: 0 2px 8px var(--shadow);
+    transform: rotateY(180deg);
+    gap: 4px;
+    text-align: center;
+  }
+
+  .tarot-card.reversed .tarot-card-front {
+    transform: rotateY(180deg) rotate(180deg);
+  }
+
+  .card-suit-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  .card-number {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary-deep);
+  }
+
+  .card-name {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .card-orientation {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 8px;
+    margin-top: 2px;
+  }
+
+  .card-orientation.upright {
+    color: var(--primary-deep);
+    background: var(--primary-pale);
+  }
+
+  .card-orientation.reversed-tag {
+    color: var(--danger);
+    background: rgba(232, 99, 111, 0.1);
+  }
+
+  .dragon-placeholder {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .dragon-placeholder .dragon-icon {
+    font-size: 2.4rem;
+    margin-bottom: 12px;
+    opacity: 0.6;
+  }
+
+  .reset-btn {
+    font-family: 'Quicksand', sans-serif;
+    margin-top: 16px;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  @media (max-width: 500px) {
+    .tarot-card {
+      width: 90px;
+      height: 140px;
+    }
+    .card-suit-icon { font-size: 1.3rem; }
+    .card-name { font-size: 0.65rem; }
+    .card-number { font-size: 0.68rem; }
+  }
+</style>
+
+<div class="container">
+  <h1>Tarot Draw</h1>
+  <p class="subtitle">78 cards / upright & reversed</p>
+
+  <!-- Daily Draw -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">&#9788;</span>
+      日常抽取
+    </div>
+    <div class="mode-selector" id="dailyModes">
+      <button class="mode-btn active" data-count="1">一张</button>
+      <button class="mode-btn" data-count="3">三张</button>
+      <button class="mode-btn" data-count="6">六张</button>
+      <button class="mode-btn" data-count="custom">自定义</button>
+    </div>
+    <div class="custom-input-row" id="customRow">
+      <input type="number" id="customCount" min="1" max="78" value="5" />
+      <label>张 (1–78)</label>
+    </div>
+    <button class="draw-btn" id="dailyDraw">抽取</button>
+    <div class="results-area" id="dailyResults"></div>
+    <button class="reset-btn" id="dailyReset" style="display:none;">重新抽取</button>
+  </div>
+
+  <!-- Dragon -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">&#128009;</span>
+      龙
+    </div>
+    <div class="dragon-placeholder">
+      <div class="dragon-icon">&#128050;</div>
+      <p>此板块尚在沉睡中，等待召唤...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const MAJOR = [
+    '愚者','魔术师','女祭司','女皇','皇帝','教皇','恋人','战车',
+    '力量','隐者','命运之轮','正义','倒吊人','死神','节制',
+    '恶魔','塔','星星','月亮','太阳','审判','世界'
+  ];
+  const SUITS = [
+    { name: '权杖', icon: '🪄' },
+    { name: '圣杯', icon: '🏆' },
+    { name: '宝剑', icon: '🗡️' },
+    { name: '星币', icon: '🪙' }
+  ];
+  const RANKS = [
+    'A','2','3','4','5','6','7','8','9','10',
+    '侍从','骑士','王后','国王'
+  ];
+
+  function buildDeck() {
+    const deck = [];
+    MAJOR.forEach((name, i) => {
+      deck.push({ name, number: toRoman(i), suit: null, icon: '✦', isMajor: true });
+    });
+    SUITS.forEach(suit => {
+      RANKS.forEach(rank => {
+        deck.push({
+          name: suit.name + ' ' + rank,
+          number: rank,
+          suit: suit.name,
+          icon: suit.icon,
+          isMajor: false
+        });
+      });
+    });
+    return deck;
+  }
+
+  function toRoman(n) {
+    const romans = [
+      'O','I','II','III','IV','V','VI','VII','VIII','IX','X',
+      'XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'
+    ];
+    return romans[n] || String(n);
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function drawCards(count) {
+    const deck = shuffle(buildDeck());
+    return deck.slice(0, count).map(card => ({
+      ...card,
+      reversed: Math.random() < 0.5
+    }));
+  }
+
+  function createCardEl(card) {
+    const el = document.createElement('div');
+    el.className = 'tarot-card unrevealed' + (card.reversed ? ' reversed' : '');
+
+    el.innerHTML = `
+      <div class="tarot-card-inner">
+        <div class="tarot-card-back">
+          <div class="tarot-card-back-pattern"></div>
+        </div>
+        <div class="tarot-card-front">
+          <span class="card-suit-icon">${card.icon}</span>
+          <span class="card-number">${card.number}</span>
+          <span class="card-name">${card.name}</span>
+          <span class="card-orientation ${card.reversed ? 'reversed-tag' : 'upright'}">
+            ${card.reversed ? '逆位' : '正位'}
+          </span>
+        </div>
+      </div>
+    `;
+
+    el.addEventListener('click', function () {
+      el.classList.remove('unrevealed');
+    });
+
+    return el;
+  }
+
+  // Mode selection
+  let currentCount = 1;
+  const modeButtons = document.querySelectorAll('#dailyModes .mode-btn');
+  const customRow = document.getElementById('customRow');
+  const customInput = document.getElementById('customCount');
+
+  modeButtons.forEach(btn => {
+    btn.addEventListener('click', function () {
+      modeButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const val = btn.dataset.count;
+      if (val === 'custom') {
+        customRow.classList.add('show');
+        currentCount = Math.min(78, Math.max(1, parseInt(customInput.value) || 5));
+      } else {
+        customRow.classList.remove('show');
+        currentCount = parseInt(val);
+      }
+    });
+  });
+
+  customInput.addEventListener('input', function () {
+    let v = parseInt(customInput.value);
+    if (isNaN(v) || v < 1) v = 1;
+    if (v > 78) v = 78;
+    currentCount = v;
+  });
+
+  // Draw
+  const dailyDrawBtn = document.getElementById('dailyDraw');
+  const dailyResults = document.getElementById('dailyResults');
+  const dailyReset = document.getElementById('dailyReset');
+
+  dailyDrawBtn.addEventListener('click', function () {
+    const activeBtn = document.querySelector('#dailyModes .mode-btn.active');
+    if (activeBtn && activeBtn.dataset.count === 'custom') {
+      currentCount = Math.min(78, Math.max(1, parseInt(customInput.value) || 5));
+    }
+    const cards = drawCards(currentCount);
+    dailyResults.innerHTML = '';
+    cards.forEach((card, i) => {
+      const el = createCardEl(card);
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      dailyResults.appendChild(el);
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.3s, transform 0.3s';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, i * 80);
+    });
+    dailyDrawBtn.style.display = 'none';
+    dailyReset.style.display = 'block';
+  });
+
+  dailyReset.addEventListener('click', function () {
+    dailyResults.innerHTML = '';
+    dailyDrawBtn.style.display = 'block';
+    dailyReset.style.display = 'none';
+  });
+})();
+</script>
