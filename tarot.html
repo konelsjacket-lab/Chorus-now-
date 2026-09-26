@@ -1,58 +1,88 @@
 <title>Tarot Draw</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Nunito:wght@400;600;700&display=swap">
 <style>
   :root {
-    --bg: #F0F5FA;
+    --bg: #F2F6FA;
     --surface: #FFFFFF;
-    --primary: #3D8AC4;
-    --primary-deep: #1E5A8A;
-    --primary-light: #A8CDE8;
-    --primary-pale: #DBE9F5;
-    --accent: #C47A3D;
-    --text: #1C3448;
-    --text-secondary: #6B8BA8;
-    --card-back: linear-gradient(145deg, #3D8AC4 0%, #1E5A8A 60%, #163F62 100%);
-    --shadow: rgba(30, 90, 138, 0.1);
-    --border: #C4D8EA;
-    --danger: #C45A5A;
-    --summary-bg: #F6FAFE;
+    --surface-alt: #F8FAFD;
+    --primary: #3B7EC2;
+    --primary-deep: #1B4F7E;
+    --primary-soft: #6AA3D8;
+    --primary-light: #B0CEE8;
+    --primary-pale: #E0ECF6;
+    --accent: #C2873B;
+    --accent-pale: #F5EBD8;
+    --text: #1A2F42;
+    --text-secondary: #6888A5;
+    --text-muted: #94AABB;
+    --card-face: #FAFCFE;
+    --card-back-1: #2B6AAA;
+    --card-back-2: #163F62;
+    --shadow-sm: 0 1px 4px rgba(27,79,126,0.06);
+    --shadow-md: 0 3px 14px rgba(27,79,126,0.08);
+    --shadow-lg: 0 6px 24px rgba(27,79,126,0.1);
+    --border: #D0DEE8;
+    --border-light: #E4EDF4;
+    --danger: #B85555;
+    --danger-pale: #FCEAEA;
+    --radius: 14px;
     color-scheme: light;
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #0E1B28;
-      --surface: #162638;
-      --primary: #5AA0D8;
-      --primary-deep: #8CC4F0;
+      --bg: #0C1720;
+      --surface: #14222F;
+      --surface-alt: #182A3A;
+      --primary: #5FA2D8;
+      --primary-deep: #9ECAF0;
+      --primary-soft: #4A8BBE;
       --primary-light: #1E3A52;
-      --primary-pale: #1A3048;
-      --accent: #D89A5A;
-      --text: #D0DEE8;
-      --text-secondary: #7A9AB4;
-      --card-back: linear-gradient(145deg, #1E4A6A 0%, #0E2A40 60%, #091C2E 100%);
-      --shadow: rgba(0, 0, 0, 0.3);
-      --border: #243848;
-      --danger: #E07070;
-      --summary-bg: #1A3048;
+      --primary-pale: #162A3C;
+      --accent: #D8A25F;
+      --accent-pale: #2A2218;
+      --text: #D4E2EE;
+      --text-secondary: #7A9AB8;
+      --text-muted: #506878;
+      --card-face: #1A2E40;
+      --card-back-1: #1A4A72;
+      --card-back-2: #0C2438;
+      --shadow-sm: 0 1px 4px rgba(0,0,0,0.2);
+      --shadow-md: 0 3px 14px rgba(0,0,0,0.25);
+      --shadow-lg: 0 6px 24px rgba(0,0,0,0.3);
+      --border: #22384A;
+      --border-light: #1C3040;
+      --danger: #D87070;
+      --danger-pale: #2A1818;
+      --radius: 14px;
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #0E1B28;
-    --surface: #162638;
-    --primary: #5AA0D8;
-    --primary-deep: #8CC4F0;
+    --bg: #0C1720;
+    --surface: #14222F;
+    --surface-alt: #182A3A;
+    --primary: #5FA2D8;
+    --primary-deep: #9ECAF0;
+    --primary-soft: #4A8BBE;
     --primary-light: #1E3A52;
-    --primary-pale: #1A3048;
-    --accent: #D89A5A;
-    --text: #D0DEE8;
-    --text-secondary: #7A9AB4;
-    --card-back: linear-gradient(145deg, #1E4A6A 0%, #0E2A40 60%, #091C2E 100%);
-    --shadow: rgba(0, 0, 0, 0.3);
-    --border: #243848;
-    --danger: #E07070;
-    --summary-bg: #1A3048;
+    --primary-pale: #162A3C;
+    --accent: #D8A25F;
+    --accent-pale: #2A2218;
+    --text: #D4E2EE;
+    --text-secondary: #7A9AB8;
+    --text-muted: #506878;
+    --card-face: #1A2E40;
+    --card-back-1: #1A4A72;
+    --card-back-2: #0C2438;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.2);
+    --shadow-md: 0 3px 14px rgba(0,0,0,0.25);
+    --shadow-lg: 0 6px 24px rgba(0,0,0,0.3);
+    --border: #22384A;
+    --border-light: #1C3040;
+    --danger: #D87070;
+    --danger-pale: #2A1818;
+    --radius: 14px;
     color-scheme: dark;
   }
 
@@ -63,49 +93,61 @@
     background: var(--bg);
     color: var(--text);
     padding-inline: 16px;
-    padding-block: 24px;
+    padding-block: 20px;
     min-height: 100vh;
   }
 
-  .container {
-    max-width: 720px;
-    margin: 0 auto;
+  .container { max-width: 680px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-block: 12px;
   }
 
-  h1 {
-    text-align: center;
+  header h1 {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 2.2rem;
-    font-weight: 600;
+    font-size: 2.4rem;
+    font-weight: 500;
     color: var(--primary-deep);
-    margin-bottom: 4px;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
     text-wrap: balance;
-    letter-spacing: 0.04em;
   }
 
-  .subtitle {
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    margin-bottom: 32px;
-    letter-spacing: 0.08em;
+  header .rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    font-weight: 600;
-  }
-
-  .section {
-    background: var(--surface);
-    border-radius: 14px;
-    padding: 24px;
-    margin-bottom: 24px;
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 8px var(--shadow);
-  }
-
-  .section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.35rem;
     font-weight: 700;
+  }
+
+  header .rule::before, header .rule::after {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .panel {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-md);
+  }
+
+  .panel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
     color: var(--primary-deep);
     margin-bottom: 18px;
     display: flex;
@@ -113,136 +155,136 @@
     gap: 10px;
   }
 
-  .section-title .icon {
-    width: 30px;
-    height: 30px;
-    background: var(--primary-pale);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.95rem;
-    color: var(--primary);
+  .panel-title .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--primary-soft);
+    flex-shrink: 0;
   }
 
-  .mode-selector {
+  .pills {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 18px;
   }
 
-  .mode-btn {
+  .pill {
     font-family: 'Nunito', sans-serif;
-    padding: 7px 18px;
+    padding: 6px 16px;
     border-radius: 20px;
-    border: 1.5px solid var(--primary-light);
+    border: 1.5px solid var(--border);
     background: transparent;
-    color: var(--text);
-    font-size: 0.88rem;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
   }
 
-  .mode-btn:hover {
-    border-color: var(--primary);
-    background: var(--primary-pale);
-  }
+  .pill:hover { border-color: var(--primary-soft); color: var(--text); }
 
-  .mode-btn.active {
+  .pill.active {
     background: var(--primary);
     border-color: var(--primary);
     color: #fff;
   }
 
-  .custom-input-row {
+  .custom-row {
     display: none;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 14px;
   }
 
-  .custom-input-row.show { display: flex; }
+  .custom-row.show { display: flex; }
 
-  .custom-input-row input {
+  .custom-row input {
     font-family: 'Nunito', sans-serif;
-    width: 72px;
-    padding: 7px 10px;
-    border: 1.5px solid var(--primary-light);
-    border-radius: 10px;
-    font-size: 0.95rem;
+    width: 64px;
+    padding: 6px 8px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--text);
-    background: var(--bg);
+    background: var(--surface-alt);
     text-align: center;
     outline: none;
   }
 
-  .custom-input-row input:focus { border-color: var(--primary); }
+  .custom-row input:focus { border-color: var(--primary); }
 
-  .custom-input-row label {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
+  .custom-row span {
+    font-size: 0.78rem;
+    color: var(--text-muted);
     font-weight: 600;
   }
 
-  .draw-btn {
+  .btn {
     font-family: 'Nunito', sans-serif;
     display: block;
     width: 100%;
-    padding: 13px;
+    padding: 12px;
     border: none;
     border-radius: 10px;
-    background: var(--card-back);
-    color: #fff;
-    font-size: 1rem;
+    font-size: 0.92rem;
     font-weight: 700;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-    letter-spacing: 0.03em;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
   }
 
-  .draw-btn:hover { opacity: 0.92; }
-  .draw-btn:active { transform: scale(0.98); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--card-back-1), var(--card-back-2));
+    color: #fff;
+  }
 
-  .results-area {
+  .btn-primary:hover { opacity: 0.92; }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-ghost {
+    margin-top: 12px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .btn-ghost:hover { border-color: var(--primary-soft); color: var(--primary); }
+
+  .cards-grid {
     margin-top: 20px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 10px;
     justify-items: center;
   }
 
-  @media (max-width: 420px) {
-    .results-area { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  }
+  .cards-grid.single { grid-template-columns: 1fr; }
+  .cards-grid.single .tarot-card { max-width: 130px; }
 
   .tarot-card {
     width: 100%;
-    max-width: 140px;
-    aspect-ratio: 5 / 8;
-    perspective: 600px;
+    max-width: 150px;
+    aspect-ratio: 11 / 17;
+    perspective: 700px;
     cursor: pointer;
   }
+
+  .tarot-card:not(.unrevealed) { cursor: default; }
 
   .tarot-card-inner {
     position: relative;
     width: 100%;
     height: 100%;
-    transition: transform 0.6s;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
     transform-style: preserve-3d;
     transform: rotateY(180deg);
   }
 
-  .tarot-card.unrevealed .tarot-card-inner {
-    transform: rotateY(0deg);
-  }
+  .tarot-card.unrevealed .tarot-card-inner { transform: rotateY(0deg); }
 
-  .tarot-card.unrevealed { cursor: pointer; }
-  .tarot-card:not(.unrevealed) { cursor: default; }
-
-  .tarot-card-front, .tarot-card-back {
+  .tarot-card-face {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -252,420 +294,603 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 8px;
   }
 
-  .tarot-card-back {
-    background: var(--card-back);
-    border: 1.5px solid var(--primary-light);
-    box-shadow: 0 2px 10px var(--shadow);
+  .tarot-card-face.back {
+    background: linear-gradient(150deg, var(--card-back-1), var(--card-back-2));
+    border: 1.5px solid rgba(255,255,255,0.08);
+    box-shadow: var(--shadow-md);
+    padding: 12px;
   }
 
-  .tarot-card-back-pattern {
-    width: 65%;
-    height: 65%;
-    border: 1.5px solid rgba(255,255,255,0.22);
+  .back-deco {
+    width: 60%; height: 60%;
+    border: 1.5px solid rgba(255,255,255,0.18);
     border-radius: 6px;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
   }
 
-  .tarot-card-back-pattern::before {
-    content: '';
-    position: absolute;
-    width: 80%;
-    height: 80%;
-    border: 1px solid rgba(255,255,255,0.12);
+  .back-deco::before {
+    content: ''; position: absolute;
+    width: 80%; height: 80%;
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 50%;
   }
 
-  .tarot-card-back-pattern::after {
-    content: '';
-    position: absolute;
-    width: 36%;
-    height: 36%;
-    border: 1px solid rgba(255,255,255,0.16);
-    border-radius: 3px;
-    transform: rotate(45deg);
+  .back-deco::after {
+    content: '✦'; position: absolute;
+    color: rgba(255,255,255,0.2);
+    font-size: 1.1rem;
   }
 
-  .tarot-card-front {
-    background: var(--surface);
+  .tarot-card-face.front {
+    background: var(--card-face);
     border: 1.5px solid var(--border);
-    box-shadow: 0 2px 10px var(--shadow);
+    box-shadow: var(--shadow-md);
     transform: rotateY(180deg);
-    gap: 3px;
+    padding: 10px 6px;
+    gap: 2px;
     text-align: center;
   }
 
-  .tarot-card.reversed .tarot-card-front {
+  .tarot-card.reversed .tarot-card-face.front {
     transform: rotateY(180deg) rotate(180deg);
   }
 
-  .card-suit-icon {
-    font-size: 1.5rem;
-    line-height: 1;
-  }
+  .card-icon { font-size: 1.5rem; line-height: 1; }
 
-  .card-number {
+  .card-num {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: var(--primary-deep);
+    letter-spacing: 0.04em;
   }
 
-  .card-name {
-    font-size: 0.7rem;
+  .card-label {
+    font-size: 0.68rem;
     font-weight: 700;
     color: var(--text);
     line-height: 1.25;
   }
 
-  .card-orientation {
-    font-size: 0.6rem;
+  .card-tag {
+    font-size: 0.58rem;
     font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 6px;
+    padding: 2px 7px;
+    border-radius: 5px;
     margin-top: 2px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
   }
 
-  .card-orientation.upright {
-    color: var(--primary-deep);
-    background: var(--primary-pale);
-  }
+  .card-tag.up { color: var(--primary-deep); background: var(--primary-pale); }
+  .card-tag.rev { color: var(--danger); background: var(--danger-pale); }
 
-  .card-orientation.reversed-tag {
-    color: var(--danger);
-    background: rgba(196, 90, 90, 0.1);
-  }
-
-  .summary-box {
-    margin-top: 18px;
-    background: var(--summary-bg);
-    border: 1px solid var(--border);
+  .summary {
+    margin-top: 16px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border-light);
     border-radius: 10px;
     padding: 14px 16px;
     display: none;
+    animation: fadeUp 0.35s ease;
   }
 
-  .summary-box.show { display: block; }
+  .summary.show { display: block; }
 
-  .summary-header {
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .summary-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
-  .summary-label {
+  .summary-head span {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 600;
     color: var(--primary-deep);
   }
 
   .copy-btn {
     font-family: 'Nunito', sans-serif;
-    padding: 4px 14px;
-    border: 1.5px solid var(--primary-light);
-    border-radius: 8px;
+    padding: 3px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
     background: var(--surface);
     color: var(--primary);
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
   }
 
-  .copy-btn:hover {
-    background: var(--primary-pale);
-    border-color: var(--primary);
-  }
+  .copy-btn:hover { background: var(--primary-pale); border-color: var(--primary-soft); }
+  .copy-btn.ok { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-  .copy-btn.copied {
-    background: var(--primary);
-    color: #fff;
-    border-color: var(--primary);
-  }
-
-  .summary-text {
-    font-size: 0.85rem;
-    line-height: 1.65;
+  .summary-body {
+    font-size: 0.82rem;
+    line-height: 1.7;
     color: var(--text);
     white-space: pre-wrap;
     user-select: text;
     -webkit-user-select: text;
   }
 
-  .dragon-placeholder {
+  /* Dragon */
+  .dragon-gate {
     text-align: center;
-    padding: 32px 16px;
-    color: var(--text-secondary);
-    font-size: 0.92rem;
+    padding: 28px 16px;
   }
 
-  .dragon-placeholder .dragon-icon {
-    font-size: 2.2rem;
+  .dragon-gate .glyph {
+    font-size: 2rem;
     margin-bottom: 10px;
-    opacity: 0.5;
+    opacity: 0.45;
   }
 
-  .reset-btn {
+  .dragon-gate p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+  }
+
+  .btn-enter {
     font-family: 'Nunito', sans-serif;
-    margin-top: 14px;
-    display: block;
-    width: 100%;
-    padding: 10px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
+    display: inline-block;
+    padding: 9px 28px;
+    border: 1.5px solid var(--accent);
+    border-radius: 20px;
     background: transparent;
-    color: var(--text-secondary);
-    font-size: 0.88rem;
+    color: var(--accent);
+    font-size: 0.85rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
   }
 
-  .reset-btn:hover {
-    border-color: var(--primary);
-    color: var(--primary);
+  .btn-enter:hover { background: var(--accent-pale); }
+
+  .dragon-inner { display: none; }
+  .dragon-inner.open { display: block; }
+
+  .sub-block {
+    background: var(--surface-alt);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
   }
 
+  .sub-block:last-child { margin-bottom: 0; }
+
+  .sub-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sub-title .tag {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 5px;
+    background: var(--primary-pale);
+    color: var(--primary);
+    letter-spacing: 0.02em;
+  }
+
+  .sub-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    justify-items: center;
+    margin-top: 10px;
+  }
+
+  .sub-cards.single { grid-template-columns: 1fr; }
+  .sub-cards.single .tarot-card { max-width: 110px; }
+
+  .sub-draw-btn {
+    font-family: 'Nunito', sans-serif;
+    width: 100%;
+    padding: 9px;
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .sub-draw-btn:hover { border-color: var(--primary-soft); color: var(--primary); border-style: solid; }
+
+  .dragon-summary {
+    margin-top: 16px;
+    display: none;
+  }
+
+  .dragon-summary.show { display: block; }
+
+  .btn-back {
+    font-family: 'Nunito', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 14px;
+    transition: all 0.2s;
+  }
+
+  .btn-back:hover { border-color: var(--primary-soft); color: var(--primary); }
+
   @media (max-width: 420px) {
-    h1 { font-size: 1.8rem; }
+    header h1 { font-size: 1.9rem; }
     .tarot-card { max-width: 100px; }
-    .card-suit-icon { font-size: 1.2rem; }
-    .card-name { font-size: 0.62rem; }
-    .card-number { font-size: 0.7rem; }
-    .card-orientation { font-size: 0.55rem; padding: 2px 6px; }
+    .cards-grid.single .tarot-card { max-width: 110px; }
+    .sub-cards.single .tarot-card { max-width: 95px; }
+    .card-icon { font-size: 1.2rem; }
+    .card-label { font-size: 0.6rem; }
+    .card-num { font-size: 0.68rem; }
+    .card-tag { font-size: 0.52rem; padding: 1px 5px; }
   }
 </style>
 
 <div class="container">
-  <h1>Tarot Draw</h1>
-  <p class="subtitle">78 cards &middot; upright & reversed</p>
+  <header>
+    <h1>Tarot Draw</h1>
+    <div class="rule">78 cards &middot; upright & reversed</div>
+  </header>
 
-  <div class="section">
-    <div class="section-title">
-      <span class="icon">&#9788;</span>
-      日常抽取
+  <!-- Daily -->
+  <div class="panel" id="dailyPanel">
+    <div class="panel-title"><span class="dot"></span>日常抽取</div>
+    <div class="pills" id="dailyPills">
+      <button class="pill active" data-n="1">一张</button>
+      <button class="pill" data-n="3">三张</button>
+      <button class="pill" data-n="6">六张</button>
+      <button class="pill" data-n="custom">自定义</button>
     </div>
-    <div class="mode-selector" id="dailyModes">
-      <button class="mode-btn active" data-count="1">一张</button>
-      <button class="mode-btn" data-count="3">三张</button>
-      <button class="mode-btn" data-count="6">六张</button>
-      <button class="mode-btn" data-count="custom">自定义</button>
+    <div class="custom-row" id="customRow">
+      <input type="number" id="customN" min="1" max="78" value="5">
+      <span>张 (1–78)</span>
     </div>
-    <div class="custom-input-row" id="customRow">
-      <input type="number" id="customCount" min="1" max="78" value="5" />
-      <label>张 (1–78)</label>
-    </div>
-    <button class="draw-btn" id="dailyDraw">抽取</button>
-    <div class="results-area" id="dailyResults"></div>
-    <div class="summary-box" id="summaryBox">
-      <div class="summary-header">
-        <span class="summary-label">抽取结果</span>
-        <button class="copy-btn" id="copyBtn">复制</button>
+    <button class="btn btn-primary" id="dailyGo">抽取</button>
+    <div class="cards-grid" id="dailyGrid"></div>
+    <div class="summary" id="dailySummary">
+      <div class="summary-head">
+        <span>抽取结果</span>
+        <button class="copy-btn" id="dailyCopy">复制</button>
       </div>
-      <div class="summary-text" id="summaryText"></div>
+      <div class="summary-body" id="dailySumText"></div>
     </div>
-    <button class="reset-btn" id="dailyReset" style="display:none;">重新抽取</button>
+    <button class="btn btn-ghost" id="dailyReset" style="display:none;">重新抽取</button>
   </div>
 
-  <div class="section">
-    <div class="section-title">
-      <span class="icon">&#128009;</span>
-      龙
-    </div>
-    <div class="dragon-placeholder">
-      <div class="dragon-icon">&#128050;</div>
+  <!-- Dragon -->
+  <div class="panel" id="dragonPanel">
+    <div class="panel-title"><span class="dot" style="background:var(--accent);"></span>龙</div>
+    <div class="dragon-gate" id="dragonGate">
+      <div class="glyph">&#128050;</div>
       <p>此板块尚在沉睡中，等待召唤...</p>
+      <button class="btn-enter" id="dragonEnter">进入</button>
+    </div>
+    <div class="dragon-inner" id="dragonInner">
+      <button class="btn-back" id="dragonBack">&larr; 返回</button>
+
+      <div class="sub-block" data-key="face" data-count="1">
+        <div class="sub-title">他的表情 <span class="tag">1 张</span></div>
+        <button class="sub-draw-btn">抽取</button>
+        <div class="sub-cards single"></div>
+      </div>
+
+      <div class="sub-block" data-key="action" data-count="1">
+        <div class="sub-title">他的动作 <span class="tag">1 张</span></div>
+        <button class="sub-draw-btn">抽取</button>
+        <div class="sub-cards single"></div>
+      </div>
+
+      <div class="sub-block" data-key="words" data-count="3">
+        <div class="sub-title">他说了什么 <span class="tag">3 张</span></div>
+        <button class="sub-draw-btn">抽取</button>
+        <div class="sub-cards"></div>
+      </div>
+
+      <div class="sub-block" data-key="mood" data-count="3">
+        <div class="sub-title">他的心情 <span class="tag">3 张</span></div>
+        <button class="sub-draw-btn">抽取</button>
+        <div class="sub-cards"></div>
+      </div>
+
+      <div class="dragon-summary" id="dragonSummary">
+        <div class="summary">
+          <div class="summary-head">
+            <span>龙 · 抽取结果</span>
+            <button class="copy-btn" id="dragonCopy">复制</button>
+          </div>
+          <div class="summary-body" id="dragonSumText"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
 (function () {
-  const MAJOR = [
+  var MAJOR = [
     '愚者','魔术师','女祭司','女皇','皇帝','教皇','恋人','战车',
     '力量','隐者','命运之轮','正义','倒吊人','死神','节制',
     '恶魔','塔','星星','月亮','太阳','审判','世界'
   ];
-  const SUITS = [
+  var SUITS = [
     { name: '权杖', icon: '🪄' },
     { name: '圣杯', icon: '🏆' },
     { name: '宝剑', icon: '🗡️' },
     { name: '星币', icon: '🪙' }
   ];
-  const RANKS = [
-    'A','2','3','4','5','6','7','8','9','10',
-    '侍从','骑士','王后','国王'
-  ];
+  var RANKS = ['A','2','3','4','5','6','7','8','9','10','侍从','骑士','王后','国王'];
+  var ROMANS = ['O','I','II','III','IV','V','VI','VII','VIII','IX','X',
+    'XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'];
 
   function buildDeck() {
-    const deck = [];
-    MAJOR.forEach((name, i) => {
-      deck.push({ name, number: toRoman(i), suit: null, icon: '✦', isMajor: true });
+    var d = [];
+    MAJOR.forEach(function (name, i) {
+      d.push({ name: name, num: ROMANS[i], icon: '✦' });
     });
-    SUITS.forEach(suit => {
-      RANKS.forEach(rank => {
-        deck.push({
-          name: suit.name + ' ' + rank,
-          number: rank,
-          suit: suit.name,
-          icon: suit.icon,
-          isMajor: false
-        });
+    SUITS.forEach(function (s) {
+      RANKS.forEach(function (r) {
+        d.push({ name: s.name + ' ' + r, num: r, icon: s.icon });
       });
     });
-    return deck;
+    return d;
   }
 
-  function toRoman(n) {
-    const romans = [
-      'O','I','II','III','IV','V','VI','VII','VIII','IX','X',
-      'XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'
-    ];
-    return romans[n] || String(n);
-  }
-
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
     }
     return a;
   }
 
-  function drawCards(count) {
-    const deck = shuffle(buildDeck());
-    return deck.slice(0, count).map(card => ({
-      ...card,
-      reversed: Math.random() < 0.5
-    }));
+  function draw(n) {
+    return shuffle(buildDeck()).slice(0, n).map(function (c) {
+      return { name: c.name, num: c.num, icon: c.icon, rev: Math.random() < 0.5 };
+    });
   }
 
-  function createCardEl(card) {
-    const el = document.createElement('div');
-    el.className = 'tarot-card unrevealed' + (card.reversed ? ' reversed' : '');
+  function makeCard(c) {
+    var el = document.createElement('div');
+    el.className = 'tarot-card unrevealed' + (c.rev ? ' reversed' : '');
     el.innerHTML =
       '<div class="tarot-card-inner">' +
-        '<div class="tarot-card-back"><div class="tarot-card-back-pattern"></div></div>' +
-        '<div class="tarot-card-front">' +
-          '<span class="card-suit-icon">' + card.icon + '</span>' +
-          '<span class="card-number">' + card.number + '</span>' +
-          '<span class="card-name">' + card.name + '</span>' +
-          '<span class="card-orientation ' + (card.reversed ? 'reversed-tag' : 'upright') + '">' +
-            (card.reversed ? '逆位' : '正位') +
-          '</span>' +
+        '<div class="tarot-card-face back"><div class="back-deco"></div></div>' +
+        '<div class="tarot-card-face front">' +
+          '<span class="card-icon">' + c.icon + '</span>' +
+          '<span class="card-num">' + c.num + '</span>' +
+          '<span class="card-label">' + c.name + '</span>' +
+          '<span class="card-tag ' + (c.rev ? 'rev' : 'up') + '">' + (c.rev ? '逆位' : '正位') + '</span>' +
         '</div>' +
       '</div>';
-    el.addEventListener('click', function () { el.classList.remove('unrevealed'); });
     return el;
   }
 
-  function buildSummaryText(cards) {
+  function summaryLine(cards) {
     return cards.map(function (c, i) {
-      var orient = c.reversed ? '逆位' : '正位';
-      return (i + 1) + '. ' + c.name + ' (' + orient + ')';
+      return (i + 1) + '. ' + c.name + ' (' + (c.rev ? '逆位' : '正位') + ')';
     }).join('\n');
   }
 
-  let currentCount = 1;
-  let lastDrawnCards = [];
-  const modeButtons = document.querySelectorAll('#dailyModes .mode-btn');
-  const customRow = document.getElementById('customRow');
-  const customInput = document.getElementById('customCount');
-  const dailyDrawBtn = document.getElementById('dailyDraw');
-  const dailyResults = document.getElementById('dailyResults');
-  const dailyReset = document.getElementById('dailyReset');
-  const summaryBox = document.getElementById('summaryBox');
-  const summaryText = document.getElementById('summaryText');
-  const copyBtn = document.getElementById('copyBtn');
+  function clipCopy(text, btn) {
+    try {
+      navigator.clipboard.writeText(text).then(function () {
+        btn.classList.add('ok'); btn.textContent = '已复制';
+        setTimeout(function () { btn.classList.remove('ok'); btn.textContent = '复制'; }, 1400);
+      }).catch(function () { selectText(btn); });
+    } catch (e) { selectText(btn); }
+  }
 
-  modeButtons.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      modeButtons.forEach(function (b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      var val = btn.dataset.count;
-      if (val === 'custom') {
+  function selectText(btn) {
+    var body = btn.closest('.summary').querySelector('.summary-body');
+    if (!body) return;
+    var r = document.createRange(); r.selectNodeContents(body);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+
+  // ── Daily ──
+  var dailyCount = 1;
+  var dailyCards = [];
+  var dailyRevealed = 0;
+  var pills = document.querySelectorAll('#dailyPills .pill');
+  var customRow = document.getElementById('customRow');
+  var customN = document.getElementById('customN');
+  var dailyGo = document.getElementById('dailyGo');
+  var dailyGrid = document.getElementById('dailyGrid');
+  var dailySummary = document.getElementById('dailySummary');
+  var dailySumText = document.getElementById('dailySumText');
+  var dailyCopy = document.getElementById('dailyCopy');
+  var dailyReset = document.getElementById('dailyReset');
+
+  pills.forEach(function (p) {
+    p.addEventListener('click', function () {
+      pills.forEach(function (b) { b.classList.remove('active'); });
+      p.classList.add('active');
+      if (p.dataset.n === 'custom') {
         customRow.classList.add('show');
-        currentCount = Math.min(78, Math.max(1, parseInt(customInput.value) || 5));
+        dailyCount = clamp(parseInt(customN.value) || 5);
       } else {
         customRow.classList.remove('show');
-        currentCount = parseInt(val);
+        dailyCount = parseInt(p.dataset.n);
       }
     });
   });
 
-  customInput.addEventListener('input', function () {
-    var v = parseInt(customInput.value);
-    if (isNaN(v) || v < 1) v = 1;
-    if (v > 78) v = 78;
-    currentCount = v;
-  });
+  customN.addEventListener('input', function () { dailyCount = clamp(parseInt(customN.value) || 1); });
 
-  dailyDrawBtn.addEventListener('click', function () {
-    var activeBtn = document.querySelector('#dailyModes .mode-btn.active');
-    if (activeBtn && activeBtn.dataset.count === 'custom') {
-      currentCount = Math.min(78, Math.max(1, parseInt(customInput.value) || 5));
-    }
-    var cards = drawCards(currentCount);
-    lastDrawnCards = cards;
-    dailyResults.innerHTML = '';
-    cards.forEach(function (card, i) {
-      var el = createCardEl(card);
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(16px)';
-      dailyResults.appendChild(el);
+  function clamp(v) { return Math.min(78, Math.max(1, v)); }
+
+  dailyGo.addEventListener('click', function () {
+    var active = document.querySelector('#dailyPills .pill.active');
+    if (active && active.dataset.n === 'custom') dailyCount = clamp(parseInt(customN.value) || 5);
+    dailyCards = draw(dailyCount);
+    dailyRevealed = 0;
+    dailyGrid.innerHTML = '';
+    dailyGrid.classList.toggle('single', dailyCount === 1);
+    dailySummary.classList.remove('show');
+
+    dailyCards.forEach(function (c, i) {
+      var el = makeCard(c);
+      el.style.opacity = '0'; el.style.transform = 'translateY(14px)';
+      dailyGrid.appendChild(el);
       setTimeout(function () {
         el.style.transition = 'opacity 0.3s, transform 0.3s';
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0)';
-      }, i * 70);
+        el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+      }, i * 60);
+      el.addEventListener('click', function () {
+        if (!el.classList.contains('unrevealed')) return;
+        el.classList.remove('unrevealed');
+        dailyRevealed++;
+        if (dailyRevealed >= dailyCards.length) showDailySummary();
+      });
     });
-    summaryText.textContent = buildSummaryText(cards);
-    summaryBox.classList.add('show');
-    copyBtn.classList.remove('copied');
-    copyBtn.textContent = '复制';
-    dailyDrawBtn.style.display = 'none';
+    dailyGo.style.display = 'none';
     dailyReset.style.display = 'block';
   });
 
-  dailyReset.addEventListener('click', function () {
-    dailyResults.innerHTML = '';
-    summaryBox.classList.remove('show');
-    dailyDrawBtn.style.display = 'block';
-    dailyReset.style.display = 'none';
-    lastDrawnCards = [];
-  });
-
-  copyBtn.addEventListener('click', function () {
-    var text = summaryText.textContent;
-    try {
-      navigator.clipboard.writeText(text).then(function () {
-        copyBtn.classList.add('copied');
-        copyBtn.textContent = '已复制';
-        setTimeout(function () {
-          copyBtn.classList.remove('copied');
-          copyBtn.textContent = '复制';
-        }, 1500);
-      }).catch(fallbackSelect);
-    } catch (e) {
-      fallbackSelect();
-    }
-  });
-
-  function fallbackSelect() {
-    var range = document.createRange();
-    range.selectNodeContents(summaryText);
-    var sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
+  function showDailySummary() {
+    dailySumText.textContent = summaryLine(dailyCards);
+    dailySummary.classList.add('show');
   }
+
+  dailyReset.addEventListener('click', function () {
+    dailyGrid.innerHTML = '';
+    dailySummary.classList.remove('show');
+    dailyGo.style.display = 'block';
+    dailyReset.style.display = 'none';
+    dailyCards = []; dailyRevealed = 0;
+  });
+
+  dailyCopy.addEventListener('click', function () { clipCopy(dailySumText.textContent, dailyCopy); });
+
+  // ── Dragon ──
+  var dragonGate = document.getElementById('dragonGate');
+  var dragonInner = document.getElementById('dragonInner');
+  var dragonEnter = document.getElementById('dragonEnter');
+  var dragonBack = document.getElementById('dragonBack');
+  var dragonSummary = document.getElementById('dragonSummary');
+  var dragonSumText = document.getElementById('dragonSumText');
+  var dragonCopy = document.getElementById('dragonCopy');
+
+  var subBlocks = document.querySelectorAll('.sub-block');
+  var dragonData = {};
+  var LABELS = { face: '他的表情', action: '他的动作', words: '他说了什么', mood: '他的心情' };
+
+  dragonEnter.addEventListener('click', function () {
+    dragonGate.style.display = 'none';
+    dragonInner.classList.add('open');
+    resetDragon();
+  });
+
+  dragonBack.addEventListener('click', function () {
+    dragonInner.classList.remove('open');
+    dragonGate.style.display = 'block';
+  });
+
+  function resetDragon() {
+    dragonData = {};
+    dragonSummary.classList.remove('show');
+    subBlocks.forEach(function (block) {
+      var grid = block.querySelector('.sub-cards');
+      var btn = block.querySelector('.sub-draw-btn');
+      grid.innerHTML = '';
+      btn.style.display = 'block';
+    });
+  }
+
+  subBlocks.forEach(function (block) {
+    var key = block.dataset.key;
+    var count = parseInt(block.dataset.count);
+    var btn = block.querySelector('.sub-draw-btn');
+    var grid = block.querySelector('.sub-cards');
+
+    btn.addEventListener('click', function () {
+      var cards = draw(count);
+      dragonData[key] = cards;
+      btn.style.display = 'none';
+      grid.innerHTML = '';
+
+      cards.forEach(function (c, i) {
+        var el = makeCard(c);
+        el.style.opacity = '0'; el.style.transform = 'translateY(10px)';
+        grid.appendChild(el);
+        setTimeout(function () {
+          el.style.transition = 'opacity 0.25s, transform 0.25s';
+          el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+        }, i * 60);
+
+        var revealed = 0;
+        el.addEventListener('click', function () {
+          if (!el.classList.contains('unrevealed')) return;
+          el.classList.remove('unrevealed');
+          revealed++;
+          checkDragonComplete();
+        });
+      });
+    });
+  });
+
+  function checkDragonComplete() {
+    var allKeys = [];
+    subBlocks.forEach(function (b) { allKeys.push(b.dataset.key); });
+    var allDone = allKeys.every(function (k) {
+      if (!dragonData[k]) return false;
+      var block = document.querySelector('.sub-block[data-key="' + k + '"]');
+      var unrevealed = block.querySelectorAll('.tarot-card.unrevealed');
+      return unrevealed.length === 0;
+    });
+    if (allDone) showDragonSummary();
+  }
+
+  function showDragonSummary() {
+    var lines = [];
+    ['face','action','words','mood'].forEach(function (k) {
+      if (!dragonData[k]) return;
+      lines.push('【' + LABELS[k] + '】');
+      dragonData[k].forEach(function (c, i) {
+        lines.push((i + 1) + '. ' + c.name + ' (' + (c.rev ? '逆位' : '正位') + ')');
+      });
+      lines.push('');
+    });
+    dragonSumText.textContent = lines.join('\n').trim();
+    dragonSummary.classList.add('show');
+    dragonSummary.querySelector('.summary').classList.add('show');
+  }
+
+  dragonCopy.addEventListener('click', function () { clipCopy(dragonSumText.textContent, dragonCopy); });
 })();
 </script>
