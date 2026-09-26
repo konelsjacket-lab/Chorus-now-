@@ -1,4 +1,4 @@
-<title>希的塔罗</title>
+<title>Xi's Tarot</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Nunito:wght@400;600;700&display=swap">
 <style>
   :root {
@@ -424,11 +424,6 @@
   }
 
   /* Dragon */
-  .dragon-gate {
-    text-align: center;
-    padding: 8px 16px 12px;
-  }
-
   .btn-enter {
     font-family: 'Nunito', sans-serif;
     display: inline-block;
@@ -533,6 +528,23 @@
 
   .btn-back:hover { border-color: var(--primary-soft); color: var(--primary); }
 
+  .collage {
+    width: 100%;
+    max-height: 120px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .collage-dragon {
+    max-height: 100px;
+    margin-bottom: 12px;
+  }
+
+  .dragon-gate {
+    text-align: center;
+    padding: 8px 16px 12px;
+  }
+
   @media (max-width: 420px) {
     header h1 { font-size: 1.9rem; }
     .tarot-card { max-width: 100px; }
@@ -542,6 +554,8 @@
     .card-label { font-size: 0.6rem; }
     .card-num { font-size: 0.68rem; }
     .card-tag { font-size: 0.52rem; padding: 1px 5px; }
+    .collage { max-height: 90px; }
+    .collage-dragon { max-height: 75px; }
   }
 </style>
 
@@ -554,6 +568,30 @@
   <!-- Daily -->
   <div class="panel" id="dailyPanel">
     <div class="panel-title"><span class="dot"></span>日常抽取</div>
+    <svg class="collage" viewBox="0 0 680 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--primary-soft)" stop-opacity="0.5"/><stop offset="100%" stop-color="var(--primary)" stop-opacity="0.3"/></linearGradient>
+        <linearGradient id="sg2" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="var(--accent)" stop-opacity="0.35"/><stop offset="100%" stop-color="var(--primary-soft)" stop-opacity="0.2"/></linearGradient>
+      </defs>
+      <polygon points="90,8 94,20 107,20 96,28 100,40 90,32 80,40 84,28 73,20 86,20" fill="url(#sg1)"/>
+      <polygon points="180,25 183,34 192,34 185,39 187,48 180,43 173,48 175,39 168,34 177,34" fill="var(--primary-light)" opacity="0.6"/>
+      <polygon points="320,12 325,26 340,26 328,35 332,49 320,40 308,49 312,35 300,26 315,26" fill="url(#sg1)"/>
+      <polygon points="500,18 503,27 513,27 505,33 508,42 500,37 492,42 495,33 487,27 497,27" fill="url(#sg2)"/>
+      <polygon points="600,30 603,38 611,38 604,43 607,51 600,46 593,51 596,43 589,38 597,38" fill="var(--primary-light)" opacity="0.5"/>
+      <polygon points="45,55 48,62 56,62 50,67 52,74 45,70 38,74 40,67 34,62 42,62" fill="var(--primary-soft)" opacity="0.4"/>
+      <polygon points="150,70 153,78 161,78 155,82 157,89 150,85 143,89 145,82 139,78 147,78" fill="url(#sg2)"/>
+      <polygon points="260,65 264,76 276,76 266,83 270,94 260,87 250,94 254,83 244,76 256,76" fill="url(#sg1)"/>
+      <polygon points="400,58 403,66 411,66 405,71 407,78 400,74 393,78 395,71 389,66 397,66" fill="var(--primary-light)" opacity="0.55"/>
+      <polygon points="540,72 543,80 551,80 545,85 547,92 540,87 533,92 535,85 529,80 537,80" fill="url(#sg1)"/>
+      <polygon points="640,65 642,71 648,71 643,75 645,81 640,77 635,81 637,75 632,71 638,71" fill="var(--primary-soft)" opacity="0.35"/>
+      <circle cx="120" cy="85" r="2" fill="var(--primary-soft)" opacity="0.4"/>
+      <circle cx="210" cy="45" r="1.5" fill="var(--primary)" opacity="0.25"/>
+      <circle cx="370" cy="95" r="2.5" fill="var(--primary-light)" opacity="0.5"/>
+      <circle cx="460" cy="50" r="1.8" fill="var(--accent)" opacity="0.3"/>
+      <circle cx="570" cy="40" r="2" fill="var(--primary-soft)" opacity="0.35"/>
+      <polygon points="440,90 442,96 448,96 443,99 445,105 440,102 435,105 437,99 432,96 438,96" fill="var(--primary-light)" opacity="0.4"/>
+      <polygon points="60,100 62,106 68,106 63,109 65,115 60,112 55,115 57,109 52,106 58,106" fill="url(#sg2)"/>
+    </svg>
     <div class="pills" id="dailyPills">
       <button class="pill active" data-n="1">一张</button>
       <button class="pill" data-n="3">三张</button>
@@ -580,6 +618,44 @@
   <div class="panel" id="dragonPanel">
     <div class="panel-title"><span class="dot" style="background:var(--accent);"></span>龙</div>
     <div class="dragon-gate" id="dragonGate">
+      <svg class="collage collage-dragon" viewBox="0 0 600 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="dg1" x1="0" y1="0" x2="1" y2="0.5"><stop offset="0%" stop-color="var(--accent)" stop-opacity="0.6"/><stop offset="100%" stop-color="var(--primary-soft)" stop-opacity="0.4"/></linearGradient>
+          <linearGradient id="dg2" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="var(--primary)" stop-opacity="0.35"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0.5"/></linearGradient>
+        </defs>
+        <!-- body curve -->
+        <path d="M80,85 C100,82 120,60 150,50 C180,40 200,42 230,48 C260,54 280,38 310,30 C340,22 360,28 380,38 C400,48 410,42 430,35 C450,28 470,32 490,45 C510,58 520,50 530,42" stroke="url(#dg1)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <!-- head -->
+        <path d="M530,42 C535,38 542,34 548,36 C554,38 556,44 552,48 C548,52 540,50 535,46 Z" fill="url(#dg1)"/>
+        <!-- eye -->
+        <circle cx="545" cy="40" r="1.8" fill="var(--accent)" opacity="0.8"/>
+        <!-- horns -->
+        <path d="M546,34 L552,24 L548,33" fill="var(--accent)" opacity="0.45"/>
+        <path d="M542,35 L544,22 L540,33" fill="var(--accent)" opacity="0.35"/>
+        <!-- whiskers -->
+        <path d="M552,42 C558,40 568,38 575,40" stroke="var(--accent)" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+        <path d="M553,45 C560,46 570,48 576,46" stroke="var(--accent)" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
+        <!-- spine ridges -->
+        <path d="M160,48 L155,36 L168,46" fill="var(--primary-soft)" opacity="0.3"/>
+        <path d="M200,43 L198,32 L207,42" fill="var(--primary-soft)" opacity="0.25"/>
+        <path d="M250,50 L247,38 L256,48" fill="var(--primary-soft)" opacity="0.3"/>
+        <path d="M310,28 L308,16 L316,26" fill="var(--primary-soft)" opacity="0.25"/>
+        <path d="M360,32 L357,20 L364,30" fill="var(--primary-soft)" opacity="0.28"/>
+        <path d="M420,34 L418,22 L425,32" fill="var(--primary-soft)" opacity="0.22"/>
+        <path d="M480,40 L477,28 L484,38" fill="var(--primary-soft)" opacity="0.25"/>
+        <!-- tail -->
+        <path d="M80,85 C70,88 55,92 42,88 C30,84 25,76 32,72 C39,68 48,74 50,80" stroke="url(#dg2)" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <path d="M32,72 L22,65 L30,73" fill="var(--accent)" opacity="0.35"/>
+        <!-- legs/claws -->
+        <path d="M180,48 C178,56 176,66 172,72" stroke="var(--primary-soft)" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+        <path d="M172,72 L168,76 M172,72 L174,77 M172,72 L170,78" stroke="var(--primary-soft)" stroke-width="1.2" stroke-linecap="round" opacity="0.3"/>
+        <path d="M390,38 C392,48 394,58 392,66" stroke="var(--primary-soft)" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+        <path d="M392,66 L388,70 M392,66 L394,71 M392,66 L390,72" stroke="var(--primary-soft)" stroke-width="1.2" stroke-linecap="round" opacity="0.3"/>
+        <!-- clouds -->
+        <ellipse cx="130" cy="28" rx="18" ry="8" fill="var(--primary-light)" opacity="0.2"/>
+        <ellipse cx="450" cy="20" rx="22" ry="7" fill="var(--primary-light)" opacity="0.15"/>
+        <ellipse cx="280" cy="80" rx="15" ry="6" fill="var(--primary-light)" opacity="0.15"/>
+      </svg>
       <button class="btn-enter" id="dragonEnter">进入</button>
     </div>
     <div class="dragon-inner" id="dragonInner">
