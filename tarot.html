@@ -536,7 +536,7 @@
   }
 
   .collage-dragon {
-    max-height: 100px;
+    max-height: 130px;
     margin-bottom: 12px;
   }
 
@@ -555,7 +555,7 @@
     .card-num { font-size: 0.68rem; }
     .card-tag { font-size: 0.52rem; padding: 1px 5px; }
     .collage { max-height: 90px; }
-    .collage-dragon { max-height: 75px; }
+    .collage-dragon { max-height: 95px; }
   }
 </style>
 
@@ -618,43 +618,120 @@
   <div class="panel" id="dragonPanel">
     <div class="panel-title"><span class="dot" style="background:var(--accent);"></span>龙</div>
     <div class="dragon-gate" id="dragonGate">
-      <svg class="collage collage-dragon" viewBox="0 0 600 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg class="collage collage-dragon" viewBox="0 0 620 140" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="dg1" x1="0" y1="0" x2="1" y2="0.5"><stop offset="0%" stop-color="var(--accent)" stop-opacity="0.6"/><stop offset="100%" stop-color="var(--primary-soft)" stop-opacity="0.4"/></linearGradient>
-          <linearGradient id="dg2" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="var(--primary)" stop-opacity="0.35"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0.5"/></linearGradient>
+          <linearGradient id="dg1" x1="0" y1="0" x2="1" y2="0.3">
+            <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.45"/>
+            <stop offset="50%" stop-color="var(--primary-soft)" stop-opacity="0.55"/>
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.4"/>
+          </linearGradient>
+          <linearGradient id="dg2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.35"/>
+          </linearGradient>
         </defs>
-        <!-- body curve -->
-        <path d="M80,85 C100,82 120,60 150,50 C180,40 200,42 230,48 C260,54 280,38 310,30 C340,22 360,28 380,38 C400,48 410,42 430,35 C450,28 470,32 490,45 C510,58 520,50 530,42" stroke="url(#dg1)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-        <!-- head -->
-        <path d="M530,42 C535,38 542,34 548,36 C554,38 556,44 552,48 C548,52 540,50 535,46 Z" fill="url(#dg1)"/>
-        <!-- eye -->
-        <circle cx="545" cy="40" r="1.8" fill="var(--accent)" opacity="0.8"/>
-        <!-- horns -->
-        <path d="M546,34 L552,24 L548,33" fill="var(--accent)" opacity="0.45"/>
-        <path d="M542,35 L544,22 L540,33" fill="var(--accent)" opacity="0.35"/>
-        <!-- whiskers -->
-        <path d="M552,42 C558,40 568,38 575,40" stroke="var(--accent)" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
-        <path d="M553,45 C560,46 570,48 576,46" stroke="var(--accent)" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
-        <!-- spine ridges -->
-        <path d="M160,48 L155,36 L168,46" fill="var(--primary-soft)" opacity="0.3"/>
-        <path d="M200,43 L198,32 L207,42" fill="var(--primary-soft)" opacity="0.25"/>
-        <path d="M250,50 L247,38 L256,48" fill="var(--primary-soft)" opacity="0.3"/>
-        <path d="M310,28 L308,16 L316,26" fill="var(--primary-soft)" opacity="0.25"/>
-        <path d="M360,32 L357,20 L364,30" fill="var(--primary-soft)" opacity="0.28"/>
-        <path d="M420,34 L418,22 L425,32" fill="var(--primary-soft)" opacity="0.22"/>
-        <path d="M480,40 L477,28 L484,38" fill="var(--primary-soft)" opacity="0.25"/>
-        <!-- tail -->
-        <path d="M80,85 C70,88 55,92 42,88 C30,84 25,76 32,72 C39,68 48,74 50,80" stroke="url(#dg2)" stroke-width="3" stroke-linecap="round" fill="none"/>
-        <path d="M32,72 L22,65 L30,73" fill="var(--accent)" opacity="0.35"/>
-        <!-- legs/claws -->
-        <path d="M180,48 C178,56 176,66 172,72" stroke="var(--primary-soft)" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
-        <path d="M172,72 L168,76 M172,72 L174,77 M172,72 L170,78" stroke="var(--primary-soft)" stroke-width="1.2" stroke-linecap="round" opacity="0.3"/>
-        <path d="M390,38 C392,48 394,58 392,66" stroke="var(--primary-soft)" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
-        <path d="M392,66 L388,70 M392,66 L394,71 M392,66 L390,72" stroke="var(--primary-soft)" stroke-width="1.2" stroke-linecap="round" opacity="0.3"/>
-        <!-- clouds -->
-        <ellipse cx="130" cy="28" rx="18" ry="8" fill="var(--primary-light)" opacity="0.2"/>
-        <ellipse cx="450" cy="20" rx="22" ry="7" fill="var(--primary-light)" opacity="0.15"/>
-        <ellipse cx="280" cy="80" rx="15" ry="6" fill="var(--primary-light)" opacity="0.15"/>
+
+        <!-- serpentine body — thick, powerful S-curve -->
+        <path d="M52,105 C62,100 78,82 105,70 C135,56 155,62 180,72
+                 C210,84 230,78 255,62 C280,46 300,38 325,42
+                 C350,46 365,60 385,68 C410,78 430,68 450,52
+                 C465,40 478,35 492,38" fill="url(#dg1)" stroke="var(--primary-soft)" stroke-width="1" stroke-opacity="0.3"/>
+        <!-- body upper edge detail -->
+        <path d="M52,105 C62,100 78,82 105,70 C135,56 155,62 180,72
+                 C210,84 230,78 255,62 C280,46 300,38 325,42
+                 C350,46 365,60 385,68 C410,78 430,68 450,52
+                 C465,40 478,35 492,38" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-opacity="0.3"/>
+        <!-- belly line -->
+        <path d="M60,108 C72,106 90,92 115,80 C142,67 160,72 185,80
+                 C212,90 234,86 258,72 C282,56 302,48 328,50
+                 C352,52 368,66 388,74 C412,84 434,76 454,60
+                 C467,50 480,44 492,44" fill="none" stroke="var(--primary-light)" stroke-width="0.8" stroke-opacity="0.4"/>
+
+        <!-- scale pattern along body -->
+        <path d="M100,74 C105,70 110,74 105,78" stroke="var(--primary)" stroke-width="0.7" stroke-opacity="0.25" fill="none"/>
+        <path d="M135,64 C140,60 145,64 140,68" stroke="var(--primary)" stroke-width="0.7" stroke-opacity="0.2" fill="none"/>
+        <path d="M175,74 C180,70 185,74 180,78" stroke="var(--primary)" stroke-width="0.7" stroke-opacity="0.25" fill="none"/>
+        <path d="M220,78 C225,74 230,78 225,82" stroke="var(--primary)" stroke-width="0.7" stroke-opacity="0.2" fill="none"/>
+        <path d="M265,56 C270,52 275,56 270,60" stroke="var(--primary)" stroke-width="0.7" stroke-opacity="0.25" fill="none"/>
+        <path d="M310,42 C315,38 320,42 315,46" stroke="var(--primary)" stroke-width="0.7" stroke-opacity="0.2" fill="none"/>
+        <path d="M355,56 C360,52 365,56 360,60" stroke="var(--primary)" stroke-width="0.7" stroke-opacity="0.25" fill="none"/>
+        <path d="M395,72 C400,68 405,72 400,76" stroke="var(--primary)" stroke-width="0.7" stroke-opacity="0.2" fill="none"/>
+        <path d="M435,60 C440,56 445,60 440,64" stroke="var(--primary)" stroke-width="0.7" stroke-opacity="0.25" fill="none"/>
+
+        <!-- dorsal fin/mane along spine -->
+        <path d="M95,68 L88,54 L102,66" fill="var(--primary-soft)" opacity="0.3"/>
+        <path d="M120,62 L115,48 L127,60" fill="var(--primary-soft)" opacity="0.25"/>
+        <path d="M155,64 L150,50 L162,62" fill="var(--primary-soft)" opacity="0.28"/>
+        <path d="M200,76 L196,62 L208,74" fill="var(--primary-soft)" opacity="0.22"/>
+        <path d="M240,68 L236,54 L248,66" fill="var(--primary-soft)" opacity="0.26"/>
+        <path d="M275,52 L272,38 L282,50" fill="var(--primary-soft)" opacity="0.24"/>
+        <path d="M340,44 L337,30 L347,42" fill="var(--primary-soft)" opacity="0.22"/>
+        <path d="M375,62 L372,48 L382,60" fill="var(--primary-soft)" opacity="0.26"/>
+        <path d="M415,72 L412,58 L422,70" fill="var(--primary-soft)" opacity="0.22"/>
+        <path d="M445,52 L442,38 L452,50" fill="var(--primary-soft)" opacity="0.24"/>
+
+        <!-- HEAD — proud, facing right, slightly raised -->
+        <path d="M492,38 C498,34 508,28 520,26 C530,25 540,28 544,34
+                 C548,40 546,48 540,52 C534,56 524,54 516,50
+                 C508,46 500,42 492,44 Z" fill="url(#dg2)"/>
+        <!-- jaw -->
+        <path d="M540,52 C546,50 554,46 558,42 C560,40 558,36 554,38
+                 C550,40 544,46 540,52 Z" fill="var(--accent)" opacity="0.4"/>
+        <!-- snout ridge -->
+        <path d="M530,30 C538,28 548,30 554,36" stroke="var(--accent)" stroke-width="1" stroke-opacity="0.4" fill="none"/>
+        <!-- eye — fierce -->
+        <ellipse cx="528" cy="36" rx="3" ry="2.5" fill="var(--surface)" opacity="0.8"/>
+        <ellipse cx="529" cy="36" rx="1.5" ry="2" fill="var(--accent)" opacity="0.9"/>
+        <!-- brow ridge -->
+        <path d="M524,32 C526,30 530,29 533,30" stroke="var(--primary-deep)" stroke-width="1.2" stroke-opacity="0.35" fill="none"/>
+
+        <!-- antler horns — branching like deer antlers -->
+        <path d="M520,28 C518,20 515,12 510,6" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.5" fill="none"/>
+        <path d="M514,14 C510,10 506,8 502,10" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.35" fill="none"/>
+        <path d="M516,18 C520,14 524,12 526,8" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.35" fill="none"/>
+        <path d="M528,28 C530,20 534,14 536,8" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.45" fill="none"/>
+        <path d="M533,16 C536,12 540,10 543,12" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.3" fill="none"/>
+
+        <!-- flowing mane behind head -->
+        <path d="M510,32 C504,28 496,30 490,26 C484,22 480,26 476,24" stroke="var(--primary-soft)" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.35" fill="none"/>
+        <path d="M508,36 C500,34 494,38 486,34 C480,30 474,34 468,32" stroke="var(--primary-soft)" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.3" fill="none"/>
+        <path d="M506,40 C498,40 492,44 484,42 C478,40 472,42 466,40" stroke="var(--primary-soft)" stroke-width="1" stroke-linecap="round" stroke-opacity="0.25" fill="none"/>
+
+        <!-- long whiskers — flowing gracefully -->
+        <path d="M556,40 C564,36 574,34 586,36 C594,38 598,34 602,30" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.4" fill="none"/>
+        <path d="M556,44 C566,44 578,48 590,46 C598,44 604,48 610,46" stroke="var(--accent)" stroke-width="1" stroke-linecap="round" stroke-opacity="0.3" fill="none"/>
+
+        <!-- FRONT LEGS with powerful claws -->
+        <!-- front left -->
+        <path d="M350,50 C346,60 342,72 338,82 C336,86 332,90 328,88" stroke="var(--primary-soft)" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.4" fill="none"/>
+        <path d="M328,88 L322,84 M328,88 L324,92 M328,88 L330,93 M328,88 L334,90" stroke="var(--primary)" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.45"/>
+        <!-- front right -->
+        <path d="M400,72 C404,82 406,92 404,100 C402,104 398,106 394,104" stroke="var(--primary-soft)" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.35" fill="none"/>
+        <path d="M394,104 L388,100 M394,104 L390,108 M394,104 L396,110 M394,104 L400,106" stroke="var(--primary)" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.4"/>
+
+        <!-- HIND LEGS -->
+        <!-- hind left -->
+        <path d="M145,68 C140,78 136,90 134,100 C132,104 128,108 124,106" stroke="var(--primary-soft)" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.35" fill="none"/>
+        <path d="M124,106 L118,102 M124,106 L120,110 M124,106 L126,112 M124,106 L130,108" stroke="var(--primary)" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.4"/>
+        <!-- hind right -->
+        <path d="M210,82 C214,92 216,100 214,108 C212,112 208,114 204,112" stroke="var(--primary-soft)" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.3" fill="none"/>
+        <path d="M204,112 L198,108 M204,112 L200,116 M204,112 L206,118 M204,112 L210,114" stroke="var(--primary)" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.35"/>
+
+        <!-- TAIL — curling, ending in a flame-like flourish -->
+        <path d="M52,105 C42,108 30,112 22,108 C14,104 10,94 16,86
+                 C22,78 34,80 38,88 C42,96 36,100 32,96" stroke="url(#dg1)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M16,86 L8,78 M16,86 L6,84 M16,86 L10,92" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.4"/>
+
+        <!-- auspicious clouds -->
+        <path d="M70,42 C76,38 84,38 88,42 C92,38 100,36 106,40 C110,44 106,50 100,50 C96,54 88,54 84,50 C78,52 72,48 70,42 Z" fill="var(--primary-light)" opacity="0.18"/>
+        <path d="M440,18 C446,14 454,14 458,18 C462,14 470,12 476,16 C480,20 476,26 470,26 C466,30 458,30 454,26 C448,28 442,24 440,18 Z" fill="var(--primary-light)" opacity="0.15"/>
+        <path d="M260,100 C264,96 270,96 274,100 C278,96 284,96 288,100 C290,104 286,108 282,108 C278,110 272,110 268,108 C264,110 260,106 260,100 Z" fill="var(--primary-light)" opacity="0.12"/>
+
+        <!-- pearl / dragon ball -->
+        <circle cx="572" cy="28" r="5" fill="none" stroke="var(--accent)" stroke-width="1" stroke-opacity="0.35"/>
+        <circle cx="572" cy="28" r="2" fill="var(--accent)" opacity="0.25"/>
+        <path d="M568,24 C570,22 574,22 576,24" stroke="var(--accent)" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+        <path d="M568,32 C570,34 574,34 576,32" stroke="var(--accent)" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
       </svg>
       <button class="btn-enter" id="dragonEnter">进入</button>
     </div>
