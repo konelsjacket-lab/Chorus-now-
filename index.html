@@ -2156,6 +2156,14 @@ function sceneDailyMenu() {
     const sideStoryOptions = getAvailableSideStories();
     sideStoryOptions.forEach(v => choices.push(v));
 
+    // Tomás selling paintings storyline
+    if (S.sideStories.tomas === 1 && S.npcs.tomas && S.npcs.tomas.affinity >= 30 && time >= 1 && time <= 2)
+      choices.push({ text: '🎨 Tomás说他想卖画但不知道怎么开始', cost: 'Tomás支线', action: sceneTomasSell1 });
+    if (S.sideStories.tomas === 2 && S.npcs.tomas && S.npcs.tomas.affinity >= 40 && time >= 0 && time <= 1 && isWeekend())
+      choices.push({ text: '🎨 陪Tomás去市集摆摊卖画', cost: 'Tomás支线 · 体力-15', action: sceneTomasSell2 });
+    if (S.sideStories.tomas === 3 && S.npcs.tomas && S.npcs.tomas.affinity >= 50 && time === 0 && isWeekend() && S.money >= 60)
+      choices.push({ text: '🎨 去瓦伦西亚！Tomás的画展', cost: 'Tomás支线 · 60€', action: sceneTomasSell3 });
+
     // Group friendship events
     const groupOptions = getAvailableGroupEvents();
     groupOptions.forEach(v => choices.push(v));
@@ -5044,6 +5052,83 @@ function sceneTomasPainting3() {
   ]);
   adjustStat('mood', 20);
   showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+// --- Tomás selling paintings storyline ---
+function sceneTomasSell1() {
+  S.sideStories.tomas = 2;
+  const npc = S.npcs.tomas; npc.affinity += 8; npc.talked++;
+  adjustStat('energy', -5); adjustStat('mood', 8); adjustStat('social', 5); advanceTime(); renderStatus();
+  showNarrative([
+    { text: '你在Carlos的店里找到Tomás。他面前摆着一堆画——不是摊着在画，是摞着，像一堆不知道该往哪放的东西。Carlos在旁边擦杯子，用一种很微妙的表情看着他。' },
+    { text: '你问怎么了。Carlos先开口了："这位先生的租期快到了。但他不想回智利。他想留下来画画。问题是——"他看了Tomás一眼。Tomás低着头。Carlos替他说完了："画不能当饭吃。暂时。"' },
+    { text: 'Tomás终于开口了："我有一些画——够办一个小展的。但我不知道怎么卖。我连怎么定价都不知道。我爸说艺术家不应该想钱的事情。但房租不这么想。"他苦笑了一下。' },
+    { text: '你说："你试过在网上卖吗？"他摇头。"在本地市集摆过摊吗？"他又摇头。"联系过画廊吗？"他的表情像你在说外星语。Carlos叹了口气："他连Instagram都没有。"你看着Tomás，觉得他像一只会画画的鸵鸟。' },
+    { text: '你说："那我们一步一步来。先拍照。"你拿出手机对着那堆画开始拍。Tomás说："等等——光线不对。"你说："先拍了再说。"他伸手挡住镜头："你要是拍了丑的我会死的。"Carlos说："你不会死的。你会穷死。所以让她拍。"' },
+    { text: '你们花了一个下午给他的二十多幅画拍了照片。有些确实很好——一幅港口的日落，一幅老城区的雨天，一幅Carlos的餐厅外景（Carlos看了说"你把我的招牌画歪了"Tomás说"那本来就是歪的"）。最后Tomás拿起一幅很小的水彩——是合唱团排练的场景，光线从石头窗户照进来，照在一群模糊的人脸上。你看了很久。' },
+    { text: '你说："这幅多少钱？"Tomás想了想："……二十欧？"Carlos差点把杯子摔了："二十欧？！你画了多久？"Tomás说："三个星期。"Carlos说："那你时薪比我洗碗的时候还低。"你说："我们得学一下定价。"Tomás的表情说明他对定价的理解程度跟你对调色的理解程度差不多——几乎为零。' },
+    { text: '你当晚回去帮他注册了一个卖画的账号，上传了十张照片。Carlos负责写简介——"Tomás，智利艺术家，在地中海的光线里画世界"。Tomás看了以后说："太夸张了。"Carlos说："你觉得夸张是因为你不习惯被夸。"你觉得Carlos有时候比任何人都懂。' },
+    { type: 'system', text: 'Tomás的卖画之路开始了——第一步：承认自己的画值得被看到。' },
+    { type: 'stat-up', text: '心情 +8 · 社交 +5 · Tomás好感度 +8' },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneTomasSell2() {
+  S.sideStories.tomas = 3;
+  const npc = S.npcs.tomas; npc.affinity += 10; npc.talked++;
+  if (S.npcs.carlos) { S.npcs.carlos.affinity += 5; S.npcs.carlos.talked++; }
+  if (S.npcs.aoife) { S.npcs.aoife.affinity += 5; S.npcs.aoife.talked++; }
+  adjustStat('energy', -15); adjustStat('money', -20); adjustStat('mood', 15); adjustStat('social', 8); advanceTime(); advanceTime(); renderStatus();
+  showNarrative([
+    { text: '周末。本地的旧城区市集——每个月一次的手工艺品和艺术品集市。你、Carlos和Aoife帮Tomás搬了四趟才把所有画和画架搬到了他的摊位。摊位号37——夹在一个卖手工肥皂的老太太和一个卖陶瓷猫的男人中间。你对Tomás说："至少你旁边很香。"他太紧张了没听到你在说什么。' },
+    { text: 'Carlos自封为"销售总监"。他做了一块牌子——手写的，字很大：「来自智利的地中海之光——原创画作」。Tomás看了以后说："字太大了。"Carlos说："字大才有人看。你以为你是毕加索吗，光站着就有人来？"Aoife在旁边笑到蹲在地上。' },
+    { text: '头两个小时——没有人。准确地说，有人路过，看了一眼，走了。Tomás的表情越来越僵。你试着安慰他："可能时间还早。"Carlos说："可能他们不懂艺术。"Aoife很温柔地说："可能他们等会儿回来。"Tomás说了一句你没听清的西班牙语——你问Carlos什么意思，Carlos说最好不要翻译。' },
+    { text: '第一个停下来的人是一对老夫妻。老太太看了那幅港口日落很久。你屏住呼吸。她说："好看。多少钱？"Tomás张了张嘴——你看到他在犹豫要不要说二十欧。Carlos从后面伸手拍了一下他的背。Tomás咽了口唾沫说："一百二十。"你差点鼓掌。' },
+    { text: '老太太皱了皱眉。你的心沉了一下。然后老先生说："值的。光线画得好。"他从钱包里掏出一百二和一张名片——他是退休的建筑师。"你如果有更大幅的，打我电话。"Tomás接过钱的时候手在发抖。他说了三遍谢谢。Carlos在后面悄悄做了一个胜利的手势。Aoife拍了张照发到了团群里。' },
+    { text: '然后事情就停不下来了——好的那种。一个二十多岁的女孩买了那幅雨天旧城区。一对情侣买了合唱团排练那幅小水彩——他们说这幅画让他们想起在巴黎参加过的一个唱诗班。一个戴贝雷帽的中年男人买了三幅小的，说要挂在他的咖啡馆里。你在旁边帮忙收钱包画，感觉自己像个画廊助理——虽然你的全部艺术知识就是"这个颜色好看"。' },
+    { text: '下午三点的时候出了意外。风突然大了——一阵海风把画架吹倒了，两幅画掉在地上，其中一幅蹭了泥。Tomás的脸白了。你蹲下来捡——那幅蹭泥的是他画了两个月的一幅大画，是整个城市的全景。右下角有一道土黄色的划痕。' },
+    { text: 'Tomás蹲在那里看了很久。你不知道该说什么。Carlos走过来，看了一眼，说："在上面再画点东西。就说是限定版。"Tomás愣了一下。然后他翻出随身带的水彩笔，在那道划痕上画了一只很小很小的猫——趴在城市全景的屋顶上。你说："天哪。"Aoife说："这比之前好看十倍。"隔壁卖陶瓷猫的男人探过头来看了一眼："这只猫画得比我做的都好。"' },
+    { text: '那幅"限定版"全景画最后卖了三百欧。买的人说她就是因为那只猫才决定买的。Tomás在收摊的时候数了数——今天总共卖了七幅，收入九百多欧。他拿着那叠钱站在那里，表情像一个不确定自己是不是在做梦的人。' },
+    { text: 'Carlos说："走。我请客。今天庆功。"你说："应该是Tomás请客吧，他今天赚了九百欧。"Tomás说："我请。"然后他看了看那叠钱，又看了看你们三个。他的眼眶红了，但他笑着。他说了一句很轻的话："谢谢你们来。如果只有我一个人，我第一个小时就收摊跑了。"' },
+    { text: 'Aoife说："那你就会错过那只猫了。"' },
+    { text: 'Carlos开了两瓶酒。你们四个坐在他的餐厅里，画架靠在墙上，剩下的画堆在角落里。Tomás的手上还有颜料——蓝色的、洗不掉的那种。你看着他笑着跟Carlos碰杯的样子，觉得这个下午好到你想画下来。但你不会画——所以你记住了。' },
+    { type: 'system', text: 'Tomás在市集上卖出了第一批画。那只意外诞生的屋顶小猫成了他的签名。' },
+    { type: 'stat-up', text: '心情 +15 · 社交 +8 · Tomás好感度 +10 · Carlos好感度 +5 · Aoife好感度 +5' },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneTomasSell3() {
+  S.sideStories.tomas = 4;
+  const npc = S.npcs.tomas; npc.affinity += 12; npc.talked++;
+  if (S.npcs.carlos) { S.npcs.carlos.affinity += 8; S.npcs.carlos.talked++; }
+  if (S.npcs.aoife) { S.npcs.aoife.affinity += 8; S.npcs.aoife.talked++; }
+  adjustStat('energy', -20); adjustStat('money', -60); adjustStat('mood', 20); adjustStat('social', 10); advanceTime(); advanceTime(); advanceTime(); renderStatus();
+  showNarrative([
+    { text: '事情是这样发生的——市集上那个退休建筑师的名片，Tomás回去以后犹豫了两周才打了电话。老先生说他在瓦伦西亚有个朋友开画廊，正在找新人。"你有兴趣吗？"Tomás说："我有兴趣但我不太确定我——"老先生说："把你的作品集发过去。别想了。"' },
+    { text: '画廊老板看了作品集以后回了一封很短的邮件：「十二月第二周，给你一面墙。六到八幅。来瓦伦西亚布展。」Tomás把邮件截图发到群里的时候Carlos回了一串感叹号。Nico回了二十个emoji。苏迟回了一句"恭喜"——但知道他的人知道这个"恭喜"重量很大。你回了："我们去。"' },
+    { text: '于是你、Carlos和Aoife挤上了周六早上去瓦伦西亚的火车。Tomás抱着一个装画的大箱子，占了两个人的座位。Carlos说："你的画比你占的地方多。"Tomás说："画比我重要。"Aoife说："至少让我把脚放下来。"你坐在窗边看外面——橘子树、白色的房子、蓝色的天，一路向北。' },
+    { text: '火车上Carlos强迫大家吃他做的三明治。Tomás咬了一口说："不如你餐厅的。"Carlos说："火车上你还挑。"Aoife从包里掏出一本爱尔兰诗集开始翻——五分钟后睡着了，头靠在你肩膀上。你不敢动。Carlos偷偷拍了照。你瞪他。' },
+    { text: '到瓦伦西亚的时候下午一点。画廊在老城区的一条窄巷子里——白墙、拱门、门口种着九重葛。画廊老板是一个五十多岁的女人，头发灰白，戴着很大的银耳环。她看到Tomás的箱子说："你带了多少？"Tomás说："八幅。"她打开箱子看了第一幅——港口日落的那幅——说了一句西班牙语。Carlos翻译："她说光线很准。"Tomás的脸红了。' },
+    { text: '布展从下午两点干到晚上八点。你帮忙挂画——准确地说你负责递钉子和量距离。Carlos负责搬重物。Aoife负责站在远处看整体效果然后喊"左边高了""右边太挤了"。Tomás每挂一幅都要退后三步，歪着头看很久，然后说"不对"，然后重来。你到第四遍的时候已经想把钉子锤进他脑袋里了。但你忍住了。因为你知道这对他很重要。' },
+    { text: '画廊老板请你们吃了晚饭——瓦伦西亚海鲜饭。Carlos吃了第一口以后沉默了。你问他怎么了。他说："比我做的好吃。"你和Aoife同时大笑。画廊老板说她这条街的餐厅有四十年历史了。Carlos说："那我还有四十年可以追。"他说这话的时候眼睛在发光。你觉得Carlos是那种在任何地方都能找到灵感的人——别人的好不是威胁，是目标。' },
+    { text: '晚上你们住在画廊附近一个很便宜的hostel。四人间。Carlos打呼。Aoife戴了耳塞。你和Tomás在天台上坐了一会儿。瓦伦西亚的夜景跟你的城市不一样——更大、更亮、更喧闹。Tomás说："你觉得明天会有人来吗？"你说："画廊老板发了帖子。Carlos发了朋友圈。Nico说她要转发一百次。会有人的。"' },
+    { text: 'Tomás沉默了一会儿。"你知道吗——我来欧洲的时候我爸说了一句话。他说：「如果你一定要画画，就要接受大部分时间你只是在跟自己说话。」我一直以为他说得对。但今天——"他看了看天台下面的街道，"今天我觉得他说错了。我不是在跟自己说话。我在跟——所有路过那面墙的人说话。"' },
+    { text: '你说："你爸会为你骄傲的。"Tomás想了想："也许吧。他是一个很不容易骄傲的人。"他转头看你。"但你们来了。所以——谢谢。"你说："你请我吃海鲜饭了。我们扯平了。"他笑了。' },
+  ]);
+  showNarrative([
+    { text: '第二天。开展。' },
+    { text: '你以为不会有人来。结果十一点画廊一开门就进了七八个人——画廊老板的朋友、附近大学的艺术系学生、看到帖子来的本地人。Tomás站在角落里，紧张到你能看到他衬衫领口的汗。Carlos在旁边像个经纪人一样跟每个人聊——"这幅是画我餐厅的""你看那只猫——有故事的"。Aoife在门口发传单，用西班牙语、英语和盖尔语——最后一个没人听懂但她说"音韵好听人就会停下来"。' },
+    { text: '一个戴围巾的年轻女人在合唱团排练那幅画前面站了十分钟。十分钟。你数的。她最后走到Tomás面前问："这些人是真的吗？"Tomás说："是。他们是我朋友。"她说："你画朋友的方式——像在画光线。人变成了光。"Tomás愣了。你看到他的眼眶亮了一下。她买了那幅画。' },
+    { text: '下午的时候一个穿黑色西装的男人走进来。画廊老板跟他聊了十分钟。然后她走到Tomás面前说："他是《地中海艺术季刊》的编辑。他想约你做一个采访。"Tomás说了一句"什么"然后转头看你——他的表情你这辈子都忘不了——不是狂喜，是一种很深的、害怕自己在做梦的恐惧。你对他点了点头。他深吸了一口气。' },
+    { text: '那天结束的时候，八幅画卖了五幅。画廊老板说她想跟Tomás签一个代理协议——每个季度提供三到四幅新作。Tomás坐在画廊的台阶上，腿有点软。Carlos递给他一杯水。Aoife坐在他旁边，肩膀靠着他的肩膀。你站在对面，看着他们三个坐在夕阳里的样子——Tomás的衬衫上还有颜料的痕迹，Carlos的围裙不知道什么时候穿上的，Aoife头发被风吹乱了。' },
+    { text: '你想：半年前你一个人坐飞机来到一个陌生的城市。你什么都不会——不会做饭、不会唱歌、不认识任何人。现在你坐在另一座城市的台阶上，旁边是三个跟你一样从世界各地漂来的人，你们刚刚帮一个智利男孩卖了他的画。你觉得人生有时候比小说还不讲道理。' },
+    { text: 'Carlos站起来说："我们再去吃一顿海鲜饭吧。今天Tomás请。"Tomás说："又是我请？"Carlos说："你今天赚了多少？"Tomás算了算。Carlos说："所以你请。"Tomás叹了口气。然后他笑了。你们四个人顺着夕阳的方向走下去，去找那家四十年历史的餐厅。你闻到了海的味道——跟你的城市一样的味道。你想家了一秒。然后Aoife说了一句什么，Carlos大笑起来，Tomás的围巾在风里飘着。你不想家了。' },
+    { type: 'system', text: 'Tomás在瓦伦西亚办了第一场画展。他开始相信自己的画值得被看到了。那只屋顶上的小猫，成了他所有画的签名。' },
+    { type: 'stat-up', text: '心情 +20 · 社交 +10 · Tomás好感度 +12 · Carlos好感度 +8 · Aoife好感度 +8' },
+  ]);
+  showChoices([{ text: '坐火车回家', action: sceneDailyMenu }]);
 }
 
 // --- Music Angel (Imaginary Friend) ---
