@@ -3057,6 +3057,7 @@ function sceneRehearsal() {
       { text: '排练后跟大家去吃东西', cost: '社交+5，心情+5', action: () => sceneRehearsalHangout() },
     ];
     if (S.vocal > 20) ch.push({ text: '跟Dietrich请教乐理', cost: '视谱+5', action: () => sceneRehearsalTheory() });
+    if (rc >= 8) ch.push({ text: '帮Yuki搬钢琴和调音', cost: 'Yuki好感度', action: () => sceneHelpYuki() });
     showChoices(ch);
   } else {
     const ch = [
@@ -3065,6 +3066,8 @@ function sceneRehearsal() {
     ];
     if (S.vocal > 25) ch.push({ text: '跟Dietrich请教乐理', cost: '视谱+5', action: () => sceneRehearsalTheory() });
     if (S.choirPhase >= 2) ch.push({ text: '排练后一起讨论曲目', cost: '社交+3，声乐+2', action: sceneRepertoireChat });
+    if (S.choirPhase >= 2) ch.push({ text: '观察Dietrich指挥然后模仿', cost: '视谱+3 · 心情+3', action: () => sceneWatchDietrich() });
+    ch.push({ text: '帮Yuki搬钢琴和调音', cost: 'Yuki好感度', action: () => sceneHelpYuki() });
     showChoices(ch);
   }
 }
@@ -3221,10 +3224,158 @@ function sceneRehearsalFocus() {
     '今天是一首本地语民歌。Marta教大家发几个特殊的元音。你跟着念了十遍，舌头还是不对。你说："我的舌头不长这样。"Marta说："再来。"你又念了十遍。第十一遍Marta说"对了！"你不确定是真的对了还是她放弃了。',
     '今天排《Bohemian Rhapsody》的合唱段落。到"Galileo"那段全场笑场了三次。你笑到声音破了。Dietrich假装生气——但他嘴角在抖。你说"对不起"。他说"再来"。第四次过了。你觉得很骄傲。',
     '排了Adele的《Someone Like You》四声部改编。Ibrahim独唱段落好得吓人——你的胳膊起了鸡皮疙瘩。排练后你对他说"太好了"。他说了声谢谢。Lena走过去跟他说了什么，他罕见地笑了。你在想：Lena能让Ibrahim笑，这件事本身就很了不起。',
+    '今天排一首全新的巴洛克作品。Dietrich说「注意力在节拍上，不要跟着旋律跑」。你努力数拍子——1-2-3-4——但Ibrahim的低音太好听了你一走神就跟他跑了。Dietrich敲了一下谱架："你。数拍子。"你赶紧回来。第三遍终于稳住了。',
+    '排练一首非洲民歌改编曲。节奏很复杂——拍手加跺脚加唱。你的手和脚和嘴巴打起了架。Carlos在旁边一边唱一边跳，像参加派对。你试着跟上——踩错了三次。第四次你踩对了，Dietrich点了点头。你觉得那个点头比任何掌声都值钱。',
+    '今天复排上周的曲子。你以为自己记得——结果第三行就迷路了。你偷看旁边Nico的谱子被Dietrich发现了。他什么都没说。但你知道他看到了。第二遍你没再偷看。第三遍你发现你真的记住了。Dietrich说"可以了"。你松了一口气。',
+    '今天排一首爵士标准曲的合唱改编。Yuki弹前奏的时候所有人都惊了——她平时弹古典很克制，但爵士的她完全放开了，节奏摇摆得像另一个人。Nico小声说"Yuki老师你藏了多少面"。你跟着旋律进入——爵士的换气点跟古典完全不同，你在第二段差点窒息。',
+    '练声部分唱。你的声部只有你和Aoife两个人。你们对视了一眼——有点紧张。Dietrich说"开始"。你深吸一口气唱了。你的声音和Aoife的声音意外地合——她比你高半个音域，正好互补。唱完Dietrich说"再来一遍"。你知道这是好的"再来一遍"不是坏的"再来一遍"。',
   ];
   renderStatus();
-  showNarrative([{ text: pick(songs) }, { type: 'stat-up', text: '声乐 +3' }]);
-  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+  const roll = Math.random();
+  if (roll < 0.15) {
+    showNarrative([{ text: pick(songs) }, { type: 'stat-up', text: '声乐 +3' },
+      { text: '排练结束了。人走得差不多了，但Dietrich还站在谱架前面，在谱子上做标记。他叫了你一声。' }]);
+    showChoices([
+      { text: '问他自己哪里还需要改进', cost: '视谱+3', action: () => {
+        adjustStat('sightRead', 3); S.npcs.dietrich.affinity += 3; renderStatus();
+        showNarrative([
+          { text: 'Dietrich拿出你的声部谱，用铅笔圈了三个地方。"这里你的气息断了。这里你在跟旁边的人而不是跟我。这里——"他顿了一下，"这里其实可以了。但可以更好。"' },
+          { text: '他示范了一遍那个乐句。你从来没听过Dietrich唱歌——他的声音出乎意料地温暖，像被打磨过的旧木头。你愣了一下。他说"你在发什么呆"。你赶紧跟着唱。' },
+          { text: '你唱了三遍，最后一遍他说："对了。记住这个感觉。"你走出排练室的时候天已经黑了。你在路上反复哼那个乐句——你怕忘掉那个"对了"的感觉。' },
+          { type: 'stat-up', text: '视谱 +3 · Dietrich 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '问他当初为什么开始指挥', cost: '心情+5', action: () => {
+        adjustStat('mood', 5); S.npcs.dietrich.affinity += 5; renderStatus();
+        showNarrative([
+          { text: 'Dietrich的表情变了一下——像是某扇门被推开了一条缝。' },
+          { text: '「我二十三岁的时候在柏林。」他说得很慢。「在一个地下室合唱团唱男高音。指挥是一个七十岁的老太太，叫Frau Kessler。她比我现在严格十倍。」' },
+          { text: '「有一天她生病了。她打电话给我说：你来指挥。我说我不会。她说：你站到前面去，听他们。剩下的你的手会知道。」他的目光落在谱架上。「她三周后去世了。我再也没有回到队伍里去。」' },
+          { text: '你不知道说什么。他站起来收谱子。你帮他收。你们没有再说话。但你觉得这是他从来没跟合唱团的人讲过的事。' },
+          { type: 'stat-up', text: '心情 +5 · Dietrich 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '说声辛苦了就走', action: () => {
+        showNarrative([
+          { text: '你说"辛苦了Dietrich老师"。他点了一下头。你走到门口的时候他说了一句："你进步了。"你转过头——他已经在收谱架了，背对着你。你不确定你有没有听错。你走出去的时候脚步比进来时轻了一点。' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]);
+  } else if (roll < 0.30) {
+    showNarrative([{ text: pick(songs) }, { type: 'stat-up', text: '声乐 +3' },
+      { text: '排练间隙你注意到苏迟没走——他站在角落里，闭着眼睛，嘴唇微动。他在默唱刚才的段落，但你隐约听到了一些不一样的东西。他在试变奏。' }]);
+    showChoices([
+      { text: '凑过去问他在试什么', cost: '声乐+2', action: () => {
+        adjustStat('vocal', 2); S.npcs.suchi.affinity += 5; renderStatus();
+        showNarrative([
+          { text: '苏迟睁开眼看到你，微微窘了一下。"没什么。我在想如果第二遍副歌把男中音声部往上移三度会怎样。"' },
+          { text: '你说："唱给我听听。"他犹豫了一下，轻声唱了两个乐句。那个变化让整段旋律像被点亮了一样。你说："这比原版好听。"他说："不是好听不好听的问题。是情绪对不对的问题。原版的和声很安全。我想让它不安全一点。"' },
+          { text: '你说："什么叫不安全？"他说："就是听的人会觉得心里一紧——像走在悬崖边上——然后下一个和弦把你接住。"他又唱了一遍，这次你跟着他的声部试了试。你的音不太准，但你感觉到了他说的那个「紧」。' },
+          { text: '「不错，」苏迟说。这可能是他给过你的最高评价。' },
+          { type: 'stat-up', text: '声乐 +2 · 苏迟好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '不打扰他，自己默默消化今天学的', cost: '声乐+1', action: () => {
+        adjustStat('vocal', 1); renderStatus();
+        showNarrative([
+          { text: '你没有走过去。你坐在另一边，翻开今天的谱子从头默读了一遍。你发现你能听到自己脑子里的声音了——不是以前那种模糊的哼唱，而是清晰的音高和节奏。这个变化是从什么时候开始的？你不记得了。' },
+          { text: '苏迟结束了默唱，收起谱子准备走。经过你的时候他停了一下，看了看你手里的谱子，说："第八小节的渐强你今天做得对。"然后走了。你低头看第八小节——你不记得自己做了什么特别的。但苏迟记得。' },
+          { type: 'stat-up', text: '声乐 +1' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]);
+  } else if (roll < 0.45) {
+    showNarrative([{ text: pick(songs) }, { type: 'stat-up', text: '声乐 +3' },
+      { text: '但有一段你唱得很不好——你知道，Dietrich也知道。他没当场说什么，但排练结束后你心里那个音一直在转。不甘心。' }]);
+    showChoices([
+      { text: '留下来一个人加练', cost: '体力-10 · 声乐+3', action: () => {
+        adjustStat('energy', -10); adjustStat('vocal', 3); renderStatus();
+        showNarrative([
+          { text: '排练室空了。你一个人坐在椅子上，对着谱子把那段唱了一遍。不对。又一遍。还是不对——不是音的问题，是气息。你的气在高音之前就断了。' },
+          { text: '你试了一种新的呼吸方式——先深吸到腹部，然后慢慢释放。第五遍的时候你的声音突然稳住了。你又唱了一遍——对了。就是这个感觉。你的胸腔在震动，声音从身体里出来，像从一口井里打上来的水。' },
+          { text: '你不知道门口站了一个人。Yuki抱着琴谱路过，停了一下。她没有进来。你唱完抬头的时候她已经走了。但钢琴盖上多了一颗薄荷糖。你拿起来——还是温的。' },
+          { type: 'stat-up', text: '体力 -10 · 声乐 +3' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '找Lena请教那段怎么唱', cost: '声乐+2 · 视谱+2', action: () => {
+        adjustStat('vocal', 2); adjustStat('sightRead', 2); S.npcs.lena.affinity += 3; renderStatus();
+        showNarrative([
+          { text: '你追上Lena。"那段——第三首的副歌——我一直唱不对。"' },
+          { text: 'Lena停下来看了你一眼。她的眼神像在评估你是不是认真的。大概你的表情够认真了，因为她说："跟我来。"' },
+          { text: '她把你带到走廊尽头。"唱一遍。"你唱了。她说："你的问题不是音准。是你在害怕那个高音。你的喉咙在高音之前就收紧了——身体比你先知道你怕。"' },
+          { text: '她示范了一遍。她的声音干净利落，高音像一把刀切过去——没有犹豫没有退缩。"不要想高音。想穿过去。想象你的声音要到墙后面去。不是到天花板——是到墙后面。水平的。"' },
+          { text: '你试了。第一遍还是紧。第二遍好一点。第三遍——你的声音穿过去了。Lena没说好。她说："回去练二十遍。"从Lena嘴里这已经是最好的鼓励了。' },
+          { type: 'stat-up', text: '声乐 +2 · 视谱 +2 · Lena 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '算了，下次注意吧', action: () => {
+        showNarrative([
+          { text: '你背着包走出排练室。你告诉自己下次会好的。你知道这是安慰自己。但有时候人需要被安慰——哪怕是自己安慰自己。' },
+          { text: '回家路上你经过广场。有人在弹吉他。你停下来听了一会儿。吉他手弹了一个错音——他笑了一下，从头来过。你想：音乐就是这样。错了就从头来过。没什么大不了的。你回到家哼了一遍那段旋律。比排练的时候好。你笑了——原来你一直在练。' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]);
+  } else if (roll < 0.55) {
+    showNarrative([{ text: pick(songs) }, { type: 'stat-up', text: '声乐 +3' },
+      { text: '今天排练有一个瞬间——Ibrahim的独唱段落。他唱的时候全场静了。不是因为Dietrich要求安静，是因为没有人舍得出声。你的胳膊起了鸡皮疙瘩。' }]);
+    showChoices([
+      { text: '排练后问Ibrahim是怎么做到的', cost: 'Ibrahim好感度+5', action: () => {
+        S.npcs.ibrahim.affinity += 5; renderStatus();
+        showNarrative([
+          { text: '你走到Ibrahim旁边。你说："刚才那段——你的声音——"你发现你不知道怎么形容。' },
+          { text: 'Ibrahim安静地看着你。过了一会儿他说："你想知道什么？"你说："你唱那段的时候在想什么？"' },
+          { text: '他想了很久。久到你以为他不会回答了。然后他说："我妈妈。她不会唱歌。但她做饭的时候会哼一个调子。每次都是同一个。我小的时候以为全世界只有一首歌。后来我知道了——那不是歌。那是她在告诉我她在这里。"' },
+          { text: '你的眼眶热了。你说："所以你唱歌的时候——"他说："我在告诉她我在这里。"' },
+          { text: '你们并排站了一会儿。窗外的橘子树被风吹得沙沙响。你觉得你刚才听到了一个人最深处的地方。' },
+          { type: 'stat-up', text: 'Ibrahim 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '默默记住那个瞬间', cost: '心情+5', action: () => {
+        adjustStat('mood', 5); renderStatus();
+        showNarrative([
+          { text: '你没有走过去。有些东西不需要理解——只需要听到。你把今天的谱子合上。你知道你永远会记得Ibrahim唱那段时排练室里的光线——下午四点，阳光从西边的窗户斜着照进来，照在他的脸上。他闭着眼睛。整个房间都是金色的。' },
+          { type: 'stat-up', text: '心情 +5' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]);
+  } else if (roll < 0.65) {
+    showNarrative([{ text: pick(songs) }, { type: 'stat-up', text: '声乐 +3' },
+      { text: '排练最后十分钟Dietrich没喊停——他让所有人从头唱了一整遍。唱完以后他说了一句"今天不错"。全场沸腾了。你从来没见过这群人因为两个字这么激动。' }]);
+    showChoices([
+      { text: '跟大家一起庆祝一下', cost: '心情+8 · 社交+3', action: () => {
+        adjustStat('mood', 8); adjustStat('social', 3); renderStatus();
+        showNarrative([
+          { text: 'Nico第一个叫出来："Dietrich说不错了！！！"Carlos冲过去抱了Dietrich一下——Dietrich僵住了三秒但没推开他。你看到Lena嘴角弯了一下。这在Lena的表情系统里相当于大笑。' },
+          { text: 'Marta从包里变出了蛋糕——你怀疑她随时都带着蛋糕以防有庆祝需要。你咬了一口。太甜了。你又咬了一口。' },
+          { text: '苏迟站在旁边看大家闹，手里拿着他那杯永远在身边的茶。你走过去说："苏迟你就不能激动一下吗。"他说："我很激动。"他的脸完全看不出激动。但你注意到他的手在微微抖。你没有拆穿他。' },
+          { type: 'stat-up', text: '心情 +8 · 社交 +3' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '安静享受这一刻', cost: '心情+10', action: () => {
+        adjustStat('mood', 10); renderStatus();
+        showNarrative([
+          { text: '你站在原地没动。你看着这群人——Carlos在拍Ibrahim的肩膀，Nico在尖叫，Marta在切蛋糕，Lena在假装不感动，Yuki在钢琴上弹了一个胜利的和弦，苏迟在喝茶。Dietrich已经开始收谱架了，假装什么都没发生过。' },
+          { text: '你深吸了一口气。排练室的空气闻起来像木头和旧纸张和Marta的苹果蛋糕。你想：我在这里。这群人认识我。我的声音是这个声音的一部分。这件事仍然让你觉得不真实。但它是真的。' },
+          { type: 'stat-up', text: '心情 +10' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]);
+  } else {
+    showNarrative([{ text: pick(songs) }, { type: 'stat-up', text: '声乐 +3' }]);
+    showChoices([{ text: '继续', action: sceneDailyMenu }]);
+  }
 }
 
 function sceneRehearsalChat() {
@@ -3320,13 +3471,326 @@ function sceneRehearsalTheory() {
   adjustStat('sightRead', 5);
   S.npcs.dietrich.talked++; S.npcs.dietrich.affinity += 3;
   renderStatus();
-  showNarrative([
-    { text: '排练后你拿着谱子去问Dietrich一个看不懂的标记。你指着那个符号说："这个是什么？我看了半天以为是印刷错误。"' },
-    { text: '他看了一眼："这是延音线，不是连音线。"然后不知不觉讲了二十分钟乐理。你听懂了大概七成。剩下三成你点头假装懂了。他看穿了，又讲了一遍。' },
-    { text: '你说："谢谢。我回去再看看。"他说："有不懂的问苏迟。他解释得比我好。"你心想：你是指挥你说他比你好？然后你想：可能是真的。' },
-    { type: 'stat-up', text: '视谱 +5' },
-  ]);
-  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+  const scenario = Math.floor(Math.random() * 6);
+  if (scenario === 0) {
+    showNarrative([
+      { text: '排练后你拿着谱子去问Dietrich一个看不懂的标记。你指着那个符号说："这个是什么？我看了半天以为是印刷错误。"' },
+      { text: '他看了一眼："这是延音线，不是连音线。"然后不知不觉讲了二十分钟乐理。你听懂了大概七成。剩下三成你点头假装懂了。他看穿了，又讲了一遍。' },
+      { type: 'stat-up', text: '视谱 +5' },
+    ]);
+    showChoices([
+      { text: '问他延音线和连音线到底怎么区分', cost: '视谱+3', action: () => {
+        adjustStat('sightRead', 3); renderStatus();
+        showNarrative([
+          { text: 'Dietrich拿起铅笔在谱子上画了两个例子。"看——连音线连的是不同音高的音，意思是要连贯地唱过去，不要断。延音线连的是同一个音高的音，意思是把两个音的时值加在一起。"' },
+          { text: '你说："所以一个是「唱过去」，一个是「唱更长」。"他抬头看了你一眼。你第一次看到Dietrich露出"你总结得比我好"的表情。' },
+          { text: '他继续说："但你真正要注意的不是记住哪个是哪个。是要看上下文。一段旋律里突然出现延音线，通常意味着作曲家在那个地方想让时间停一下。他在告诉你：这里很重要。慢下来。"' },
+          { text: '你说："就像说话的时候，重要的话前面会停顿一下。"Dietrich把铅笔放下了。"你什么时候变聪明的。"你不确定这是表扬还是吐槽。但你决定当表扬收了。' },
+          { type: 'stat-up', text: '视谱 +3' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '问他为什么说苏迟解释得比他好', cost: '苏迟好感度+3', action: () => {
+        S.npcs.suchi.affinity += 3; renderStatus();
+        showNarrative([
+          { text: 'Dietrich停了一下。"因为他会打比方。"他的语气有点不情愿地佩服。"我说「这是延音线」，他会说「这是作曲家的呼吸」。我教你规则，他教你感觉。两个都需要。但你现在不缺规则。"' },
+          { text: '你说："所以我该去找苏迟？"他说："你该两个都找。但先找我。打好基础。苏迟教你的东西，没有基础你听不懂。"' },
+          { text: '你点头。你在想Dietrich和苏迟之间的关系——像一个严格的工匠和一个天生的诗人。他们尊重彼此。这种尊重不是嘴上说的，是你从他们排练时的眼神交换里看出来的。' },
+          { type: 'stat-up', text: '苏迟好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '谢谢他就走', action: () => {
+        showNarrative([{ text: '你说谢谢。他说"有不懂的问苏迟。他解释得比我好。"你心想：你是指挥你说他比你好？然后你想：可能是真的。' }]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]);
+  } else if (scenario === 1) {
+    showNarrative([
+      { text: '你问Dietrich一个你想了很久的问题："和声是怎么工作的？为什么有些音放在一起好听，有些就很难受？"' },
+      { text: 'Dietrich看了你一眼——你觉得他在判断你是随便问问还是真的想知道。大概你的表情足够认真，因为他走到Yuki的琴前面坐下来了。' },
+      { type: 'stat-up', text: '视谱 +5' },
+    ]);
+    showChoices([
+      { text: '认真听他讲', cost: '视谱+3 · 心情+5', action: () => {
+        adjustStat('sightRead', 3); adjustStat('mood', 5); S.npcs.dietrich.affinity += 3; renderStatus();
+        showNarrative([
+          { text: 'Dietrich按下两个键——C和E。"听。这是大三度。大部分人觉得这个听起来「明亮」。"他又按了C和降E。"这是小三度。同样两个键，差了半个音，但感觉完全不一样。"' },
+          { text: '你闭上眼睛听。他说得对——大三度像阳光，小三度像阴天。只差半个音。你说："半个音就能改变一个世界。"' },
+          { text: 'Dietrich弹了一个完整的和弦——C大三和弦。然后他把中间那个音降了半度。一瞬间你觉得空气变了颜色。你的呼吸轻了一点。' },
+          { text: '他说："莫扎特最后的安魂曲里，他在大调和小调之间来回切换。同一段旋律——希望和绝望，光和影。听的人不知道为什么想哭。但他们的身体知道。"' },
+          { text: '你说："我以前以为音乐就是好听不好听。"他关上琴盖："好听是最低的标准。能让人心里一动——那才是音乐。"你走出去的时候觉得你刚才上了你人生里最好的一课。' },
+          { type: 'stat-up', text: '视谱 +3 · 心情 +5 · Dietrich 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '问他能不能用排练的曲子举例', cost: '视谱+5', action: () => {
+        adjustStat('sightRead', 5); renderStatus();
+        showNarrative([
+          { text: 'Dietrich打开你们正在排的《Ave Verum Corpus》谱子。他指着第十二小节："看——这里莫扎特从大调转到小调。歌词是「whose side was pierced」——被刺穿的身体。他用和声的变化来表达痛苦。"' },
+          { text: '他弹了大调版本，然后弹小调版本。你听到了。"像——像有东西碎了。"你说。他点头："对。碎了。但下一个和弦他又回来了——回到大调。从碎了的地方长出来的东西。你要唱出这个过程。"' },
+          { text: '你看着那些黑色的蝌蚪一样的音符——以前它们只是指令，告诉你唱什么音、唱多长。现在你第一次觉得它们在说话。每一个音符背后有一个人在做选择。' },
+          { text: '你说："我以前看谱子就像看说明书。"Dietrich把谱子合上："现在呢？"你想了想："像读信。"他没说对不对。但他把自己那本标满注释的《Ave Verum Corpus》放到了你面前："看一看。下周还给我。"' },
+          { type: 'stat-up', text: '视谱 +5' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]);
+  } else if (scenario === 2) {
+    showNarrative([
+      { text: '你问Dietrich："指挥到底在干什么？我看你挥手但我不太明白每个动作的意思。"' },
+      { text: 'Dietrich的表情像是你问了一个他等了很久的问题。' },
+      { type: 'stat-up', text: '视谱 +5' },
+    ]);
+    showChoices([
+      { text: '让他示范给你看', cost: '视谱+3 · 心情+3', action: () => {
+        adjustStat('sightRead', 3); adjustStat('mood', 3); S.npcs.dietrich.affinity += 5; renderStatus();
+        showNarrative([
+          { text: '他站到谱架前面。"看我的右手。这是四拍——下、左、右、上。"他的手在空中画了一个十字形。"现在看左手。"他的左手做了一个从小到大的手势。"这是渐强——你们要越唱越大声。"' },
+          { text: '你说："所以你的两只手在说不同的话？"他说："对。右手是时间——告诉你们什么时候。左手是表情——告诉你们怎么唱。"' },
+          { text: '他忽然说："你来试试。"你吓了一跳："我？"他让你站到谱架前面。你拿起指挥棒——比你想象的轻。他站到你后面，握着你的手腕带你画了一个四拍。' },
+          { text: '你感觉到他的手指很干燥，力道很轻但很确定。下、左、右、上。你自己来了一遍——歪歪扭扭的。他说"不要想手，想音乐。你的手跟着音乐走。"你深吸一口气，又来了一遍。这次好了一点。' },
+          { text: '他说："够了。你知道我在干什么了。"你把指挥棒还给他。你的手腕还在微微发热。你说："看起来轻松实际上好累。"他说："指挥最累的不是手。是耳朵。你要同时听所有人。"你说："你怎么做到的？"他说："练了四十年。"' },
+          { type: 'stat-up', text: '视谱 +3 · 心情 +3 · Dietrich 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '问他最难指挥的是什么时刻', cost: '心情+5', action: () => {
+        adjustStat('mood', 5); S.npcs.dietrich.affinity += 3; renderStatus();
+        showNarrative([
+          { text: 'Dietrich想了一会儿。"有两种难。一种是技术上的——很复杂的节拍、多声部交错、速度变化。这种难是可以练的。"' },
+          { text: '他的声音低了一点："另一种难是……当你们唱得太好的时候。"你不太理解。他说："当音乐真的出来了——不是你们在唱，是音乐自己在动——那个时候指挥反而不知道该做什么。因为你的手在多余。音乐不需要你了。但你不能停。你要假装自己还在指挥，其实你只是站在那里听。"' },
+          { text: '他看着谱架："那个时刻是最难的。也是最好的。"' },
+          { text: '你说："那你的手在做什么？"他说："在颤抖。"你看了看他的手——此刻它很稳。但你相信他说的是真的。' },
+          { type: 'stat-up', text: '心情 +5 · Dietrich 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]);
+  } else if (scenario === 3) {
+    showNarrative([
+      { text: '你带了一个新问题去找Dietrich："呼吸。我唱到一半气就没了。但Ibrahim和苏迟好像永远有气。"' },
+      { text: 'Dietrich放下谱子："你用胸呼吸。他们用腹呼吸。区别很大。来。"' },
+      { type: 'stat-up', text: '视谱 +5' },
+    ]);
+    showChoices([
+      { text: '跟着练呼吸法', cost: '声乐+3 · 视谱+2', action: () => {
+        adjustStat('vocal', 3); adjustStat('sightRead', 2); renderStatus();
+        showNarrative([
+          { text: '他让你把手放在肚子上。"吸气——不是抬肩膀，是让肚子鼓起来。像吹气球。"你试了。感觉很别扭。他说："你习惯了就好。人类婴儿都是腹式呼吸的。你只是忘了。"' },
+          { text: '你吸了三口。第三口的时候你感觉到了——气沉到了腹部，像一个很深的水池被装满。他说："好。现在唱一个「啊」。慢慢放气。不要一下子出来。"' },
+          { text: '你唱了。这次你的声音稳了至少三秒。你惊了。"怎么做到的？"他说："你做到了。你的身体知道怎么做。你的脑子在挡路。"' },
+          { text: '他让你练了十分钟。最后他说："回去每天练五分钟。一个月后你的气息会完全不同。"你信他。因为他说话的时候呼吸均匀得像一台机器。你想成为一台会唱歌的机器。' },
+          { type: 'stat-up', text: '声乐 +3 · 视谱 +2' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '问他Ibrahim和苏迟的呼吸有什么不同', cost: '视谱+3', action: () => {
+        adjustStat('sightRead', 3); renderStatus();
+        showNarrative([
+          { text: 'Dietrich靠在墙上想了一会儿。"Ibrahim的呼吸像大地。很深很慢。他的气从脚底上来。他可能自己都不知道——那是天生的。你学不来。"' },
+          { text: '"苏迟不一样。他是练出来的。他的呼吸非常有控制——他知道每一口气能唱多少音节，精确到小节。有时候我觉得他在呼吸之前已经把整个乐句算好了。"他停了一下："但有时候他太精确了。他需要学会让气息自己流动，不要总是控制它。"' },
+          { text: '你说："那你呢？你的呼吸像什么？"Dietrich看了你一眼——你觉得他没料到这个反问。他想了想："我的呼吸像……节拍器。稳定的。可预测的。这是优点也是缺点。"' },
+          { text: '你说："缺点在哪？"他说："太稳了的东西不会让人感动。"这是你第一次听到Dietrich承认自己有缺点。你觉得这比任何乐理知识都珍贵。' },
+          { type: 'stat-up', text: '视谱 +3' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]);
+  } else if (scenario === 4) {
+    showNarrative([
+      { text: '今天你拿了一个大胆的问题去找Dietrich。"你觉得我们有可能在巴塞罗那拿奖吗？"' },
+      { text: 'Dietrich收谱子的手停了一下。' },
+      { type: 'stat-up', text: '视谱 +5' },
+    ]);
+    showChoices([
+      { text: '等他回答', cost: '心情+5', action: () => {
+        adjustStat('mood', 5); S.npcs.dietrich.affinity += 3; renderStatus();
+        showNarrative([
+          { text: '他沉默了很久。然后他说："你问错了问题。"' },
+          { text: '你说："那正确的问题是什么？"他说："正确的问题是——你在巴塞罗那的舞台上唱完最后一个音之后，你会觉得自己活过了吗。如果答案是对的，奖不奖的无所谓。"' },
+          { text: '你想说"但奖还是很重要吧"——但你把这句话咽回去了。因为你看到他的眼睛在说另一件事。他带过很多合唱团。有些拿了奖。有些没有。但他还在这里——一个社区合唱团，十几个业余歌手，在一棵橘子树下面。' },
+          { text: '你说："你觉得我们活过了吗？"他把最后一沓谱子放进包里。"还没有。但快了。"' },
+          { type: 'stat-up', text: '心情 +5 · Dietrich 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '问他往年比赛是什么样的', cost: '视谱+5', action: () => {
+        adjustStat('sightRead', 5); renderStatus();
+        showNarrative([
+          { text: 'Dietrich的眼神变了——像拉开了一个装满记忆的抽屉。"我2004年带过一支大学合唱团去。那一年我们输给了一个拉脱维亚的少年合唱团——十六个平均年龄十四岁的孩子。他们唱了一首波罗的海民歌。三声部。没有伴奏。"' },
+          { text: '他的声音低了一点："唱完全场站起来了。不是为了鼓掌——是因为坐不住。你的身体被一种你说不出名字的东西推起来。我当时站在后台——我的团还没上场——我就知道：我们今天不会赢。但我不在乎了。因为我刚刚听到了音乐应该的样子。"' },
+          { text: '你说："后来你们唱得怎么样？"他说："我们唱了我人生里最好的一场。因为我不再想着赢了。我只想唱出刚才那种东西——那种让人站起来的东西。我们没做到。但我们离它比以前近了一点。"' },
+          { text: '你在心里记住了这段话。你想在巴塞罗那的舞台上想起它。' },
+          { type: 'stat-up', text: '视谱 +5' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]);
+  } else {
+    showNarrative([
+      { text: '你今天带了一个很具体的问题："对位法。苏迟老提到这个词。两个旋律怎么同时唱还不打架？"' },
+      { text: 'Dietrich难得地笑了一下——可能只有半秒钟。"你去问苏迟他会讲一个小时。我讲十分钟就够了。"' },
+      { type: 'stat-up', text: '视谱 +5' },
+    ]);
+    showChoices([
+      { text: '听Dietrich的十分钟版本', cost: '视谱+3', action: () => {
+        adjustStat('sightRead', 3); renderStatus();
+        showNarrative([
+          { text: '他让Yuki弹了一个简单的旋律——四个音。"这是主题。现在——"他等了两拍——"Yuki。"Yuki用左手弹了同样的旋律，低了五度，错开两拍进入。两条旋律同时进行，像两条河汇合但没有混在一起。' },
+          { text: '你说："它们不打架。"Dietrich说："因为它们在对话。不是两个人同时说话——是一个人说了一句，另一个人接着说了一句，但第一个人还没说完。"' },
+          { text: '你说："像——像两个人走在路上聊天，步伐不一样但方向一样？"Dietrich看了你一眼："你有做比喻的天赋。可惜你唱歌不如做比喻。"你不确定该高兴还是该难过。你决定两个都收。' },
+          { type: 'stat-up', text: '视谱 +3' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '说不如叫苏迟一起来讲', cost: '视谱+5 · 苏迟好感度+3', action: () => {
+        adjustStat('sightRead', 5); S.npcs.suchi.affinity += 3; renderStatus();
+        const paras = [
+          { text: '苏迟正好还没走。Dietrich朝他招了招手。苏迟走过来看了看你手里的谱子，立刻知道你们在聊什么。' },
+          { text: 'Dietrich说："你讲。"苏迟犹豫了一秒——然后他拿起铅笔在空白谱纸上画了两条线。"你看——巴赫的赋格。这是主题。"他唱了第一条旋律，声音很轻。"然后第二个声部进来——"他用另一种音色唱了第二条旋律。他一个人唱了两个声部。' },
+          { text: '你惊了："你怎么做到同时听两条线的？"苏迟说："不是同时听。是你已经把第一条记住了，它在你脑子里继续走，你的注意力跟着第二条走。像你左手画圆右手画方——练多了就能做到。"' },
+          { text: 'Dietrich补了一句："但巴赫能同时写六条线。"苏迟点头："所以巴赫是巴赫。我们是凡人。"Dietrich说："凡人练多了也能听三条。"苏迟说："Dietrich老师总能听四条。"Dietrich说："有时候五条。"他们互相看了一眼。你觉得你在围观两个武林高手过招。' },
+        ];
+        showNarrative(paras);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]);
+  }
+}
+
+function sceneHelpYuki() {
+  S.npcs.yuki.talked++; S.npcs.yuki.affinity += 5; renderStatus();
+  const scenes = [
+    { intro: '排练前你看到Yuki在跟那架旧立式钢琴较劲。她试了几个键，皱眉。"中间的G又偏了，"她轻声说。', choices: [
+      { text: '帮她想办法修', cost: 'Yuki好感度+5 · 心情+3', action: () => {
+        adjustStat('mood', 3); S.npcs.yuki.affinity += 3; renderStatus();
+        showNarrative([
+          { text: '你凑过去看了看琴的内部——你什么都不懂，但你觉得表现出关心是重要的。Yuki说："不用。我有调音扳手。"她从包里拿出一个你从没见过的金属工具。' },
+          { text: '她拧了几下。你在旁边递工具、扶住琴盖。她每调一个音都要弹几十次来听。你说："你怎么听得出来差了多少？"她说："就像你听得出来一个人说话是不是真心的。耳朵会知道。"' },
+          { text: '调完以后她从头弹了一遍音阶。声音清亮了一些——但你听不出跟之前有什么区别。她点了点头："好了。"你说："我完全听不出差别。"她说："那是因为现在对了。对的东西你不会注意到。只有错的才明显。"' },
+          { text: '你觉得这句话适用于很多事情。不只是钢琴。' },
+          { type: 'stat-up', text: 'Yuki 好感度提升 · 心情 +3' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '问她为什么不换一架好琴', cost: 'Yuki好感度+5', action: () => {
+        S.npcs.yuki.affinity += 3; renderStatus();
+        showNarrative([
+          { text: 'Yuki的手指停在琴键上。她想了一会儿。"这架琴很老了。音不太准，踏板有点重，琴槌有两个松了。"' },
+          { text: '她轻轻弹了一个和弦——声音有点闷，但有一种温暖的质感。"但它有记忆。你弹多了一架琴，它会记住你的手指。这架琴记住了所有在这里排练过的人的歌。"' },
+          { text: '她又弹了一个和弦。"新琴的声音很完美。但完美的声音是空的。这架琴的声音不完美——它带着灰尘和旧空气和所有人的呼吸。我喜欢这种声音。"' },
+          { text: '你看着她的手指在琴键上——很轻，像在抚摸一个老朋友。你忽然理解了为什么Yuki从来不抱怨这架琴。不是因为她不在意品质。是因为她在意的品质跟你以为的不一样。' },
+          { type: 'stat-up', text: 'Yuki 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]},
+    { intro: '排练结束了。大家都走了。你看到Yuki还坐在琴前面——她没在弹，只是坐着，手放在膝盖上，看着琴键。', choices: [
+      { text: '问她要不要一起走', cost: '社交+3', action: () => {
+        adjustStat('social', 3); S.npcs.yuki.affinity += 3; renderStatus();
+        showNarrative([
+          { text: '她回过神来。"啊——好。"她轻轻合上琴盖，动作很慢，像在关一扇不舍得关的门。' },
+          { text: '你们一起走出排练室。路上她忽然说了一句："你知道吗，在东京我每天练琴八小时。一个人。房间里只有琴和节拍器的声音。"' },
+          { text: '你说："那你现在呢？"她说："现在我每天练两小时。但我跟你们一起唱歌的时候比一个人练琴八小时学到的多。"你说："为什么？"她说："因为钢琴是一个人的乐器。合唱是所有人的。在钢琴上我听到的是自己的声音。在合唱里我听到的是——"她停了一下，"是呼吸。所有人的呼吸。"' },
+          { text: '你在车站分开的时候她说了一句"今天谢谢你等我"。你说不客气。但你觉得你才是应该说谢谢的那个人。' },
+          { type: 'stat-up', text: '社交 +3 · Yuki 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '安静地坐到她旁边', cost: '心情+5', action: () => {
+        adjustStat('mood', 5); S.npcs.yuki.affinity += 5; renderStatus();
+        showNarrative([
+          { text: '你没说话。你走过去，在她旁边的椅子上坐下了。她看了你一眼，没说什么。你们就这样坐着。排练室很安静。窗外有鸟叫。' },
+          { text: '过了大概两分钟——也可能是五分钟——她把手放到琴键上，轻轻弹了一段你没听过的旋律。很慢。很轻。像月光落在水上的声音。' },
+          { text: '你闭上眼睛听。你不知道这首曲子叫什么。你不需要知道。你只需要坐在这里听一个从东京来的钢琴家在一个地中海城市的排练室里弹一架走音的旧钢琴。这个画面本身就是一首曲子。' },
+          { text: '弹完以后她说了一句很轻的话："德彪西。「月光」。我十二岁的时候弹的第一首曲子。"你说："你十二岁弹「月光」？"她说："弹得很烂。但我记住了月光的样子。"' },
+          { text: '你们又坐了一会儿。然后她合上琴盖。"走吧。"你点头。你的心很静。' },
+          { type: 'stat-up', text: '心情 +5 · Yuki 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]},
+    { intro: '排练前Yuki在搬一摞谱子，堆得比她的头还高。你看着那个小小的身影在摇晃——', choices: [
+      { text: '赶紧过去帮忙', cost: 'Yuki好感度+5 · 社交+3', action: () => {
+        adjustStat('social', 3); S.npcs.yuki.affinity += 3; renderStatus();
+        showNarrative([
+          { text: '你接过一半谱子。她松了一口气："谢谢。Dietrich让我整理上学期所有的谱子。有一百三十多份。"你说："一百三十？！"她说："Dietrich每学期大概排二十首。六年了。"' },
+          { text: '你帮她搬到琴房的架子上。她开始按字母排序。你也跟着排——你发现这些谱子上到处都是铅笔标记。Dietrich的笔迹、Lena的笔迹、还有一些你不认识的名字。' },
+          { text: 'Yuki拿起一份特别旧的谱子——纸都黄了。"这是2019年的。那时候合唱团只有六个人。"你翻了翻——上面有一个你没见过的名字：Anna。你问Yuki。她说："她搬走了。去了维也纳。"她的声音很淡。' },
+          { text: '你帮她把最后一摞放好。她在架子上贴了标签——字写得很小很整齐。你说："你做事真的很细。"她说："混乱会让我不安。秩序让我安心。"你觉得这也是她弹琴的方式——每一个音符都在它该在的地方。' },
+          { type: 'stat-up', text: '社交 +3 · Yuki 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '假装没看见（你搬不动）', action: () => {
+        showNarrative([
+          { text: '你犹豫了一秒。然后Carlos从你身后走过去，一把接过了所有谱子。"Yuki你怎么不叫人帮忙！"Yuki说："我叫了。Dietrich说自己会来。"Carlos说："Dietrich说的话你也信？"' },
+          { text: '你看着Carlos轻松地把一百多份谱子搬完了。你有点惭愧。Carlos经过你的时候拍了拍你的肩："下次动作快一点。"他笑着说。你知道他没在怪你。但你决定下次一定要比Carlos快。' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]},
+  ];
+  const s = pick(scenes);
+  showNarrative([{ text: s.intro }]);
+  showChoices(s.choices);
+}
+
+function sceneWatchDietrich() {
+  adjustStat('sightRead', 3); adjustStat('mood', 3);
+  S.npcs.dietrich.affinity += 2; renderStatus();
+  const scenes = [
+    { intro: '今天排练你决定不只唱——你要看。你的目光锁定了Dietrich的手。', choices: [
+      { text: '试着理解他的每个手势', cost: '视谱+3', action: () => {
+        adjustStat('sightRead', 3); renderStatus();
+        showNarrative([
+          { text: '你发现Dietrich的右手在打拍子的时候，轨迹不是固定的——在情感强烈的段落，他的手画得更大更慢；在快的段落，动作变小变紧。他的手在呼吸。' },
+          { text: '他的左手更有意思。你数了一下——排一首曲子他大概用了十七种不同的手势。张开的掌心：放开唱。握拳：收住。手指捏在一起然后展开：渐强。食指竖在唇前：轻。两手向上捧：升起来。' },
+          { text: '最让你注意的是他的眼神。他在指挥的时候轮流看每一个人——不是扫视，是一个一个看。当他看到你的时候，你的脊背不自觉地直了。你知道他在看你唱得对不对。但你更觉得他在看你在不在这里——你的心在不在这首歌里。' },
+          { text: '排练结束后你在笔记本上画了他的几个手势。歪歪扭扭的，但你记住了。苏迟经过的时候瞥了一眼你的画。他说："你画的第四个是错的。渐弱不是握拳——是手指慢慢收拢。"你改了。' },
+          { type: 'stat-up', text: '视谱 +3' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '偷偷在座位上模仿他的动作', cost: '心情+5', action: () => {
+        adjustStat('mood', 5); renderStatus();
+        showNarrative([
+          { text: '你在大腿上偷偷比划Dietrich的手势——下、左、右、上。你试着跟上他的节拍。你发现跟上节拍不难，难的是预判——他的手总是在声音之前动。他不是在跟着音乐，他是在引领音乐。' },
+          { text: 'Nico在旁边注意到了你的小动作。她没说话，但她也开始偷偷比划。你们对视了一下，都快笑出来了。' },
+          { text: '然后Dietrich忽然停了。他看着你们这边。"第二排。你们在做什么。"你的手立刻缩回来。Nico用闪电般的速度把手插进口袋。Dietrich盯着你们看了两秒——你觉得他看穿了一切。但他只说了一句："专注。"然后继续指挥。' },
+          { text: '排练后你路过Dietrich。他忽然低声说了一句："下、左、右、上。你的左和右是反的。"然后走了。你愣了三秒才反应过来——他不仅看到了，还在纠正你。' },
+          { type: 'stat-up', text: '心情 +5' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]},
+    { intro: '今天排到一个高潮段落的时候，你注意到了一件事——Dietrich的脚。他的脚在地板上轻轻地打着节拍。', choices: [
+      { text: '排练后问他脚为什么在动', cost: 'Dietrich好感度+5', action: () => {
+        S.npcs.dietrich.affinity += 3; renderStatus();
+        showNarrative([
+          { text: 'Dietrich显然没有意识到自己的脚在动。他停了一下——你看到了一种非常罕见的东西：Dietrich的窘迫。它只持续了半秒。' },
+          { text: '「……那是因为音乐在身体里走。」他说得有点勉强。「手是意识的。脚是不由自主的。当音乐真的进来了，身体会自己动。」' },
+          { text: '你说："所以你的脚说明你在享受音乐。"他看了你一眼。"不要把这件事告诉任何人。"你说"好"。但你知道你会告诉苏迟的。' },
+          { type: 'stat-up', text: 'Dietrich 好感度提升' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+      { text: '自己也偷偷试试用脚打拍子', cost: '声乐+2', action: () => {
+        adjustStat('vocal', 2); renderStatus();
+        showNarrative([
+          { text: '你的右脚开始跟着打。1-2-3-4。你发现一件奇怪的事——当你的脚在打拍子的时候，你的呼吸自动变稳了。好像身体的下半部分帮上半部分找到了锚点。' },
+          { text: '你的声音稳了。那个你一直唱不好的长音，今天你唱到了尾巴。你惊了一下——然后差点因为惊了而又唱错。你赶紧稳住。脚不要停。脚不要停。' },
+          { text: '排练结束后你跟Aoife说了这个发现。她说："你才发现？我一直在用脚打。Ibrahim也是——你看他的鞋尖。"你低头看了看Ibrahim的鞋——鞋尖磨了。你心想：原来所有人的脚都有秘密。' },
+          { type: 'stat-up', text: '声乐 +2' },
+        ]);
+        showChoices([{ text: '继续', action: sceneDailyMenu }]);
+      }},
+    ]},
+  ];
+  const s = pick(scenes);
+  showNarrative([{ text: s.intro }, { type: 'stat-up', text: '视谱 +3 · 心情 +3' }]);
+  showChoices(s.choices);
 }
 
 // --- Practice ---
