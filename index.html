@@ -301,7 +301,7 @@ const S = {
   musicAngelPhase: 0,
   birthdayHappened: false,
   pugCallDone: false, partnerCallDone: false,
-  nicoPinkPonyDone: false, tomasInsecureDone: false, cookingCount: 0, lastCookDay: 0,
+  nicoPinkPonyDone: false, tomasInsecureDone: false, cookingCount: 0, lastCookDay: 0, witcherPhase: 0,
   competitionAnnounced: false,
   repertoire: [],
   sectionalCount: 0,
@@ -905,7 +905,7 @@ const NPC_EVENTS = {
         '走的时候她塞给你一盒蛋糕。"给Sofia也分一点。那孩子一个人在这边，我老怕她不好好吃饭。"你提着蛋糕走在路上，觉得手里的重量不只是面粉和苹果的重量。',
       ], {social:5, mood:8}) },
     { id: 'ma_witcher', affinity: 28, label: '🎮 Marta带了一张神秘的碟', time: [2],
-      scene: () => npcEvent('marta','ma_witcher', [
+      scene: () => { S.witcherPhase = 1; npcEvent('marta','ma_witcher', [
         'Marta在合唱团的群里发了一条消息："谁有PlayStation？我带了一个好东西。"Carlos回："我有。什么好东西？"Marta发了一张照片——一个游戏盒子，封面上有个白头发的男人拿着剑。你一眼认出来了：巫师3。',
         '你在Carlos的餐厅后面的小房间里——他客厅放不下所有人。Carlos把电视搬到了这里。你到的时候已经有五个人了：Marta占了沙发正中间，手柄在手里，一脸认真。Carlos坐在地上。Nico挤在沙发扶手上。Yuki坐在一把折叠椅上，很安静地看着。苏迟——你不确定他为什么来了，但他来了，靠在墙角，抱着胳膊。',
         '你说："Marta，你玩游戏？"她转过头看你，表情像被冒犯了："我当然玩游戏。我波兰人。巫师3是波兰人做的。这是——"她想了想找了个词，"——民族遗产。"Carlos说："你上次跟我说它是教育软件。"Marta说："它教你做正确的选择。这不是教育吗？"',
@@ -917,7 +917,7 @@ const NPC_EVENTS = {
         '安静了几秒。然后Nico说："所以你来合唱团是因为你奶奶？"Marta想了想："大概吧。我没办法唱得像Lena那么好。但我奶奶也唱不好。重要的不是好不好。是唱不唱。"',
         '苏迟忽然说了一句："你选C是对的。"所有人看他。他说："那个NPC后面有一条隐藏线。你走A或B都会断。"Marta看着他："你也通关过？"苏迟说："……两次。"你忽然发现苏迟打游戏可能是他最大的秘密。',
         '那天晚上你们玩到十一点。Carlos在Marta做了一个完美的boss战以后站起来鼓掌。Marta把手柄放下，喝了一口Carlos的咖啡，说了一句："这才是波兰文化。"你觉得她说得对。',
-      ], {social:8, mood:10}) },
+      ], {social:8, mood:10}); } },
     { id: 'ma3', affinity: 35, label: 'Marta教你做波兰饺子', time: [2],
       scene: () => npcEvent('marta','ma3', [
         'Marta说要教你做pierogi。你以为你会包饺子——你妈教过你。结果波兰饺子跟中国饺子完全是两回事。你捏出来的东西像被卡车压过。',
@@ -2163,6 +2163,14 @@ function sceneDailyMenu() {
       choices.push({ text: '🎨 陪Tomás去市集摆摊卖画', cost: 'Tomás支线 · 体力-15', action: sceneTomasSell2 });
     if (S.sideStories.tomas === 3 && S.npcs.tomas && S.npcs.tomas.affinity >= 50 && time === 0 && isWeekend() && S.money >= 60)
       choices.push({ text: '🎨 去瓦伦西亚！Tomás的画展', cost: 'Tomás支线 · 60€', action: sceneTomasSell3 });
+
+    // Witcher 3 series
+    if (S.witcherPhase === 1 && S.npcs.marta && S.npcs.marta.affinity >= 35 && time === 2)
+      choices.push({ text: '🎮 Marta说今晚继续巫师3', cost: '全员游戏夜', action: sceneWitcher2 });
+    if (S.witcherPhase === 2 && S.npcs.marta && S.npcs.marta.affinity >= 42 && time === 2)
+      choices.push({ text: '🎮 巫师3到大结局了！', cost: '全员决战之夜', action: sceneWitcher3 });
+    if (S.witcherPhase === 3 && S.npcs.marta && S.npcs.marta.affinity >= 50 && time >= 0 && time <= 1 && isWeekend())
+      choices.push({ text: '🎮 本地漫展！巫师团出动', cost: '体力-15 · 25€', action: sceneWitcher4 });
 
     // Group friendship events
     const groupOptions = getAvailableGroupEvents();
@@ -5129,6 +5137,105 @@ function sceneTomasSell3() {
     { type: 'stat-up', text: '心情 +20 · 社交 +10 · Tomás好感度 +12 · Carlos好感度 +8 · Aoife好感度 +8' },
   ]);
   showChoices([{ text: '坐火车回家', action: sceneDailyMenu }]);
+}
+
+// --- Witcher 3 Series ---
+function sceneWitcher2() {
+  S.witcherPhase = 2;
+  adjustStat('energy', -10); adjustStat('social', 8); adjustStat('mood', 12); advanceTime(); renderStatus();
+  if (S.npcs.marta) { S.npcs.marta.affinity += 5; S.npcs.marta.talked++; }
+  if (S.npcs.suchi) S.npcs.suchi.affinity += 5;
+  showNarrative([
+    { text: 'Marta在群里发了一条消息：「今晚继续。谁来谁来。」配了一张Geralt骑马的截图。Carlos秒回：「我来。上次那个boss我还没看够。」苏迟没回消息，但你知道他会来。' },
+    { text: '这次人更多了。上次的五个人以外，Ibrahim来了——他说「我对中世纪文化感兴趣」。Aoife来了——她说「我听说里面有爱尔兰口音的配角」。Sofia来了——她说「我就看看」，然后坐在角落里吃Carlos做的爆米花。Lena也来了，她坐在最远的椅子上织围巾，时不时抬头看一眼屏幕。' },
+    { text: '今晚的主题是：昆特牌。' },
+    { text: 'Marta打开了昆特牌对战——她用的是北方领域牌组，一套她花了三个通关周期收集齐的完美套牌。她说：「昆特牌是这个游戏最好的部分。主线什么的无所谓，牌才是正经事。」' },
+    { text: 'Carlos完全看不懂规则。「等等等等，」他每三秒说一次，「那个8点的骑兵是干什么的？」Marta耐心地解释了十遍。到第十一遍的时候Nico说：「Carlos你是不是故意的。」Carlos说：「不是。但Marta讲解的时候很可爱。」Marta的耳朵红了。' },
+    { text: '然后苏迟开口了：「让我试试。」' },
+    { text: '所有人都看他。苏迟从来没主动要过手柄。Marta把手柄递给他——她的表情说：我很好奇。' },
+    { text: '苏迟接过手柄。他花了三十秒看了一遍手上的牌。然后他开始打——' },
+    { text: '第一局他故意放水，用最弱的牌引诱AI全力出牌。AI赢了第一局，洋洋得意。第二局苏迟把所有强力牌压上去，碾压。第三局——AI手里没牌了，苏迟轻松拿下。全场三比零实际上是二比一。' },
+    { text: 'Marta的嘴张开了。她说：「你……你刚才用了间谍牌骗AI出了天气牌对不对。」苏迟面无表情：「嗯。」Marta说：「这个战术我通关七次才想到。你第一次玩？」苏迟说：「……卡牌游戏的逻辑都差不多。」' },
+    { text: 'Carlos说：「苏迟你这个人就是这样的——你假装不在乎，但你什么都会。」苏迟没否认。' },
+    { text: '你们开始讨论角色。这变成了一场激烈的辩论。' },
+    { text: 'Nico说Geralt最帅。Marta说Lambert最有趣。Carlos说Dandelion是他的灵魂伴侣——「一个不靠谱但忠诚的最好的朋友」。你问Ibrahim喜欢谁。Ibrahim想了很久说：「那个在烧毁的村庄里等儿子回来的老人。」全场安静了三秒。Aoife说：「Ibrahim你不能每次都这样。」Ibrahim说：「什么样？」Aoife说：「每次都说最让人心碎的那个。」' },
+    { text: '苏迟说他喜欢Regis。你问为什么。他说：「因为他是一个选择不做怪物的怪物。」你看了他一眼。你觉得这句话说的不只是游戏。' },
+    { text: 'Yuki一直没说话。你问他喜欢谁。他说：「配乐。」Marta看着他，然后站起来，走过去非常郑重地跟他握了一下手：「你是对的。」' },
+    { text: '那天晚上你们讨论到凌晨一点。Sofia在角落里睡着了，爆米花撒了一地。Lena的围巾织了十厘米。Carlos说明天要把Dandelion的台词背下来。Marta说下次要打血与酒DLC，那个才是真正的神作。你看着这一屋子因为一个波兰游戏而吵成一团的多国籍成年人，心想：这就是你的合唱团。' },
+    { type: 'stat-up', text: '社交 +8 · 心情 +12 · Marta好感度 +5 · 苏迟好感度 +5' },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneWitcher3() {
+  S.witcherPhase = 3;
+  adjustStat('energy', -10); adjustStat('social', 10); adjustStat('mood', 15); advanceTime(); renderStatus();
+  if (S.npcs.marta) { S.npcs.marta.affinity += 8; S.npcs.marta.talked++; }
+  if (S.npcs.suchi) S.npcs.suchi.affinity += 8;
+  if (S.npcs.carlos) S.npcs.carlos.affinity += 3;
+  showNarrative([
+    { text: 'Marta在群里发了一条消息，全部大写：「今晚。大结局。所有人必须来。不来的以后不许跟我说话。」' },
+    { text: '她不是在开玩笑。' },
+    { text: '这次Carlos的小房间挤了九个人。地上铺了毯子和垫子。Carlos做了一大锅意面——他说「大结局需要碳水化合物」。Marta带了波兰啤酒。Ibrahim带了薄荷茶。你带了旺旺仙贝——上次中国合唱团阿姨给的，你留了一包。' },
+    { text: 'Marta说今晚要打两个boss：先是主线最终战，然后是整个游戏最难的选择——Ciri的命运。' },
+    { text: '主线最终战的时候大家轮番上阵。Marta打第一阶段——她的格挡时机完美到Carlos开始用手机录像。第二阶段给了Nico——她从来没打过这个boss但她死了七次硬是摸出了规律，第八次完美通关。「我在布加勒斯特街头长大的，」她说，「这算什么boss。」' },
+    { text: '第三阶段给了苏迟。' },
+    { text: '苏迟接过手柄的时候所有人都安静了。这个阶段是公认最难的——boss会瞬移、连招、还有范围攻击。苏迟花了三十秒观察boss的攻击模式。然后他开始打——不是狂按按键，是一种几乎像下棋的打法。每一次翻滚都刚好躲过攻击的判定帧。每一次反击都在boss的后摇窗口。' },
+    { text: 'Carlos站起来了。Nico的嘴张开了。Marta双手合十——像在祈祷。' },
+    { text: '苏迟一条命没掉。满血通关。' },
+    { text: '房间里爆发了。Carlos把苏迟举了起来——苏迟吓坏了，「放我下来！」Nico在尖叫。Marta的表情像看到了神迹。你看到苏迟被放下来以后耳朵红透了，但嘴角有一个他藏不住的笑。' },
+    { text: 'Ibrahim说：「我完全看不懂发生了什么但你们的反应告诉我这很厉害。」Aoife说：「Ibrahim你刚才眨了三次眼。你也紧张了。」Ibrahim没否认。' },
+    { text: '然后——Ciri的命运。' },
+    { text: 'Marta暂停了游戏。她站起来，非常严肃地说：「这是整个游戏最重要的选择。Ciri是Geralt的养女。游戏的最后，你的选择会决定她的命运——成为女皇、成为猎魔人、或者……死。你之前做的每一个小决定都会影响结局。现在。你们说。」' },
+    { text: 'Carlos第一个说：「让她自己选。她不是谁的附属品。」Marta说：「但这是游戏——你必须替她选。」Carlos说：「那就选她最自由的那个。猎魔人。」' },
+    { text: 'Nico同意：「猎魔人。她应该上路。我也是这样——没人能替我决定我要不要唱歌。」' },
+    { text: 'Aoife说：「但如果她当女皇可以帮助更多的人——」Nico说：「帮助别人不需要当女皇。」Aoife说：「在爱尔兰，如果你有机会改变体制——」于是Aoife和Nico吵了起来。不是真吵——是那种谁都不会让步但谁都不会生气的吵。' },
+    { text: 'Ibrahim说：「我觉得……让她回家。不管是什么身份。只要能回家。」又安静了。Carlos看着Ibrahim，轻轻说了一句：「是啊。」' },
+    { text: '你问苏迟。苏迟想了很久。他说：「让她走她自己想走的路。不管那条路看起来多不合理。」他停了一下。「即使那条路让爱她的人担心。」' },
+    { text: '你看着苏迟。你想起他自己的故事——逃离父亲规划好的经济学，一个人来到一个地中海小城，在橘子树下面找到了音乐。他说的不是Ciri。他说的是自己。' },
+    { text: 'Sofia一直没说话。你转头看她——她的眼眶是红的。你问她怎么了。她说：「这个游戏比我想的要深。」Marta笑了：「我跟你说过。教育软件。」' },
+    { text: '最后Marta做了决定。她选了猎魔人结局。结局播放的时候——Ciri回来了，Geralt把一把剑递给她，她笑了——整个房间安静了。你听到Aoife吸了一下鼻子。你听到Carlos清了一下喉咙。你看到Marta把手柄放在膝盖上，双手合十贴在嘴唇上，一动不动地看完了整段CG。' },
+    { text: '字幕滚完以后没有人说话。过了十秒，Marta站起来，关了电视。她说：「好了。波兰文化课结束。你们都毕业了。」' },
+    { text: 'Carlos说：「Marta。」Marta说：「什么？」Carlos说：「谢谢你带我们玩这个游戏。」Marta的眼眶闪了一下——只一下。她说：「不客气。下次玩血与酒。准备好纸巾。」' },
+    { type: 'stat-up', text: '社交 +10 · 心情 +15 · Marta好感度 +8 · 苏迟好感度 +8 · Carlos好感度 +3' },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
+}
+
+function sceneWitcher4() {
+  S.witcherPhase = 4;
+  adjustStat('energy', -15); adjustStat('social', 10); adjustStat('mood', 15); adjustStat('money', -25); advanceTime(); renderStatus();
+  if (S.npcs.marta) { S.npcs.marta.affinity += 8; S.npcs.marta.talked++; }
+  if (S.npcs.suchi) S.npcs.suchi.affinity += 5;
+  if (S.npcs.nico) S.npcs.nico.affinity += 5;
+  showNarrative([
+    { text: '周六早上Marta在群里发了一张海报。本地漫展——就在海边的会展中心。海报上画了一堆动漫角色，但右下角你看到了一个白头发拿剑的男人。' },
+    { text: 'Marta说：「谁跟我去。」' },
+    { text: 'Carlos说：「我去，但我不cosplay。」Marta说：「你不需要cosplay，你长得就像Dandelion。」Carlos愣了一下然后说：「……你是不是在夸我。」Marta说：「他是游戏里最帅的角色之一。你自己看着办。」' },
+    { text: '最后去了七个人——你、Marta、Carlos、苏迟、Nico、Aoife、Yuki。Marta是唯一认真cosplay的——她穿了一件军绿色的长外套，戴了一条红色头巾，腰上别了一把塑料剑。你问她是谁。她说：「Triss Merigold。红头发女巫师。」Carlos说：「但你的头发不是红的。」Marta说：「红头巾够了。精神上是红的。」' },
+    { text: '苏迟——你没想到——带了一副黄色的猫眼隐形眼镜。他说是在网上买的。戴上以后他看起来真的像猎魔人——瘦削、苍白、眼神冷淡。Nico看到以后说：「苏迟你做猎魔人比做合唱团员合适多了。」苏迟说：「区别不大。都是接了委托去处理麻烦。」' },
+    { text: '漫展比你想的大。到处是cosplay的人——你看到了三个不同版本的Geralt、两个Yennefer、一个非常精致的血腥男爵。Marta见到每一个巫师cos都要去合影。她的手机里已经存了至少二十张合照。' },
+    { text: '你们在一个巫师3的周边摊位前停了很久。Marta买了一套昆特牌实体版——「我等这个等了两年。」苏迟站在旁边看了半天，最后买了一个Regis的小手办。你假装没看到。他把手办塞进外套口袋里的动作很快，像偷东西一样。' },
+    { text: '然后你们发现了一个角落——有人在办昆特牌锦标赛。真正的实体昆特牌。Marta的眼睛亮了。她转头看苏迟。苏迟看着她。两个人什么都没说。' },
+    { text: 'Marta说：「你上。」苏迟说：「你七个通关。你上。」Marta说：「你满血打boss。你上。」苏迟说：「那是动作游戏。这是卡牌。」Marta说：「你第一次玩就用间谍牌骗了AI。」' },
+    { text: '最后两个人都报了名。Marta用北方领域，苏迟用尼弗迦德——「因为间谍牌多」。' },
+    { text: 'Marta赢了两轮淘汰赛。她的表情像一个将军在检阅部队。苏迟赢了三轮——他的打法让对手完全看不懂，每一局都在第一轮故意输，然后在后两轮碾压。一个对手打完以后站起来说：「你是职业选手吗？」苏迟说：「不。我是合唱团的。」对手的表情非常困惑。' },
+    { text: '半决赛——Marta对苏迟。' },
+    { text: '这是整个漫展最紧张的三分钟。你们五个人围在桌子旁边，Nico紧张得在咬指甲。Carlos在小声解说——虽然他其实不太懂规则。Aoife举着手机录像。Yuki在用小本子记两个人出的每一张牌。' },
+    { text: '苏迟用了他的老战术——第一轮放水。但Marta没上当。她也放水了。两个人在第一轮各出了一张最弱的牌，然后互相看着对方。全场大笑。' },
+    { text: '第二轮真正交手。Marta先出了增援牌把三张步兵的战力翻倍。苏迟用间谍牌偷了Marta的远程单位。Marta用诱饵牌把间谍牌抽了回来。苏迟皱了一下眉——你从来没见过苏迟在任何事情上皱眉。' },
+    { text: '第三轮决胜。苏迟手里只剩两张牌。Marta剩三张。所有人都以为Marta赢定了——但苏迟打出的最后一张牌是Villentretenmerth，烧掉了Marta最强的一排。Marta看着自己被清空的近战排，闭上了眼睛。' },
+    { text: '苏迟赢了。差两点。' },
+    { text: 'Marta沉默了五秒。然后她站起来，走到苏迟面前，非常郑重地鞠了一躬：「你配得上这个胜利。」苏迟说：「你第二轮的诱饵牌用得太早了。如果你留到第三轮——」Marta说：「闭嘴。让我有尊严地输。」' },
+    { text: '苏迟最后拿了亚军——决赛输给了一个本地的巫师3速通玩家。但他赢了一套限量版昆特牌和一个奖杯——一个小小的铜制奖杯，上面刻着昆特牌的花纹。他拿着奖杯的时候脸上有一种你很少见到的表情——不是骄傲，是一种……被认可的满足。像一个一直在角落里安静观察的人终于被看到了。' },
+    { text: '回去的路上你们在海边坐了一会儿。夕阳把海面染成金色。Marta拆开了她的昆特牌实体版，开始教Carlos打——这次Carlos真的在学了。Nico和Aoife在讨论Ciri是不是女权主义偶像。Yuki在翻他的笔记本——上面密密麻麻记了两个人的出牌顺序。' },
+    { text: '苏迟坐在你旁边。他从口袋里掏出那个Regis手办，放在膝盖上看了一会儿。你说：「一个选择不做怪物的怪物。」他看了你一眼。然后他笑了——很小的笑，但很真。' },
+    { text: '他说：「今天很好。」' },
+    { text: '你说：「是啊。」' },
+    { text: '你看着海面上的夕阳。你想：一个波兰游戏把一群来自不同国家的人变成了朋友。一个虚构的世界让真实的感情流了出来。Marta说巫师3是教育软件——你现在完全同意。' },
+    { type: 'stat-up', text: '社交 +10 · 心情 +15 · Marta好感度 +8 · 苏迟好感度 +5 · Nico好感度 +5 · -25€' },
+  ]);
+  showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
 // --- Music Angel (Imaginary Friend) ---
