@@ -7949,36 +7949,221 @@ function sceneVictory2() {
 }
 
 function sceneVictory3() {
+  if (!S.celebrationEvents) S.celebrationEvents = {};
   showNarrative([
-    { text: '那天晚上你们在巴塞罗那的小巷子里庆祝。找了一家很小的酒馆——Tapas、Sangria、音乐。Carlos用叉子敲杯子发表了一段即兴演讲，大意是"你们都是最好的疯子"。Marta补充说"我做的丝带好看吧？金色比银色更好看——等等，我之前是不是说反了？"' },
-    { text: '他们邀请了Marco和他的圣保罗合唱团。两个合唱团挤在一个小酒馆里。Marco的人带了吉他和手鼓。Nico也带了吉他。然后发生了一件奇妙的事——两边的人开始即兴合唱。你不知道是谁先开始的——也许是Nico弹了一个和弦，也许是Marco那边一个叫Rafael的男低音随口哼了一句——总之你们二十几个来自完全不同地方的人在一个巴塞罗那的地下酒馆里唱了起来。唱什么不重要。重要的是那个声音——那个属于所有人的声音。' },
-    { text: 'Ibrahim教了大家一首约旦民歌。谁都不会唱。发音全错了。但大家都在唱。Ibrahim笑得整张脸都亮了——你想你从来没有见过他这么开心。' },
-    { text: 'Sofia拉着你去外面的露台上坐了一会儿。巴塞罗那的夜景很美。你能看到远处的圣家堂还在亮着灯。你们不说话，只是看着。然后Sofia说："你知道吗？我来欧洲的时候什么都没有。你也是吧？"你说："嗯。"她说："现在我们是冠军了。"她笑了。你也笑了。笑着笑着眼眶就湿了。' },
-    { text: '午夜的时候你出来接了一个电话。你妈。她哭了。她在电话那头说："我闺女/我儿子好厉害。"你说："妈，金奖。第一名。"她哭得更厉害了。然后她说——你一辈子都会记得这句话："我不管什么奖。我的孩子在那么远的地方能这么快乐，这比什么奖都重要。"' },
-    { text: '你在巴塞罗那的街上，凌晨一点，听你妈在电话里哭了五分钟。你也哭了。但是那种好的哭。那种你终于可以告诉妈妈「我在这里很好」的哭。' },
-    { text: '回到酒馆的时候，Yuki和Lena在教Dietrich跳一种看不懂的舞。Dietrich跳得很僵硬，但他在笑。Aoife在录像。这段视频后来在合唱团的群里被转发了一百多次。' },
+    { text: '那天晚上你们在巴塞罗那的小巷子里庆祝。找了一家很小的酒馆——Tapas、Sangria、音乐。他们邀请了Marco和他的圣保罗合唱团。两个合唱团挤在一个小酒馆里，二十多个人，三种语言，一面刚拿到的金奖。' },
+    { text: '酒馆老板把最大的那张桌子腾出来了——其实还是不够坐。Carlos把两张桌子拼在一起，Marta用餐巾纸折了一排小花放在中间当装饰。Ibrahim找了一个角落的位子——安静但看得到所有人。Nico已经把吉他从琴盒里拿出来了。' },
+    { text: '你坐下来的时候，Sangria已经在桌上了。杯子不够，有人用空果酱罐代替。你端起你的果酱罐——里面的Sangria是深红色的，泡着切碎的苹果和橙子。你喝了一口。酸的，甜的，烈的。和今天一样。' },
   ]);
-  showChoices([{ text: '继续', action: sceneRomanceEpilogue }]);
+  showChoices([{ text: '庆功宴开始了', action: sceneCelebrationMenu }]);
 }
 
-// --- Romance Epilogue ---
-function sceneRomanceEpilogue() {
-  const partner = S.confirmedPartner || ['suchi','sofia','nico','tomas'].find(id => S.npcs[id] && S.npcs[id].romance);
-  if (partner) {
-    if (partner === 'suchi') sceneRomanceSuchi();
-    else if (partner === 'sofia') sceneRomanceSofia();
-    else if (partner === 'nico') sceneRomanceNico();
-    else if (partner === 'tomas') sceneRomanceTomas();
-  } else {
-    sceneEpilogue();
+function sceneCelebrationMenu() {
+  if (!S.celebrationEvents) S.celebrationEvents = {};
+  const choices = [];
+  if (!S.celebrationEvents.toast)
+    choices.push({ text: '🍷 Carlos站起来要发表演说', action: sceneCelebToast });
+  if (!S.celebrationEvents.jam)
+    choices.push({ text: '🎸 Nico和巴西合唱团开始即兴合唱', action: sceneCelebJam });
+  if (!S.celebrationEvents.folksong)
+    choices.push({ text: '🎵 Ibrahim说他想教大家一首歌', action: sceneCelebFolksong });
+  if (!S.celebrationEvents.dance)
+    choices.push({ text: '💃 有人在怂恿Dietrich跳舞', action: sceneCelebDance });
+  if (!S.celebrationEvents.phonecall)
+    choices.push({ text: '📞 你的手机在响——妈妈', action: sceneCelebPhonecall });
+  if (!S.celebrationEvents.weidmann)
+    choices.push({ text: '🥃 Weidmann端着酒杯走过来了', action: sceneCelebWeidmann });
+  if (!S.celebrationEvents.groupPhoto)
+    choices.push({ text: '📸 Yuki说要拍一张「史上最乱合影」', action: sceneCelebGroupPhoto });
+  const partner = S.confirmedPartner;
+  if (partner && !S.celebrationEvents.partnerRomance)
+    choices.push({ text: '💙 ' + ({sofia:'Sofia',suchi:'苏迟',nico:'Nico',tomas:'Tomás'}[partner]) + '的目光一直追着你', cost: '恋爱事件', action: sceneCelebRomance });
+  if (choices.length === 0 || (choices.length === 1 && partner && !S.celebrationEvents.partnerRomance)) {
+    choices.push({ text: '🌙 夜深了，该走了', action: sceneCelebEnd });
   }
+  if (choices.length > 1 && Object.keys(S.celebrationEvents).length >= 3)
+    choices.push({ text: '🌙 夜深了，该走了', action: sceneCelebEnd });
+  const done = Object.keys(S.celebrationEvents).length;
+  if (done === 0) {
+    showNarrative([{ text: '酒馆里热闹极了。你环顾四周——到处都有事情在发生。' }]);
+  } else {
+    showNarrative([{ text: '酒馆里的夜晚还在继续。' }]);
+  }
+  showChoices(choices);
+}
+
+function sceneCelebToast() {
+  S.celebrationEvents.toast = true;
+  showNarrative([
+    { text: 'Carlos站了起来。他用叉子敲了敲杯子——叮叮叮。酒馆安静了大概两秒，然后又吵起来了。他又敲了一次，这次用力了，杯子差点碎。' },
+    { text: '「我有话要说！」Carlos喊。Nico在后面喊：「你什么时候没有话说？」全场笑了。Carlos不理她。' },
+    { text: '他端起他的Sangria——也是果酱罐装的——清了清嗓子。他平时嘻嘻哈哈的，但你看到他的眼睛在认真地闪。' },
+    { text: '「一年前，」他说，「我在我的咖啡店里擦桌子。一个德国人走进来，点了一杯不加糖的黑咖啡，然后问我会不会唱歌。我说会。他说你唱一句听听。我就在店里唱了一句桑巴。他听完以后说——」Carlos学了Dietrich的口音——「音准不行，节奏可以，有救。」' },
+    { text: '全场又笑了。Dietrich端着酒杯，脸上的表情介于认同和否认之间。' },
+    { text: '「然后他跟我说，他要搞一个合唱团。我说你疯了。他说——」Carlos又学他——「可能。来不来？」' },
+    { text: 'Carlos看了一圈桌上的所有人。他说：「我来了。你们也来了。我们这些从不同地方跑来的人——一个约旦来的、一个日本来的、一个中国来的、一个罗马尼亚来的、一个爱尔兰来的——不知道为什么就凑在了一起唱歌。这件事从头到尾都不合理。」' },
+    { text: '他举高了杯子。Sangria从果酱罐里晃出来洒了一点在桌上。' },
+    { text: '「敬所有不合理的事情。」' },
+    { text: 'Marta在旁边补充：「还有我做的丝带！金奖配金色丝带！我之前做了银色和金色两种以防万一——现在银色的可以扔了！」Carlos说：「留着吧。下次做鞋带用。」Marta打了他一下。' },
+    { text: '你举起你的果酱罐。所有人都举起来了。玻璃碰玻璃的声音在酒馆里回荡了好几秒。你喝了一大口Sangria。水果的碎块卡在牙缝里。你不在乎。' },
+    { type: 'stat-up', text: '心情 +10' },
+  ]);
+  adjustStat('mood', 10);
+  showChoices([{ text: '继续', action: sceneCelebrationMenu }]);
+}
+
+function sceneCelebJam() {
+  S.celebrationEvents.jam = true;
+  showNarrative([
+    { text: 'Marco的人带了吉他和手鼓。Nico也把吉他拿了出来。' },
+    { text: '你不知道是谁先开始的——也许是Nico弹了一个和弦，也许是Marco那边一个叫Rafael的男低音随口哼了一句。总之一个音变成了两个音，两个音变成了一段旋律，一段旋律变成了一首没有名字的歌。' },
+    { text: '你们二十几个来自完全不同地方的人在一个巴塞罗那的地下酒馆里唱了起来。没有指挥。没有谱子。没有声部分配。有人唱旋律，有人哼和声，有人用手拍桌子打节奏。Carlos敲着一个倒扣的锅——不知道从哪找来的。' },
+    { text: '这不是一首好听的歌。音准全飘了。有三个人在唱不同的调。节奏也对不上。但是——但是。这是你听过的最快乐的声音。没有评委。没有比赛。只有一群喝了Sangria的人在一起制造噪音。而这些噪音加在一起——奇迹般地——变成了某种你在排练室里永远做不出来的东西。' },
+    { text: 'Rafael站起来唱了一段巴西民谣。他的男低音像地壳一样在震动。Carlos用葡萄牙语跟着唱，然后他开始哭——你不知道他在哭什么，也许是因为听到了家乡的歌。Marta从后面搂住了他。他一边哭一边唱，声音沙哑了但没有停。' },
+    { text: 'Nico突然弹了一个新的和弦进行——从大调滑入了小调——整个酒馆的气氛变了。从狂欢变成了某种更深的东西。Rafael的民谣和Nico的和弦对话了几个来回，像两条河在找汇合的路。然后他们找到了——一个共同的调。两种音乐融在一起了。你起了一身鸡皮疙瘩。' },
+    { text: '你也加入了。你开口唱了一个长音——不是任何歌的音，只是一个音。你旁边的Aoife也唱了一个。然后是Yuki。然后是更多人。一个一个的音叠加上去，变成了一片嗡鸣，像蜂群，像大海，像所有人的心跳同时响起来。' },
+    { text: '酒馆老板趴在吧台后面听了整整二十分钟。后来他说这是他三十年来在这间酒馆听过的最好的音乐。你觉得他没有说谎。' },
+    { type: 'stat-up', text: '心情 +15' },
+  ]);
+  adjustStat('mood', 15);
+  showChoices([{ text: '继续', action: sceneCelebrationMenu }]);
+}
+
+function sceneCelebFolksong() {
+  S.celebrationEvents.folksong = true;
+  showNarrative([
+    { text: 'Ibrahim站了起来。他平时很少主动在大家面前开口，但今晚不一样——他的眼睛亮着，他喝了半罐Sangria，这对他来说已经很多了。' },
+    { text: '「我想教你们唱一首歌，」他说，「我小时候的歌。我妈妈唱给我听的。」' },
+    { text: '所有人都安静了。Ibrahim清了清嗓子，然后开始唱——阿拉伯语，一首短短的、旋律弯曲的摇篮曲。他的声音在酒馆的低矮天花板下回荡着，那些弯曲的音在空气中画出了你看不见但能感觉到的曲线。' },
+    { text: '唱完一遍他说：「跟着我唱。」然后所有人都试了。' },
+    { text: '灾难。' },
+    { text: '阿拉伯语的那些喉音没有一个欧洲人发得对。Nico的发音听起来像在呛水。Carlos直接放弃了歌词，用"啦啦啦"代替。Lena用德语口音唱阿拉伯语——听起来像一种全新的语言。' },
+    { text: 'Ibrahim听了三秒，然后笑了。笑得整张脸都亮了。你想你从来没有见过他这么开心——不是因为大家唱得好，是因为他的歌被这么多人认真地、笨拙地、努力地唱了。一首约旦母亲的摇篮曲，被九个不同国家的人在巴塞罗那的酒馆里唱走了调。这件事本身就是世界上最不可思议的事。' },
+    { text: '他一遍一遍地教。到第五遍的时候，大家的发音还是不对，但旋律终于像那么回事了。到第十遍的时候——你不知道发生了什么——突然之间所有人都安静了，然后一起开口，从头唱了一遍。' },
+    { text: '这一遍——完美吗？不。但是有了一样东西——一样在前九遍里不存在的东西。你不知道怎么形容。也许是所有人的注意力终于对齐了。也许是这首歌终于不再是"Ibrahim的歌"而变成了"我们的歌"。' },
+    { text: 'Ibrahim低下了头。你看到他在擦眼角。Aoife轻轻拍了拍他的背。他说了一句阿拉伯语——后来他翻译了，那句话的意思是：「现在我的妈妈的歌在更多人心里了。」' },
+    { type: 'stat-up', text: '心情 +15 · Ibrahim好感度 +10' },
+  ]);
+  adjustStat('mood', 15);
+  if (S.npcs.ibrahim) S.npcs.ibrahim.affinity = (S.npcs.ibrahim.affinity||0) + 10;
+  showChoices([{ text: '继续', action: sceneCelebrationMenu }]);
+}
+
+function sceneCelebDance() {
+  S.celebrationEvents.dance = true;
+  showNarrative([
+    { text: 'Yuki和Lena联手了。这是一个危险的组合。' },
+    { text: 'Yuki负责放音乐——他不知道从哪找来了一首极其洗脑的西班牙舞曲。Lena负责外交——她走到Dietrich面前，用那种欧洲人特有的、温柔而不可拒绝的方式说：「Dietrich，你答应过Aoife今晚会跳一支舞的。」' },
+    { text: 'Dietrich说：「我没有答应过这种事。」' },
+    { text: 'Aoife在旁边喊：「你说过的！在赛前！你说如果拿了金奖你就跳舞！」Dietrich回忆了三秒，然后他的表情表明他确实说过这种话但没想到会兑现。' },
+    { text: 'Nico把吉他一放：「Dietrich！Dietrich！Dietrich！」她开始敲桌子。然后Carlos加入了。然后是Marta。然后是Marco那边的人——他们根本不认识Dietrich但这不妨碍他们起哄。整个酒馆都在敲桌子。' },
+    { text: 'Dietrich——那个永远笔挺的、永远精准的、永远像一把调好的节拍器的Dietrich——站了起来。' },
+    { text: '他脱了外套。他把外套整整齐齐地挂在椅背上。他把袖子卷起来。卷了两圈。很工整。' },
+    { text: '然后他跳了。' },
+    { text: '他跳得很僵硬。像一个机器人在执行一套它并不完全理解的程序。他的手臂以一种几何学上精确但美学上灾难的角度摆动。他的脚步——你必须承认——是踩在节拍上的。Dietrich不可能不踩在节拍上。但那个节拍是他自己心里的节拍，和音乐的节拍差了大约半秒。' },
+    { text: '全场先是愣了一秒。然后爆发出了你这辈子听到过的最大声的欢呼。Carlos哭笑不得地说：「他在跳什么？探戈还是体操？」Nico说：「都不是。这是Dietrich式的。独一无二。」' },
+    { text: 'Lena拉住了Dietrich的手，试图引导他。Dietrich被引导了大约四秒，然后他的身体本能拒绝了被别人带领——他又开始跳自己的了。但这次他在笑。你从来没有看到过Dietrich这样笑过——那种控制不住的、像个孩子一样的笑。他一边跳一边笑，越跳越离谱，最后他转了一个完全不必要的圈，差点撞到了桌子。' },
+    { text: 'Aoife在录像。这段视频后来在合唱团的群里被转发了一百多次。每次有人心情不好就把它翻出来看一遍。' },
+    { type: 'stat-up', text: '心情 +15 · 全体好感度 +5' },
+  ]);
+  adjustStat('mood', 15);
+  showChoices([{ text: '继续', action: sceneCelebrationMenu }]);
+}
+
+function sceneCelebPhonecall() {
+  S.celebrationEvents.phonecall = true;
+  showNarrative([
+    { text: '手机震了。屏幕上写着：妈妈。' },
+    { text: '你拿着手机走出了酒馆。巷子里比里面安静很多——只有远处隐约的弗拉明戈吉他声和猫叫。' },
+    { text: '你接了。' },
+    { text: '「怎么样了？」她的声音在信号不太好的手机里听着有点远。你能想象她坐在客厅的沙发上，旁边放着一杯凉了的茶，电视开着但她没在看，她在等你的电话。她等了一整天。' },
+    { text: '你说：「妈，金奖。第一名。」' },
+    { text: '她没有回答。你以为信号断了。你说：「妈？」' },
+    { text: '她在哭。' },
+    { text: '她在电话那头哭了很久才说出话来。她说的第一句话是：「我闺女好厉害。」或者是「我儿子好厉害。」——你分不清，因为你也开始哭了。' },
+    { text: '你说：「妈，是金奖。一百多个合唱团。我们是第一名。」她哭得更厉害了。然后她深吸一口气，努力平静下来，说了一句你一辈子都会记得的话——' },
+    { text: '「我不管什么奖。我的孩子在那么远的地方能这么快乐，这比什么奖都重要。」' },
+    { text: '你站在巴塞罗那凌晨的街头，听你妈在万里之外哭了五分钟。你也哭了。但是那种好的哭。那种你终于可以打电话回去说「我在这里很好」的哭。不是报喜式的好，是真的好。你的声音已经不一样了，你的肺活量已经不一样了，你整个人都已经不一样了——但你妈听到的不是这些。她听到的是：我的孩子在笑。' },
+    { text: '你妈最后说：「你下次回来的时候唱给我听好不好？就唱你们比赛唱的那首。」你说好。你不确定你到时候能不能唱完而不哭。但你说好。' },
+    { text: '你挂了电话。你站在巷子里，抬头看了一会儿天——巴塞罗那的夜空看不到太多星星，但月亮很大很亮。你想：在地球的另一边，妈妈大概也在看同一个月亮。这个想法很俗。但很好。' },
+    { type: 'stat-up', text: '心情 +20' },
+  ]);
+  adjustStat('mood', 20);
+  showChoices([{ text: '回到酒馆', action: sceneCelebrationMenu }]);
+}
+
+function sceneCelebWeidmann() {
+  S.celebrationEvents.weidmann = true;
+  showNarrative([
+    { text: 'Weidmann端着一杯威士忌走了过来。不是走向你们的大桌子——是走向Dietrich。' },
+    { text: '酒馆里的声音小了一点。不是所有人都安静了，但你旁边的几个人都在偷看。Carlos停下了正在讲的笑话。苏迟的书合上了。' },
+    { text: 'Weidmann在Dietrich对面坐了下来。两个德国人。一个学院派，一个叛逃者。据说他们在柏林爱乐的岁月既是最好的时光也是最大的伤口。你不知道细节——Dietrich从来不提。' },
+    { text: '他们用德语说了几句什么。你听不懂。但你看到Dietrich的手指轻轻攥紧了杯子。你看到Weidmann的表情——不是傲慢，不是客套，是某种真正的、卸了甲的东西。' },
+    { text: '然后Weidmann举起了杯子。Dietrich看了他两秒。然后Dietrich也举起了杯子。' },
+    { text: '两个杯子在空中碰了一下。声音很轻。但你觉得那一下碰掉了什么——某种积了很多年的东西。' },
+    { text: 'Weidmann站起来之前说了一句话。后来Lena偷偷给你翻译了——他说的是：「你比在柏林的时候强多了。因为你终于不是一个人在指挥了。」' },
+    { text: 'Dietrich没有回答。他只是低头看着杯子里的酒，嘴角有一个很小的、几乎看不见的弧度。你想：Dietrich一辈子都在等这句话。不是因为他需要Weidmann的认可——是因为他需要知道当年离开是对的。' },
+    { text: 'Weidmann走了。他把那杯威士忌留在了桌上——只喝了一口。Dietrich看了那杯酒很久。然后他把它推到一边，端起了自己的果酱罐——里面是Sangria。他对你们举了举：「这个比威士忌好喝。」Nico喊：「Dietrich你终于有品位了！」' },
+    { type: 'stat-up', text: '心情 +10 · 见证了一段和解' },
+  ]);
+  adjustStat('mood', 10);
+  showChoices([{ text: '继续', action: sceneCelebrationMenu }]);
+}
+
+function sceneCelebGroupPhoto() {
+  S.celebrationEvents.groupPhoto = true;
+  showNarrative([
+    { text: 'Yuki跳上了椅子——差点踩翻。他举着手机喊：「合影！所有人！史上最乱的合影！」' },
+    { text: '你以为他在开玩笑。但Yuki已经开始指挥了——而且比Dietrich还有威严。「你们三个往左！Carlos你太高了蹲下来！Marco你的人也来！Dietrich你不许站在角落里！」' },
+    { text: '二十多个人挤在一起。怎么也挤不进画面。Nico建议举手机的人站远一点——但酒馆太小了，退三步就到墙了。最后的解决方案是：所有人站在一起，Yuki把手机绑在一根扫把上伸出去自拍。' },
+    { text: '扫把摇摇晃晃的。Yuki的手在抖——不是紧张，是笑得太厉害。Carlos在后排做兔耳朵被Marta打了一下。Ibrahim被两边的人挤得几乎看不见脸，只露出了一个微笑的嘴角。Aoife试图把一个酒馆菜单举在头上当道具被Lena拦下了。Dietrich站得很直——全场唯一一个姿势正常的人。' },
+    { text: '「三——二——一——」' },
+    { text: '扫把掉了。手机飞出去了。Nico接住了——用脚。球感很好。' },
+    { text: '「没拍到！再来！」' },
+    { text: '第二次。Yuki找了一个更稳的方案——把手机架在酒架上，用定时拍照。十秒。他按完快门飞奔回人群——跑的时候被一把椅子绊了一下，扑进了人群里，撞到了Carlos，Carlos撞到了Marco，连锁反应——' },
+    { text: '就在那一刻快门响了。' },
+    { text: '后来你看了那张照片。歪的。模糊的。有人在摔倒。有人在大笑。有人在试图接住正在摔倒的人。Dietrich的表情是"我被什么撞了一下"。苏迟在最边缘的位置，半个身子出了画面，但他在笑——真的在笑。你的脸占了画面的八分之一，因为Yuki摔过来的时候把你推到了镜头前面。' },
+    { text: '这是你们拍过的最差的一张合影。也是最好的一张。' },
+    { text: '后来Carlos把它洗出来挂在了咖啡店的墙上。旁边配了一行字：「2024 Europa Cantat金奖合唱团。拍照时无人受伤（大概）。」' },
+    { type: 'stat-up', text: '心情 +10 · 解锁记忆：史上最乱合影' },
+  ]);
+  adjustStat('mood', 10);
+  showChoices([{ text: '继续', action: sceneCelebrationMenu }]);
+}
+
+function sceneCelebRomance() {
+  S.celebrationEvents.partnerRomance = true;
+  const partner = S.confirmedPartner;
+  if (partner === 'suchi') sceneRomanceSuchi();
+  else if (partner === 'sofia') sceneRomanceSofia();
+  else if (partner === 'nico') sceneRomanceNico();
+  else if (partner === 'tomas') sceneRomanceTomas();
+  else sceneCelebrationMenu();
+}
+
+function sceneCelebEnd() {
+  const done = Object.keys(S.celebrationEvents).length;
+  const paras = [];
+  if (done >= 5) {
+    paras.push({ text: '凌晨三点。酒馆老板开始收椅子了。他没有赶你们——他说你们可以待到天亮，但是他要先去睡了，钥匙在门口，走的时候替他锁门。' });
+    paras.push({ text: '你们鱼贯走出酒馆。巴塞罗那凌晨的空气是凉的，带着海和石头的气味。你深吸一口——像Dietrich教的那种，从横膈膜开始的深呼吸。你觉得你的肺里装进了整座城市。' });
+  } else {
+    paras.push({ text: '夜渐深了。酒馆开始收场。你们慢慢散了——带着酒意、笑意和一种你说不清的东西。也许是满足。也许是不舍。也许两者是一回事。' });
+  }
+  paras.push({ text: '你们在酒馆门口站了一会儿。没有人想先走。Nico说：「我们明天还是要起早赶火车的。」Carlos说：「火车会等我们的。我们是金奖合唱团。」Marta说：「火车不会等你的。」Carlos说：「那我们就唱到它等。」' });
+  paras.push({ text: '最后是Dietrich先走的——不是因为他想走，是因为他知道如果他不走就没人会走。他举了一下手，算是告别，然后转身走进了巷子。他的背影在路灯下很直。走了大概十步，他突然回过头说：「下周二。准时。不许迟到。」' });
+  paras.push({ text: '全场欢呼。' });
+  paras.push({ text: 'Nico喊：「Dietrich！我们刚拿了金奖！你就不能给我们放一天假吗？！」' });
+  paras.push({ text: '他没有回头。但你听到了——在巴塞罗那凌晨的巷子里——Dietrich在笑。' });
+  showNarrative(paras);
+  showChoices([{ text: '回家', action: sceneEpilogue }]);
 }
 
 function sceneRomanceSuchi() {
   showNarrative([
-    { text: '庆功宴散了以后，大家三三两两地往旅舍走。你走在最后面。你以为自己是一个人——' },
-    { text: '苏迟站在巷子口等你。' },
-    { text: '他靠在一面贴满海报的墙上，手里拿着那本加缪。他看到你了，但没有开口。你走过去站在他旁边。巴塞罗那凌晨两点的巷子很安静，只有远处某个酒吧在放弗拉明戈。' },
+    { text: '酒馆里越来越热闹，但你注意到苏迟不在座位上了。他的加缪还压在桌上，咖啡杯旁边。你去门口看了一眼——' },
+    { text: '苏迟站在巷子口。' },
+    { text: '他靠在一面贴满海报的墙上，仰着头在看天。他看到你了，但没有开口。你走过去站在他旁边。酒馆的喧闹隔了一扇门就变成了远处的嗡嗡声。' },
     { text: '你说："你怎么不回去？"' },
     { text: '他说："等你。"' },
     { text: '就两个字。但你听到了那两个字下面压着的所有东西。' },
@@ -8004,14 +8189,14 @@ function sceneRomanceSuchi() {
     { type: 'stat-up', text: '心情 +20 · 苏迟好感度大幅提升' },
   ]);
   adjustStat('mood', 20);
-  showChoices([{ text: '回家', action: sceneEpilogue }]);
+  showChoices([{ text: '回到酒馆', action: sceneCelebrationMenu }]);
 }
 
 function sceneRomanceSofia() {
   showNarrative([
-    { text: '庆功宴散了以后，你走出酒馆。巴塞罗那的夜风是温的，带着海和茉莉花的气味。你的脑袋嗡嗡的——酒精、音乐、掌声、金奖——所有东西搅在一起。' },
-    { text: 'Sofia站在酒馆门口。她没有跟大家一起走。她在等你。' },
-    { text: '你们对视了一秒。不用说话。你知道她要去哪，她也知道你会跟着。' },
+    { text: '酒馆里太热了。你端着果酱罐走到门口透气。巴塞罗那的夜风是温的，带着海和茉莉花的气味。' },
+    { text: 'Sofia也在门口。她靠着墙，光脚——高跟鞋提在手里。她没在看手机，只是看着巷子尽头一小片能看到的夜空。' },
+    { text: '你们对视了一秒。不用说话。她转身往巷子深处走去。你跟着。' },
     { text: '你们走到海边。凌晨两点的巴塞罗那海滩几乎没有人——只有远处几个喝醉的年轻人在唱歌，和一对坐在沙滩上接吻的情侣。月亮很大。海面上铺着一条银色的光路。' },
     { text: 'Sofia脱了鞋。她提着高跟鞋走在沙滩上，裙子的下摆沾了潮湿的沙。你也脱了鞋。沙子是凉的，比你想象的凉。' },
     { text: '她走到海水刚好能碰到脚趾的地方站住了。你站在她旁边。浪花一遍一遍地冲过你们的脚——退，来，退，来。' },
@@ -8030,14 +8215,14 @@ function sceneRomanceSofia() {
     { type: 'stat-up', text: '心情 +20 · Sofia好感度大幅提升' },
   ]);
   adjustStat('mood', 20);
-  showChoices([{ text: '回家', action: sceneEpilogue }]);
+  showChoices([{ text: '回到酒馆', action: sceneCelebrationMenu }]);
 }
 
 function sceneRomanceNico() {
   showNarrative([
-    { text: '庆功宴到最后只剩下你和Nico了。其他人陆续走了——Carlos抬着喝醉的Marco回旅舍，Ibrahim凌晨要做礼拜先回去了，苏迟说困了（你不信），Aoife终于承认她还没完全退烧被Lena拖走了。' },
-    { text: '酒馆老板开始收椅子了。Nico把吉他挎在肩上，对你说："走。我带你去一个地方。"' },
-    { text: '她带你上了一座小山。你不知道这座山叫什么——后来你查了，叫Montjuïc。凌晨三点爬山的时候你问她怎么知道这个地方的，她说："我来巴塞罗那的第一天就找好了。每到一个城市我第一件事就是找最高的地方。"' },
+    { text: 'Nico在弹吉他的间隙看了你一眼。那种眼神——你认得。她放下吉他，走过来，靠在你耳边说了一句：「跟我走。」' },
+    { text: '你跟她溜出了酒馆。没人注意到——所有人都在看Dietrich跳舞或者听Carlos讲第五遍同一个笑话。Nico把吉他挎在肩上，走得很快。' },
+    { text: '她带你上了一座小山。你不知道这座山叫什么——后来你查了，叫Montjuïc。深夜爬山的时候你问她怎么知道这个地方的，她说："我来巴塞罗那的第一天就找好了。每到一个城市我第一件事就是找最高的地方。"' },
     { text: '你们爬到一个可以俯瞰整座城市的平台。你的腿酸了，呼吸很重。但你看到眼前的景色——整个巴塞罗那在你脚下亮着，像一块铺满萤火虫的布。远处的海是深蓝色的，几乎和天空融在一起。圣家堂的灯在城市中间亮着，像一根插在蛋糕上的蜡烛。' },
     { text: 'Nico把吉他放在膝盖上。她没有弹。她只是看着那片灯光。' },
     { text: '你在她旁边坐下来。你们的肩膀碰在一起。她没有闪开。' },
@@ -8059,16 +8244,15 @@ function sceneRomanceNico() {
     { type: 'stat-up', text: '心情 +20 · Nico好感度大幅提升' },
   ]);
   adjustStat('mood', 20);
-  showChoices([{ text: '回家', action: sceneEpilogue }]);
+  showChoices([{ text: '回到酒馆', action: sceneCelebrationMenu }]);
 }
 
 function sceneRomanceTomas() {
   showNarrative([
-    { text: '庆功宴上Tomás一直在画画。他坐在酒馆的角落里，用一支铅笔在餐巾纸上画你们庆祝的样子——Carlos举杯、Nico弹吉他、Ibrahim教唱歌、Dietrich被迫跳舞。你偶尔看到他抬起头看你一眼，然后低下头继续画。' },
-    { text: '散场的时候你走到他旁边。桌上铺满了画满画的餐巾纸。他在收拾它们——小心翼翼地叠好，放进一个速写本里。' },
-    { text: '你说："你一晚上都在画。"他说："好素材。"你说："你也应该去庆祝。"他说："我在庆祝。用我的方式。"' },
-    { text: '你们一起走出酒馆。Carlos和Marta已经先走了——Carlos说要带Marco去旅舍附近最好的咖啡店，虽然现在凌晨两点没有咖啡店开门。' },
-    { text: 'Tomás说："我想去看海。"你说："好。"' },
+    { text: 'Tomás一直坐在酒馆的角落里画画。餐巾纸上画满了今晚的场景——Carlos举杯、Nico弹吉他、Ibrahim教唱歌、Dietrich被迫跳舞。你偶尔看到他抬起头看你一眼，然后低下头继续画。' },
+    { text: '你端着果酱罐走到他旁边坐下。桌上铺满了画满画的餐巾纸。' },
+    { text: '你说："你一晚上都在画。"他说："好素材。"你说："你也应该去庆祝。"他说："我在庆祝。用我的方式。"他合上速写本，看了你一眼：「出去走走？」' },
+    { text: '你们溜出了酒馆。Tomás说："我想去看海。"你说："好。"' },
     { text: '你们走到了巴塞罗内塔海滩。凌晨的海滩很安静。浪花在月光下像碎银。Tomás找了一段防波堤坐下来——你在他旁边坐下。他从口袋里掏出一支铅笔和那本速写本。' },
     { text: '你说："又要画？"他说："想画一个东西。但不是速写。"' },
     { text: '他翻到一页空白页。然后他看着海看了很久——不是在构图，是在想什么。' },
@@ -8088,7 +8272,7 @@ function sceneRomanceTomas() {
     { type: 'stat-up', text: '心情 +20 · Tomás好感度大幅提升' },
   ]);
   adjustStat('mood', 20);
-  showChoices([{ text: '回家', action: sceneEpilogue }]);
+  showChoices([{ text: '回到酒馆', action: sceneCelebrationMenu }]);
 }
 
 // --- Epilogue ---
