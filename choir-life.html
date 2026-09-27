@@ -5130,7 +5130,9 @@ function sceneVacation(spot) {
 }
 
 function vacationEnd(price) {
-  showNarrative([{ type: 'stat-up', text: `心情 +25 · 社交 +10 · -${price}€ · 所有朋友好感度 +5` }]);
+  const el = document.getElementById('narrative');
+  el.innerHTML += `<p class="stat-change stat-up">心情 +25 · 社交 +10 · -${price}€ · 所有朋友好感度 +5</p>`;
+  el.scrollTop = el.scrollHeight;
   showChoices([{ text: '继续', action: sceneDailyMenu }]);
 }
 
