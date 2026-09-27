@@ -7975,6 +7975,8 @@ function sceneCelebrationMenu() {
     choices.push({ text: '🥃 Weidmann端着酒杯走过来了', action: sceneCelebWeidmann });
   if (!S.celebrationEvents.groupPhoto)
     choices.push({ text: '📸 Yuki说要拍一张「史上最乱合影」', action: sceneCelebGroupPhoto });
+  if (!S.celebrationEvents.gifts && S.money >= 15)
+    choices.push({ text: '🎁 巷子口有家通宵纪念品店……', cost: '花钱', action: sceneCelebGifts });
   const partner = S.confirmedPartner;
   if (partner && !S.celebrationEvents.partnerRomance)
     choices.push({ text: '💙 ' + ({sofia:'Sofia',suchi:'苏迟',nico:'Nico',tomas:'Tomás'}[partner]) + '的目光一直追着你', cost: '恋爱事件', action: sceneCelebRomance });
@@ -8128,6 +8130,123 @@ function sceneCelebGroupPhoto() {
     { type: 'stat-up', text: '心情 +10 · 解锁记忆：史上最乱合影' },
   ]);
   adjustStat('mood', 10);
+  showChoices([{ text: '继续', action: sceneCelebrationMenu }]);
+}
+
+function sceneCelebGifts() {
+  S.celebrationEvents.gifts = true;
+  if (!S.celebGiftsGiven) S.celebGiftsGiven = {};
+  showNarrative([
+    { text: '你溜出了酒馆。巷子口有一家还亮着灯的小店——半纪念品店半杂货铺，那种只有地中海老城区才有的、什么都卖的店。老板是个戴着老花镜的大妈，正在织毛衣，看到你进来抬了一下眼皮。' },
+    { text: '你在狭窄的货架之间转了一圈。明信片、橄榄油、手工皂、冰箱贴、陶瓷小碗、皮质笔记本、各种说不清用途的纪念品……你突然觉得——你想给大家买点什么。不是多贵重的东西。就是一个纪念。一个「今晚我在想着你」的小小证明。' },
+    { text: '你开始挑礼物。' },
+  ]);
+  showChoices([{ text: '看看都有什么', action: sceneCelebGiftMenu }]);
+}
+
+function sceneCelebGiftMenu() {
+  const choices = [];
+  const g = S.celebGiftsGiven;
+  if (!g.dietrich && S.money >= 20)
+    choices.push({ text: '🎼 一本手工装帧的空白乐谱本 · 送Dietrich · 20€', action: () => sceneCelebGiveGift('dietrich') });
+  if (!g.suchi && S.money >= 18)
+    choices.push({ text: '🖋️ 一支老式蘸水笔 · 送苏迟 · 18€', action: () => sceneCelebGiveGift('suchi') });
+  if (!g.nico && S.money >= 15)
+    choices.push({ text: '🎸 一套彩色吉他拨片 · 送Nico · 15€', action: () => sceneCelebGiveGift('nico') });
+  if (!g.carlos && S.money >= 15)
+    choices.push({ text: '☕ 一袋加泰罗尼亚本地咖啡豆 · 送Carlos · 15€', action: () => sceneCelebGiveGift('carlos') });
+  if (!g.ibrahim && S.money >= 15)
+    choices.push({ text: '📿 一条手工编织的书签 · 送Ibrahim · 15€', action: () => sceneCelebGiveGift('ibrahim') });
+  if (!g.marta && S.money >= 15)
+    choices.push({ text: '🧵 一盒彩色丝线 · 送Marta · 15€', action: () => sceneCelebGiveGift('marta') });
+  if (!g.lena && S.money >= 15)
+    choices.push({ text: '🍫 一盒手工巧克力 · 送Lena · 15€', action: () => sceneCelebGiveGift('lena') });
+  if (!g.yuki && S.money >= 18)
+    choices.push({ text: '🎹 一个微型钢琴钥匙扣 · 送Yuki · 18€', action: () => sceneCelebGiveGift('yuki') });
+  if (!g.aoife && S.money >= 15)
+    choices.push({ text: '🌿 一小瓶地中海迷迭香精油 · 送Aoife · 15€', action: () => sceneCelebGiveGift('aoife') });
+  if (!g.sofia && S.npcs.sofia && S.npcs.sofia.affinity > 0 && S.money >= 18)
+    choices.push({ text: '🌸 一束干花和一张手写明信片 · 送Sofia · 18€', action: () => sceneCelebGiveGift('sofia') });
+  if (!g.tomas && S.npcs.tomas && S.npcs.tomas.affinity > 0 && S.money >= 20)
+    choices.push({ text: '🎨 一盒24色水彩颜料 · 送Tomás · 20€', action: () => sceneCelebGiveGift('tomas') });
+  if (!g.marco && S.money >= 40)
+    choices.push({ text: '🇧🇷 一箱Sangria · 送Marco的圣保罗合唱团 · 40€', action: () => sceneCelebGiveGift('marco') });
+  if (!g.weidmann && S.money >= 30)
+    choices.push({ text: '🇩🇪 一瓶好酒 · 送Weidmann的慕尼黑合唱团 · 30€', action: () => sceneCelebGiveGift('weidmann_choir') });
+  if (choices.length === 0) {
+    showNarrative([{ text: S.money < 15 ? '你翻了翻钱包——预算见底了。但没关系，该买的都买了。' : '你看了看手里的袋子——该送的人都送到了。' }]);
+    showChoices([{ text: '带着礼物回酒馆', action: sceneCelebGiftDeliver }]);
+  } else {
+    showNarrative([{ text: '你的存款还有 ' + S.money + '€。你想买什么？' }]);
+    choices.push({ text: '🛍️ 够了，回去送礼物', action: sceneCelebGiftDeliver });
+    showChoices(choices);
+  }
+}
+
+function sceneCelebGiveGift(id) {
+  S.celebGiftsGiven[id] = true;
+  const costs = { dietrich:20, suchi:18, nico:15, carlos:15, ibrahim:15, marta:15, lena:15, yuki:18, aoife:15, sofia:18, tomas:20, marco:40, weidmann_choir:30 };
+  adjustStat('money', -(costs[id]||15));
+  renderStatus();
+  sceneCelebGiftMenu();
+}
+
+function sceneCelebGiftDeliver() {
+  const g = S.celebGiftsGiven;
+  const gifts = Object.keys(g);
+  if (gifts.length === 0) {
+    showNarrative([{ text: '你空手回了酒馆。也好。有时候陪伴本身就是最好的礼物——好吧这话太俗了。但你现在喝了Sangria，有权说俗话。' }]);
+    showChoices([{ text: '继续', action: sceneCelebrationMenu }]);
+    return;
+  }
+  const paras = [{ text: '你拎着袋子回到酒馆。袋子鼓鼓囊囊的，老板娘还多送了你一个小陶瓷猫当添头（「因为你买得多，」她说）。' }];
+  if (g.dietrich) paras.push(
+    { text: '你把空白乐谱本递给Dietrich的时候，他翻了翻——厚实的米黄色纸，手工缝线装帧，封面是素的牛皮纸。他什么都没说，但他用拇指摩挲了一下封面的纹路。你知道那个动作的意思——他已经在想第一页要写什么了。他说：「谢谢。」就两个字。但他说得很认真。' }
+  );
+  if (g.suchi) paras.push(
+    { text: '苏迟接过蘸水笔的时候愣了三秒。他把笔从盒子里拿出来，对着酒馆昏黄的灯光看了看笔尖。「这个型号……」他说了半句又停了。你问怎么了。他说：「我爸有一支一样的。他用来写小楷。」他停了很久。然后他说：「我会用它写谱子。」他把笔小心地放回盒子里，放进了外套内侧的口袋——贴胸口的那个。' }
+  );
+  if (g.nico) paras.push(
+    { text: 'Nico拆开拨片的时候发出了一声尖叫——是那种能让酒馆玻璃杯共振的尖叫。「彩色的！」她把六片不同颜色的拨片摊在手掌上像看宝石。她立刻换上了红色那片试弹了一个和弦：「声音不一样！听到没有！红色的拨片声音更——更红！」Carlos说这不科学。Nico说谁管科学。' }
+  );
+  if (g.carlos) paras.push(
+    { text: 'Carlos把咖啡豆的袋子凑到鼻子前面闻了一下——然后他闭上了眼睛。「加泰罗尼亚烘的豆子，」他说，「中深度，有坚果香……」他睁开眼看着你：「你怎么知道我一直想试本地豆子？」你说你不知道，只是觉得适合他。他把袋子抱在怀里：「明天早上。第一杯。你必须来喝。」' }
+  );
+  if (g.ibrahim) paras.push(
+    { text: 'Ibrahim把书签展开——手工编织的，深蓝和金色相间，末端有流苏。他看了很久。他说：「这个颜色很像我家乡清真寺的地毯。」然后他把书签夹进了他随身带的那本《古兰经》的扉页。你想：一个来自巴塞罗那的纪念品，安放在一本承载了他全部信仰的书里。这是最好的归宿。' }
+  );
+  if (g.marta) paras.push(
+    { text: 'Marta打开丝线盒子的一刻整个人亮了。「琥珀色！和我们丝带一样的琥珀色！」她从里面抽出一根金色的丝线在灯下比了比：「这个色号——我找了好久都没找到！你从哪买的？我要买十盒！」你还没来得及回答她已经开始盘算下一季丝带的设计了。Carlos在旁边说：「你看，送Marta丝线就等于送她一份工作。」Marta说：「闭嘴，这叫热爱。」' }
+  );
+  if (g.lena) paras.push(
+    { text: 'Lena拆开巧克力的包装纸——很慢，像拆一件精密仪器。她拿起一颗看了看，闻了闻，然后咬了一小口。她咀嚼的时候什么也没说。然后她点了一下头：「不错。可可含量至少75%。」在Lena的词典里，「不错」大约等于一般人的「天哪这太好吃了」。她把盒子合上，然后从里面又拿出一颗递给你：「你也尝尝。」你吃了一颗。确实很好。' }
+  );
+  if (g.yuki) paras.push(
+    { text: 'Yuki接过钥匙扣——一个巴掌大小的微型三角钢琴。他翻来覆去看了看，然后试了试——琴盖居然可以打开。他打开了琴盖，里面的琴键是画上去的，但画得很精细。Yuki用指尖在微型琴键上弹了一段无声的旋律——你看他的手指动作，猜他弹的是莫扎特。他弹完以后把钥匙扣挂在了他钥匙上。你看到他原来的钥匙上什么挂件都没有——现在有了。' }
+  );
+  if (g.aoife) paras.push(
+    { text: 'Aoife打开精油瓶盖闻了一下——迷迭香的味道在酒馆的酒精和食物气味中像一条清澈的溪流。她闭上眼睛吸了一口：「这个味道——像爱尔兰乡下外婆家花园里的味道。」她睁开眼，眼圈有点红：「我有一阵没回去了。」她把瓶盖旋好，放进口袋里：「谢谢。我会在想家的时候闻一下。」' }
+  );
+  if (g.sofia) paras.push(
+    { text: 'Sofia拆开牛皮纸的时候你有点紧张——你不知道一束干花和一张明信片够不够。明信片上你用英文写了一句话。Sofia看了明信片——看了很久。她没有念出来。她把明信片翻过去看了看正面——巴塞罗那的夜景——又翻回来看了一遍你的字。然后她把干花凑到鼻子前面闻了闻——干花其实已经没什么味道了，但她闻得很认真。她说了一个葡萄牙语的词。你问什么意思。她笑了：「意思是：刚好。」' }
+  );
+  if (g.tomas) paras.push(
+    { text: 'Tomás打开颜料盒的一刻安静了。24色水彩——从柠檬黄到午夜蓝，每一格颜料都是干净的、没被碰过的。他用手指碰了碰其中一格——群青色。他看了你一眼。「你知道群青色在文艺复兴时期比黄金还贵吗？」他说，「只有最重要的画才用。圣母的披风。天使的翅膀。」他把颜料盒合上，放在桌上，然后他的手覆上了你的手，捏了一下。很轻。什么都没说。什么都说了。' }
+  );
+  if (g.marco) paras.push(
+    { text: '你抱着一箱Sangria走到Marco的桌前——差点被桌腿绊倒。Rafael接住了箱子。Marco看到了酒标，然后抬头看你，表情从困惑变成了惊喜。「你给我们买酒？」他站起来，给了你一个巴西式的拥抱——很紧，拍你后背拍了三下。「朋友！你告诉你的指挥，下次来巴西，我们请你们喝到天亮！」他打开了第一瓶，给每个人倒了一杯。Rafael举起杯子用葡萄牙语唱了一句什么，然后所有巴西人都跟着唱了起来——一首你听不懂但能感受到的庆祝歌。Carlos在你旁边翻译：「他在唱『今夜我们都是兄弟』。」' }
+  );
+  if (g.weidmann_choir) paras.push(
+    { text: '你拿着那瓶酒走向Weidmann的几个团员。他们有些意外——你是对手合唱团的人，来给他们送酒？你用不太流利的英语说：「你们唱得也很好。真的。」一个慕尼黑合唱团的女中音接过酒，看了看酒标——是一瓶本地产的红酒，不贵但不差。她笑了：「你们的指挥以前是我们的人。所以严格来说，你也是半个我们的人。」她叫来了Weidmann。Weidmann看了看酒，然后看了看你。他的表情很复杂——骄傲？感慨？最后他只说了一句：「好酒。」然后他拍了拍你的肩膀——很重，像在拍一个他认可的人。' }
+  );
+  const count = gifts.length;
+  if (count >= 5) paras.push({ type: 'stat-up', text: '花光了积蓄，但每一分钱都值得 · 所有收到礼物的人好感度 +15' });
+  else paras.push({ type: 'stat-up', text: '收到礼物的人好感度 +15' });
+  showNarrative(paras);
+  gifts.forEach(id => {
+    if (S.npcs[id]) S.npcs[id].affinity = (S.npcs[id].affinity||0) + 15;
+  });
+  adjustStat('mood', 5 + count * 3);
   showChoices([{ text: '继续', action: sceneCelebrationMenu }]);
 }
 
