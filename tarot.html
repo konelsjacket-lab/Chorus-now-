@@ -356,36 +356,75 @@
     padding: 10px 6px;
     gap: 2px;
     text-align: center;
+    overflow: hidden;
+  }
+
+  .tarot-card-face.front::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M10 0L20 10L10 20L0 10Z' fill='none' stroke='%233B7EC2' stroke-width='0.35'/%3E%3C/svg%3E");
+    background-size: 20px 20px;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  .tarot-card-face.front::after {
+    content: '';
+    position: absolute;
+    top: 4px; left: 4px; right: 4px; bottom: 4px;
+    border: 0.5px solid var(--primary-light);
+    border-radius: 7px;
+    pointer-events: none;
+    opacity: 0.5;
   }
 
   .tarot-card.reversed .tarot-card-face.front {
     transform: rotateY(180deg) rotate(180deg);
   }
 
-  .card-icon { font-size: 1.5rem; line-height: 1; }
+  .card-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+  .card-icon svg { width: 100%; height: 100%; }
 
   .card-num {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-style: italic;
     color: var(--primary-deep);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
+    position: relative;
+    z-index: 1;
   }
 
   .card-label {
-    font-size: 0.68rem;
-    font-weight: 700;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    font-weight: 600;
     color: var(--text);
     line-height: 1.25;
+    letter-spacing: 0.02em;
+    position: relative;
+    z-index: 1;
   }
 
   .card-tag {
-    font-size: 0.58rem;
+    font-size: 0.56rem;
     font-weight: 700;
     padding: 2px 7px;
     border-radius: 5px;
     margin-top: 2px;
     letter-spacing: 0.03em;
+    position: relative;
+    z-index: 1;
   }
 
   .card-tag.up { color: var(--primary-deep); background: var(--primary-pale); }
@@ -863,11 +902,16 @@
     '力量','隐者','命运之轮','正义','倒吊人','死神','节制',
     '恶魔','塔','星星','月亮','太阳','审判','世界'
   ];
+  var SVG_STAR = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="12" r="1.5" fill="var(--primary)"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="8.8" y2="8.8"/><line x1="15.2" y1="15.2" x2="19.1" y2="19.1"/><line x1="19.1" y1="4.9" x2="15.2" y2="8.8"/><line x1="8.8" y1="15.2" x2="4.9" y2="19.1"/></svg>';
+  var SVG_WAND = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round"><line x1="12" y1="22" x2="12" y2="8"/><path d="M12 8Q8 4 12 1Q16 4 12 8Z" fill="var(--accent)" opacity="0.2" stroke-linejoin="round"/></svg>';
+  var SVG_CUP = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4L7 11Q7 16 12 16Q17 16 17 11L17 4" fill="var(--primary)" opacity="0.1"/><line x1="12" y1="16" x2="12" y2="20"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="6" y1="4" x2="18" y2="4"/></svg>';
+  var SVG_SWORD = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="18"/><line x1="7.5" y1="7" x2="16.5" y2="7"/><path d="M10 18L12 22L14 18"/></svg>';
+  var SVG_COIN = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1"><circle cx="12" cy="12" r="9.5" fill="var(--accent)" opacity="0.08"/><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1" fill="var(--accent)"/></svg>';
   var SUITS = [
-    { name: '权杖', icon: '🪄' },
-    { name: '圣杯', icon: '🏆' },
-    { name: '宝剑', icon: '🗡️' },
-    { name: '星币', icon: '🪙' }
+    { name: '权杖', icon: SVG_WAND },
+    { name: '圣杯', icon: SVG_CUP },
+    { name: '宝剑', icon: SVG_SWORD },
+    { name: '星币', icon: SVG_COIN }
   ];
   var RANKS = ['A','2','3','4','5','6','7','8','9','10','侍从','骑士','王后','国王'];
   var ROMANS = ['O','I','II','III','IV','V','VI','VII','VIII','IX','X',
@@ -876,7 +920,7 @@
   function buildDeck() {
     var d = [];
     MAJOR.forEach(function (name, i) {
-      d.push({ name: name, num: ROMANS[i], icon: '✦' });
+      d.push({ name: name, num: ROMANS[i], icon: SVG_STAR });
     });
     SUITS.forEach(function (s) {
       RANKS.forEach(function (r) {
