@@ -2681,7 +2681,165 @@ function sceneRehearsal() {
     paras.push({ type: 'system', text: '朋友的朋友修好了钢琴。跳蚤市场赚了两百多欧。Carlos的辣酱卖光了。' });
     adjustStat('mood', 10); adjustStat('social', 6); adjustStat('money', 25);
 
-  } else if (rc === 26 && S.choirPhase >= 3 && !S.choirDrama.lastOutdoor) {
+  } else if (rc === 26 && S.choirPhase >= 2 && !S.choirDrama.seasonsOfLove) {
+    S.choirDrama.seasonsOfLove = true;
+    paras.push({ text: 'Dietrich走进来的时候手里拿着一叠新谱子。他把谱子发下去。你一看标题——Seasons of Love。' });
+    paras.push({ text: '「这不是音乐剧的歌吗？」Nico问。Dietrich说：「Rent。1996年。Jonathan Larson在首演前一天去世了。这首歌是关于一年有多长的。五十二万五千六百分钟。」' });
+    paras.push({ text: '「为什么排这首？」Lena问。Dietrich看了她一眼：「因为再过两个月我们成立正好一年。我想唱这首。」' });
+    paras.push({ text: '安静了三秒。你从来没听过Dietrich说「我想」。他说的永远是「我们需要」「你们应该」。这是第一次他说「我想」。' });
+    paras.push({ text: '排练开始。灾难从第一句就来了。' });
+    paras.push({ text: '这首歌的开头是一段独唱——Dietrich指定了Ibrahim。Ibrahim唱到「Five hundred twenty-five thousand six hundred minutes」的时候，Carlos在旁边小声算了一下：「五十二万……等等，一年有这么多分钟吗？」Marta说：「当然了你数学多差。」Ibrahim笑了——音掉了。Dietrich没有说话但他的眼神能杀人。' });
+    paras.push({ text: '合唱部分更灾难了。这首歌的和声层次很复杂——不是简单的四声部，中间有声部交叉、有对位、有一段需要节奏完全自由但情感精确的哼唱。你唱到「How do you measure a year?」的时候发现自己不知道该跟哪个声部走。你偷看了一眼苏迟——他闭着眼睛在唱，似乎完全不需要看任何人。你恨他。' });
+    paras.push({ text: 'Nico在高音部分冲得太猛，直接盖过了所有人。Lena停下来看了她一眼。Nico说：「怎么了？」Lena说：「你不是在独唱。」Nico说：「我知道。但这段应该有力量——」Lena说：「力量不是音量。」' });
+    paras.push({ text: 'Dietrich让你们从头来了十一遍。第三遍的时候Carlos的嗓子开始哑了——他说在餐厅喊了一天。第五遍的时候Aoife的节拍慢了半拍——Marta悄悄碰了她一下提醒。第八遍的时候你终于找到了自己的位置——就在苏迟和Sofia之间的那个缝隙里，你的声音像一块拼图卡了进去。' });
+    paras.push({ text: '第十一遍。终于——不完美，但对了。最后一句「Measure your life in love」落下来的时候，你觉得排练室里的空气变了。不是更好了——是更暖了。' });
+    paras.push({ text: 'Dietrich放下手。他说：「还不够好。但这首歌的意思你们懂了。」他看了所有人一眼：「五十二万五千六百分钟。你们选择把其中的一些给了这个排练室。给了彼此。这就是这首歌在说的事。」' });
+    paras.push({ text: '你走出排练室的时候在心里算了一下：你加入合唱团以来一共排练了多少分钟。你算不清。但你知道每一分钟都算数。' });
+    paras.push({ type: 'system', text: '新曲目：Seasons of Love。排了十一遍。五十二万五千六百分钟。' });
+    adjustStat('vocal', 3); adjustStat('mood', 8);
+
+  } else if (rc === 27 && S.choirPhase >= 2 && !S.choirDrama.meetTheaterTroupe) {
+    S.choirDrama.meetTheaterTroupe = true;
+    paras.push({ text: '排练前Lena说：「今天排练室借给了隔壁的音乐剧团用上午。我们下午排。」' });
+    paras.push({ text: '你下午到的时候，音乐剧团还没走。他们在排一出你不认识的戏——有人在跳舞，有人在念台词，一个女生站在角落里独唱一段咏叹调。你站在门口看了一会儿。' });
+    paras.push({ text: '一个高个子男人走过来——棕色卷发，围着一条很夸张的红围巾。他说：「你是合唱团的？我叫Rafa。Voces del Puerto音乐剧团的导演。我们借了你们的场地——抱歉超时了。」' });
+    paras.push({ text: '你说没关系。Rafa看着你们陆续到来的团员，忽然说了一句：「你们要不要跟我们合作一次？」' });
+    paras.push({ text: 'Lena走过来的时候Rafa已经在口若悬河地描述他的想法了。「我们下个月有一个社区演出——改编版的《悲惨世界》片段。但我们缺一个合唱团唱finale。你们来？」' });
+    paras.push({ text: 'Dietrich看了Lena一眼。Lena说：「让我了解一下细节。」你知道这是Lena的方式说「我感兴趣但我不会当面答应」。' });
+    paras.push({ text: 'Rafa邀请你们看了十分钟他们的排练。他们正在排一出改编的《猫》选段。三个演员在跳舞——其中一个女生的柔韧度让Nico惊呼了一声。另一个男生在唱Memory——他的声音跟Ibrahim完全不同，更明亮，更戏剧化，但一样让你鸡皮疙瘩起来。' });
+    paras.push({ text: 'Carlos在旁边小声说：「他们比我们帅。」Marta说：「音乐剧的人都帅。这是行业标准。」Carlos说：「那我去转行。」Marta看了他一眼：「你已经够帅了。」然后她转过头假装什么都没说。Carlos愣了。你假装没听到。' });
+    paras.push({ text: '排练后Rafa请你们几个去街角的酒吧喝了一杯。他讲了Voces del Puerto的故事——七年前他一个人在港口区的仓库里办了第一次演出，台下坐了十一个人，其中三个是他妈和他的两个姐姐。你笑了。你觉得每一个做音乐的人都有一个「台下只有十一个人」的故事。' });
+    paras.push({ type: 'system', text: '认识了隔壁的Voces del Puerto音乐剧团，导演Rafa邀请合作演出。' });
+    adjustStat('social', 5); adjustStat('mood', 5);
+
+  } else if (rc === 28 && S.choirDrama.meetTheaterTroupe && !S.choirDrama.theaterCollab) {
+    S.choirDrama.theaterCollab = true;
+    paras.push({ text: 'Lena答应了和Voces del Puerto的合作。今天是第一次联排。' });
+    paras.push({ text: '你们到的时候音乐剧团已经在了。Rafa今天的围巾是紫色的——你开始怀疑他每天换围巾。他把你们和他的演员混编在了一起排练。' });
+    paras.push({ text: '这次排的是《悲惨世界》的「One Day More」。原版是音乐剧的finale——每个角色都有自己的旋律线，最后所有线汇合在一起。Rafa的改编版把你们的合唱团当成「群众」的声部——就是那些在街垒上唱歌的人。' });
+    paras.push({ text: '联排非常混乱。音乐剧的人习惯边唱边动，合唱团的人习惯站着不动。你差一点被一个跳过来的舞者撞倒。Nico倒是适应得很快——她本来就会动，她开始跟着舞者的节奏摇摆。Dietrich看着Nico摇摆，表情像在看一场车祸。' });
+    paras.push({ text: '但唱到最后的大合唱部分——你们所有人的声音和他们所有人的声音叠在一起的时候——你被震到了。这不是合唱团的声音，也不是音乐剧的声音，是更大的东西。像一整条街在唱歌。像一座城市在唱歌。' });
+    paras.push({ text: 'Rafa在旁边激动得快哭了：「就是这个！就是这个感觉！」Dietrich没那么夸张，但你看到他的嘴角动了——这是他的微笑。' });
+    paras.push({ text: '排练后Rafa请所有人去他常去的小餐馆吃饭。二十几个人挤在一个能坐十五个人的地方。你被夹在一个会劈叉的舞者和Ibrahim之间。桌上是paella、面包和红酒。' });
+    paras.push({ text: '那个唱Memory的男生——叫Adrià——坐在Ibrahim旁边。你听到他们在聊声乐技巧。Adrià说音乐剧的唱法是「永远在演一个角色」。Ibrahim说合唱是「永远在成为一个整体」。Adrià想了想说：「也许我们在做的是一样的事——只是方向不同。」Ibrahim点了点头。你觉得这是一个很深的对话，但两个人讲得像在聊天气。' });
+    paras.push({ text: 'Nico和剧团的一个吉他手聊了一整晚——他们发现彼此都在同一个obscure的罗马尼亚地下摇滚论坛上混过。Nico惊叫的声音把隔壁桌吓到了。' });
+    paras.push({ text: '苏迟安静地坐在角落里，面前放着一杯他几乎没碰的红酒。Rafa走过来跟他聊了几句——你听到Rafa说「你的声音适合独唱」，苏迟说「我不独唱」，Rafa说「可惜了」，苏迟说「不可惜」。简短。准确。苏迟式的对话。' });
+    paras.push({ text: '吃完饭出来已经很晚了。你和这群认识了不到三个小时的人说再见，感觉像认识了三年。Rafa在门口挨个拥抱——到Dietrich的时候Dietrich后退了一步。Rafa说：「好吧，不抱。但我们以后一定要再合作。」Dietrich说：「看Lena的安排。」Rafa说：「你说了算的意思。」Dietrich没有否认。' });
+    paras.push({ type: 'system', text: '和音乐剧团联排了「One Day More」，然后一起吃了晚饭。二十几个做音乐的人挤在一个小餐馆里。' });
+    adjustStat('social', 8); adjustStat('mood', 12); adjustStat('vocal', 2);
+
+  } else if (rc === 29 && S.choirPhase >= 2 && !S.choirDrama.shantyNight) {
+    S.choirDrama.shantyNight = true;
+    paras.push({ text: '今天排练Dietrich做了一件出人意料的事——他放下了谱子。' });
+    paras.push({ text: '「今天不排比赛曲目。」他说。所有人看着他。「今天唱sea shanty。」' });
+    paras.push({ text: '你不知道sea shanty是什么。Aoife知道。她的眼睛亮了：「水手号子？！」Dietrich点头：「你来领唱。」Aoife说：「我？」Dietrich说：「你是爱尔兰人。这是你的传统。」' });
+    paras.push({ text: 'Aoife站到前面。她深吸了一口气，然后开始唱——一首叫「Drunken Sailor」的歌。你不知道歌词但旋律非常简单——简单到你听一遍就记住了。Aoife的声音在唱这首歌的时候完全变了——不是排练室里那个温柔的声音，是一种粗犷的、带着海风味道的声音。' });
+    paras.push({ text: '副歌部分所有人一起唱：「Way hay and up she rises!」你的声音和Carlos的声音和Ibrahim的声音混在一起，你们的脚跟开始跺地板，手掌开始拍大腿。没有人教你这样做——你就是控制不住。这首歌就是让你想动。' });
+    paras.push({ text: 'Dietrich在旁边看着，没有指挥。你从来没见过他不指挥。他靠在钢琴旁边，双手插在口袋里，嘴角有弧度。你想：他在享受。这个永远在工作的人今天在享受。' });
+    paras.push({ text: '唱完Drunken Sailor，Aoife又教了两首——Leave Her, Johnny和South Australia。到第三首的时候你们已经不需要教了——Aoife唱一句，你们跟一句，越唱越大声，越唱越开心。Nico开始在桌子上跳。Carlos把一把扫帚当船桨。Ibrahim在角落里拍着一个纸箱当鼓。' });
+    paras.push({ text: '苏迟不知道什么时候从角落里走出来了。他站在所有人中间，嘴唇在动——他在唱。你听不到他的声音因为太吵了。但他在唱。苏迟从来不在排练以外唱歌的。你看到他的嘴角有弧度——一样的弧度。' });
+    paras.push({ text: '排练结束的时候你们都哑了。Carlos说：「这是我们排过的最好的一次。」Dietrich说：「这不是排练。」Carlos说：「那这是什么？」Dietrich想了想：「这是music。」他用了英语。你知道为什么——他想说的不是「音乐」，是比「音乐」更原始的那个东西。' });
+    paras.push({ type: 'system', text: '今天没排比赛曲目。唱了水手号子。Carlos把扫帚当船桨。Dietrich微笑了。' });
+    adjustStat('vocal', 2); adjustStat('mood', 15); adjustStat('social', 5);
+
+  } else if (rc === 30 && S.choirPhase >= 2 && !S.choirDrama.rainRehearsal) {
+    S.choirDrama.rainRehearsal = true;
+    paras.push({ text: '暴雨天。你跑到排练室的时候浑身湿透了。推开门——只来了五个人。你、苏迟、Ibrahim、Marta、Lena。其他人被雨困住了，或者明智地选择了待在家里。' });
+    paras.push({ text: 'Dietrich当然在。他看了看来的人：「五个人。够了。」' });
+    paras.push({ text: '他让你们排了一段你从来没单独唱过的东西——Ave Verum Corpus的核心四声部。只有四个歌者加一个不唱的Lena在听。没有其他声部掩盖你，你的每一个音都暴露在空气里。你紧张得手心出汗。' });
+    paras.push({ text: '但奇怪的事情发生了——当只有四个声音的时候，你听到了平时听不到的东西。你听到了Ibrahim的呼吸节奏——每一次换气都像一个小小的句号。你听到了Marta的声音里有一个微微的颤音——不是错误，是她的特质，像一杯酒里的余味。你听到了苏迟——他的声音在只有四个人的时候变了。不是更大声——是更深。像一口井，你以为看到底了，但水面下面还有水。' });
+    paras.push({ text: '你的声音在他们之间找到了位置。不是挤进去的——是刚好有一个形状是你的。' });
+    paras.push({ text: '唱完一遍Dietrich没说话。他走到窗边，看着外面的雨，然后说了一句：「有时候暴风雨是最好的老师。它把不该来的人留在家里，把该在这里的人送到这里。」' });
+    paras.push({ text: 'Lena说：「你是在说其他团员不该来吗。」Dietrich说：「我在说今天的声音很好。」他转过头看了你们一眼：「记住这个声音。你们四个的声音。在比赛的时候如果你迷路了——不要听所有人，只听你旁边的人。从一个人开始。」' });
+    paras.push({ text: '排练后你们在排练室里等雨停。Ibrahim泡了茶——他永远有茶。Marta在织围巾。苏迟在看谱子。你靠着墙听雨。五个人在一个橘子树旁边的旧仓库里，外面是暴雨，里面是安静。' });
+    paras.push({ text: '你想：有些东西只有在安静的时候才听得见。' });
+    paras.push({ type: 'system', text: '暴雨天。五个人的排练。你听到了平时听不到的声音。' });
+    adjustStat('vocal', 4); adjustStat('mood', 8);
+
+  } else if (rc === 31 && S.choirPhase >= 2 && !S.choirDrama.localFestival1) {
+    S.choirDrama.localFestival1 = true;
+    paras.push({ text: '圣母升天节——本地最大的节日之一。整条海滨大道都封了，到处是花车、游行队伍和临时搭的舞台。Dietrich说：「教区请我们在教堂前的广场上唱两首。」' });
+    paras.push({ text: '你到的时候广场已经挤满了人。你看到了你认识的面孔——面包店的阿姨，语言学校的老师，图书馆的管理员，咖啡馆的老板。他们都来了。你忽然意识到——你在这座城市已经有了「认识的人」。这个认识不是「见过」，是「他们知道你的名字」。' });
+    paras.push({ text: '你们站在教堂前面的台阶上。没有舞台，没有音响，只有你们的声音和一个广场的人。Dietrich选了两首——一首加泰罗尼亚民歌，一首Ave Verum Corpus。' });
+    paras.push({ text: '第一首唱到一半的时候，你看到人群里有人在跟着哼。一个老太太，穿着节日的黑色裙子，双手合在胸前，嘴唇在动。她在跟着你们唱。然后她旁边的人也开始了。然后更多的人。' });
+    paras.push({ text: '你们在教堂台阶上唱歌，脚下的广场在和你们一起唱。这不是排练室。这是一整条街的声音。你的眼眶热了——不是因为感动，是因为你第一次真正理解了「社区合唱团」的意思。你不是在为他们唱歌。你是和他们一起唱歌。' });
+    paras.push({ text: '唱完以后面包店阿姨挤过来塞了一袋子pastéis de nata给你们。「唱得好！」她的声音比她做的蛋挞还甜。你分了一个给苏迟。他咬了一口，没说好不好吃，但吃得很快。你判断这是好吃的意思。' });
+    paras.push({ type: 'system', text: '圣母升天节演出。教堂广场上的人跟着你们一起唱了。这就是社区合唱团。' });
+    adjustStat('mood', 15); adjustStat('social', 8); adjustStat('vocal', 2);
+
+  } else if (rc === 32 && S.choirPhase >= 2 && !S.choirDrama.nightRehearsalPower) {
+    S.choirDrama.nightRehearsalPower = true;
+    paras.push({ text: '晚上排练到一半停电了。' });
+    paras.push({ text: '排练室瞬间一片漆黑。有人尖叫了——Nico。Carlos说：「Nico你不要一惊一乍的。」Nico说：「那不是我，那是Yuki。」Yuki的声音从黑暗中传来：「……不是。」大家笑了。' });
+    paras.push({ text: 'Dietrich的声音从前方传来：「不要动。等一下。」你听到他在口袋里找什么——然后一个手机屏幕亮了。微弱的蓝光照亮了他的脸。他看起来像一个站在黑暗中的幽灵指挥家。' });
+    paras.push({ text: '然后更多的手机亮了——一个一个地亮起来。Ibrahim的，Marta的，Carlos的，你的。排练室里出现了十几个发光的方块，像萤火虫。' });
+    paras.push({ text: 'Dietrich说：「看来今天不用看谱了。」他居然笑了。在停电的黑暗里。「闭上眼睛。用耳朵唱。」' });
+    paras.push({ text: '你闭上了眼睛。Dietrich的手在黑暗中打拍子——你看不见，但你听到了他的指尖弹响的声音。一下。两下。三下——' });
+    paras.push({ text: '你开始唱了。在完全的黑暗里。' });
+    paras.push({ text: '没有灯光，你的其他感官全部打开了。你听到了每一个人的呼吸——Ibrahim沉稳的，Nico急促的，苏迟几乎听不到的。你听到了自己的声音在黑暗中传出去，撞到墙壁，回来。你听到了所有声音合在一起的时候那个「咔嗒」——那个你一直在追的感觉——在黑暗中比在光里更清晰。' });
+    paras.push({ text: '你唱了一整首Ave Verum Corpus。没有看过一眼谱子。没有看过一眼Dietrich的手势。只靠声音。只靠耳朵。只靠你们之间那条看不见但确实存在的线。' });
+    paras.push({ text: '唱完以后安静了五秒。然后灯亮了——电来了。你睁开眼睛，被荧光灯刺得眨了一下。你看到所有人都在微笑。Nico说：「我们刚才是不是——很好？」Dietrich说：「那是你们唱得最好的一次。」' });
+    paras.push({ text: '你想：也许音乐就是这样——在看不见的时候反而最清楚。' });
+    paras.push({ type: 'system', text: '停电中的排练。闭着眼睛唱了最好的一次Ave Verum Corpus。' });
+    adjustStat('vocal', 5); adjustStat('mood', 12);
+
+  } else if (rc === 33 && S.choirPhase >= 2 && !S.choirDrama.suchiArrangement) {
+    S.choirDrama.suchiArrangement = true;
+    paras.push({ text: '苏迟今天迟到了十五分钟。这对苏迟来说非常异常——他通常比Dietrich还早到。' });
+    paras.push({ text: '他走进来的时候手里抱着一叠手写的谱子。至少有二十页。他走到Dietrich面前，把谱子放在钢琴上，说了一句话：' });
+    paras.push({ text: '「我改编了一首歌。你看看。」' });
+    paras.push({ text: '所有人都安静了。苏迟从来没有自己写过编曲——他总是在分析别人的。Dietrich拿起谱子开始看。他看了很久。三分钟。五分钟。Nico在旁边快要憋死了：「怎么样？」Dietrich没抬头：「安静。」' });
+    paras.push({ text: '七分钟后Dietrich放下谱子。他看了苏迟一眼。苏迟的脸是紧绷的——你认识那个表情，是在等判决的表情。' });
+    paras.push({ text: 'Dietrich说：「唱什么？」苏迟说：「茉莉花。」' });
+    paras.push({ text: '安静了三秒。然后Carlos说：「那个中国民歌？」苏迟点头。他的改编是这样的——保留了原旋律的骨架，但用了完全不同的和声。不是西方古典的和声，也不是原版的五声音阶，是两者之间的某个地方。第二段加入了对位——一个阿拉伯调式的旋律线和原曲交织在一起。第三段是泛音处理——让某些声部的泛音共振产生一个「幽灵」声部。' });
+    paras.push({ text: '你看着那个谱子——手写的，笔迹很小很工整，每一个标注都精确到拍。你想起苏迟说过的话——他来这里之前在家里偷偷看被锁起来的和声学课本。这份编曲就像是他偷学的所有东西的总和。' });
+    paras.push({ text: 'Dietrich让大家试唱了一遍。' });
+    paras.push({ text: '第一段很简单——所有人都能跟上。茉莉花的旋律在你嘴里像一条你以为已经忘记的路。你不知道你还记得。但你的嘴唇记得。' });
+    paras.push({ text: '第二段Ibrahim的阿拉伯旋律线加入的时候——整个空间变了。不是中国的了，也不是中东的。是一种你从来没听过的东西。Ibrahim唱到第二句的时候停了一下——他看了苏迟一眼。苏迟微微点头。Ibrahim继续唱。他唱完以后说了一句：「这个调式——你听过阿拉伯音乐？」苏迟说：「YouTube。三百多个小时。」Ibrahim的表情很复杂——像是感动和惊讶和一点点嫉妒的混合。' });
+    paras.push({ text: '第三段的泛音没有成功——太难了，需要更多练习。但你已经能想象它完成以后的样子——一首两千年的中国民歌，被一个中国男生用西方和声和阿拉伯调式重新编织，由九个国家的人在地中海小城的一个旧仓库里唱出来。' });
+    paras.push({ text: 'Dietrich看完了谱子的最后一页。他说了两个字：「用它。」' });
+    paras.push({ text: '苏迟的肩膀放下来了。你从来没见过他的肩膀放得这么低——低到你意识到它们之前一直是紧绷的。他说了一个字：「好。」然后他转过身走回自己的位置。但你看到他走路的时候——步子比来的时候轻。' });
+    paras.push({ type: 'system', text: '苏迟改编了《茉莉花》。Dietrich说：用它。' });
+    adjustStat('vocal', 3); adjustStat('mood', 10);
+    if (S.npcs.suchi) S.npcs.suchi.affinity += 8;
+
+  } else if (rc === 34 && S.choirDrama.suchiArrangement && !S.choirDrama.jasmineRehearsal) {
+    S.choirDrama.jasmineRehearsal = true;
+    paras.push({ text: '过去一周你们一直在排《茉莉花》。今天是第四次。' });
+    paras.push({ text: '前三次都是灾难——第三段的泛音技巧太难了。Carlos尝试了很多次但做不出泛音——他的声音太「实」了，像一块砖头，你没法把砖头变成玻璃。Dietrich想了一个办法：让Carlos保持他的低音不变，让其他人在他的音上面做泛音共振。Carlos变成了地基，其他人是建筑。' });
+    paras.push({ text: '今天苏迟做了一件让所有人意外的事——他站到了前面。不是指挥的位置，是Dietrich旁边。Dietrich让出了半步。苏迟面对所有人，手里拿着谱子——虽然他根本不需要看。' });
+    paras.push({ text: '他开始教第三段的泛音。他的教法跟Dietrich完全不同——Dietrich教技巧，苏迟教感觉。他说：「不要想泛音是什么。你唱一个La的时候，听——」他唱了一个La。然后你听到了——第二个音从那个La里面浮出来，像水面下的一条鱼游到了水面上。「它一直在那里。你只需要让它出来。」' });
+    paras.push({ text: '你试了。没出来。又试了。没出来。第三次——你听到了一点什么。不是泛音。是泛音的影子。苏迟走到你面前，听了一下，说：「你的舌头放低一点。对——」他的手在空气中比了一个形状，「在这里。」你不知道「这里」在哪里但你的身体知道了。你又试了一次——' });
+    paras.push({ text: '出来了。很弱，但确实出来了。一个幽灵一样的音从你的声音里升起来。你吓了一跳——差点停了。苏迟说：「不要停。跟着它。」你跟着它。那个音越来越清晰。你的一个声音变成了两个。' });
+    paras.push({ text: 'Nico在旁边说：「这太吓人了。」她的意思是「这太美了」。' });
+    paras.push({ text: '今天的排练是这样结束的——所有人试唱了完整的《茉莉花》。第一段的旋律让你想起家。第二段Ibrahim的阿拉伯对位让你想起你不认识的远方。第三段——当泛音真的出现的时候——你想起了Taavi说的话：「每个音里面都住着很多声音。」' });
+    paras.push({ text: '唱完以后Dietrich说了一句话。不是对大家说的。是对苏迟说的。他走到苏迟旁边，声音很低——但你听到了：' });
+    paras.push({ text: '「你早该站到前面来了。」' });
+    paras.push({ text: '苏迟没回答。但你看到他低下头的时候嘴角有弧度。' });
+    paras.push({ type: 'system', text: '苏迟站到了前面。你学会了泛音唱法。《茉莉花》排成了。' });
+    adjustStat('vocal', 5); adjustStat('mood', 12);
+    if (S.npcs.suchi) S.npcs.suchi.affinity += 5;
+
+  } else if (rc === 35 && S.choirPhase >= 2 && !S.choirDrama.harvestFestival) {
+    S.choirDrama.harvestFestival = true;
+    paras.push({ text: '秋收节。本地最古老的节日——据说从中世纪就有了。整个小城都在庆祝。广场上摆满了水果、蔬菜和自酿的酒。你看到了一堆你从来没见过的南瓜品种。' });
+    paras.push({ text: 'Dietrich说：「教区再次请我们演出。三首歌。而且——」他看了苏迟一眼，「我们唱《茉莉花》。」' });
+    paras.push({ text: '苏迟的脸色变了。你看到他的手捏紧了——不是紧张，是另一种东西。这是他的歌。他的改编。要在整个小城的人面前唱了。' });
+    paras.push({ text: '演出在黄昏时分。舞台搭在市政厅前面的广场上——比上次圣母节的好一些，有简易音响和两盏灯。台下至少有三百人——比上次多了一倍。你认出了很多面孔。Sofia也来了——她不唱但她来了，站在第一排，给你们鼓掌鼓得最大声的永远是她。' });
+    paras.push({ text: '前两首——Seasons of Love和一首本地民歌——唱得很好。观众很热情。但你知道真正的考验是第三首。' });
+    paras.push({ text: 'Dietrich举手。安静了。他看了苏迟一眼——苏迟微微点头。' });
+    paras.push({ text: '《茉莉花》开始了。' });
+    paras.push({ text: '第一段旋律升起来的时候，你看到台下有人在交头接耳——他们不认识这首歌。一首中文歌在西班牙的秋收节上，很奇怪。但旋律太美了。美到人们安静下来了。你的声音和所有人的声音一起唱出那个属于两千年前的旋律——「好一朵美丽的茉莉花」。你用中文唱。苏迟用中文唱。其他人用Dietrich标注了拼音的谱子唱。Carlos的「hǎo yī duǒ」发音奇怪得让你想笑，但他唱得很认真。' });
+    paras.push({ text: '第二段Ibrahim的阿拉伯旋律加入。台下有人倒吸了一口气——你听到了。中国的茉莉花和阿拉伯的苍穹交织在一起，像两条来自不同海洋的河流汇入了同一个三角洲。Ibrahim的声音在你的声音上方飘着，像热浪，像祈祷。' });
+    paras.push({ text: '第三段。泛音。你深吸一口气。你唱了你的La——然后你放松了舌头，让那个住在音里面的幽灵出来——' });
+    paras.push({ text: '它出来了。不只是你的——是所有人的。三四个泛音同时升起来，像透明的蝴蝶从你们的声音里飞出来。教堂的钟楼把这些声音折射回来——泛音和回声叠在一起，产生了第三层、第四层的声音。广场变成了一个巨大的共鸣箱。' });
+    paras.push({ text: '你看到台下有人在哭。你不知道他们为什么哭——他们不懂中文，不懂阿拉伯语。但他们懂音乐。有些东西不需要翻译。' });
+    paras.push({ text: '唱完以后全场安静了三秒。然后掌声。你从来没听过这么大的掌声——在一个地中海小城的秋收节广场上。你看了看苏迟——他站在他的位置上，一动不动，眼睛是亮的。你走过去。你说：「你的歌。」他说：「不是我的。」你说：「是你的。」他没有再说话。但你看到他笑了。' });
+    paras.push({ type: 'system', text: '秋收节演出。苏迟的《茉莉花》让三百个人安静，然后鼓掌。' });
+    adjustStat('vocal', 3); adjustStat('mood', 15); adjustStat('social', 8);
+    if (S.npcs.suchi) S.npcs.suchi.affinity += 8;
+
+  } else if (rc === 36 && S.choirPhase >= 3 && !S.choirDrama.lastOutdoor) {
     S.choirDrama.lastOutdoor = true;
     paras.push({ text: '今天Dietrich把排练搬到了海边。"最后一次户外排练，"他说。你不知道为什么他要这么做——离Europa Cantat只剩两周，时间宝贵。' });
     paras.push({ text: '你们站在防波堤上。风很大。谱子差点被吹走——Nico追了两张回来，第三张被海浪卷走了。她说："那个声部自由发挥吧。"Lena瞪了她一眼但没说话。' });
@@ -2694,7 +2852,7 @@ function sceneRehearsal() {
     paras.push({ type: 'system', text: '海边的最后一次户外排练。你的声音不需要完美，它需要真实。' });
     adjustStat('mood', 15); adjustStat('vocal', 3); adjustStat('social', 5);
 
-  } else if (rc === 27 && S.choirPhase >= 3 && !S.choirDrama.stageMakeup) {
+  } else if (rc === 37 && S.choirPhase >= 3 && !S.choirDrama.stageMakeup) {
     S.choirDrama.stageMakeup = true;
     paras.push({ text: '今天排练结束后Lena拿出了一个巨大的化妆箱。"Europa Cantat的演出需要舞台妆。我联系了一个在剧院工作的朋友，她教了我基础。现在我教你们。"' });
     paras.push({ text: 'Carlos看了一眼化妆箱，退了一步："我不需要——"Lena打断他："舞台灯光会把你的脸打成一张白纸。所有人都要化。包括你。包括Dietrich。"她看了Dietrich一眼。Dietrich的表情说明他也不太情愿但知道Lena说得对。' });
@@ -2711,7 +2869,7 @@ function sceneRehearsal() {
     paras.push({ type: 'system', text: '学了舞台妆。Carlos像吸血鬼，Nico像去夜店，你的眉毛左右不对称。Dietrich否认自己笑了。' });
     adjustStat('mood', 10); adjustStat('social', 5);
 
-  } else if (rc === 28 && S.choirPhase >= 3 && !S.choirDrama.ibrahimVisa) {
+  } else if (rc === 38 && S.choirPhase >= 3 && !S.choirDrama.ibrahimVisa) {
     S.choirDrama.ibrahimVisa = true;
     paras.push({ text: '排练前Marta把你拉到一边。她的表情很严肃。"Ibrahim的签证出问题了。"' });
     paras.push({ text: '你的心沉了下去。"什么问题？"' });
@@ -2726,7 +2884,7 @@ function sceneRehearsal() {
     adjustStat('mood', -8); adjustStat('social', 5);
     S.npcs.ibrahim.affinity += 5; S.npcs.lena.affinity += 3;
 
-  } else if (rc === 29 && S.choirDrama.ibrahimVisa && !S.choirDrama.ibrahimVisaSolved) {
+  } else if (rc === 39 && S.choirDrama.ibrahimVisa && !S.choirDrama.ibrahimVisaSolved) {
     S.choirDrama.ibrahimVisaSolved = true;
     paras.push({ text: '排练前五分钟Lena冲进来。她从来不冲。你抬头看她——她的脸是红的，呼吸很急。你的心跳加速了。' });
     paras.push({ text: '她举着手机："过了。Ibrahim的入境许可。今天下午批的。"' });
@@ -2738,7 +2896,7 @@ function sceneRehearsal() {
     adjustStat('mood', 20); adjustStat('vocal', 3); adjustStat('social', 5);
     S.npcs.ibrahim.affinity += 10;
 
-  } else if (rc === 30 && S.choirPhase >= 3 && !S.choirDrama.ribbonNight) {
+  } else if (rc === 40 && S.choirPhase >= 3 && !S.choirDrama.ribbonNight) {
     S.choirDrama.ribbonNight = true;
     paras.push({ text: '出发前三天。Marta叫所有人排练后留下来。' });
     paras.push({ text: '她从一个大布袋里拿出了十几条丝带——每一条颜色不同。海蓝、落日橙、橄榄绿、深紫、鹅黄、砖红……她把它们铺在桌上，像一道小小的彩虹。' });
@@ -2754,7 +2912,7 @@ function sceneRehearsal() {
     paras.push({ type: 'system', text: '每个人都有了自己的颜色。出发前最后的礼物。' });
     adjustStat('mood', 15); adjustStat('social', 5);
 
-  } else if (rc === 31 && S.choirPhase >= 3 && !S.choirDrama.firstCommercialGig) {
+  } else if (rc === 41 && S.choirPhase >= 3 && !S.choirDrama.firstCommercialGig) {
     S.choirDrama.firstCommercialGig = true;
     paras.push({ text: 'Lena在群里发了一个消息：「好消息。本地一个文化节找我们去演出。有报酬的那种。」' });
     paras.push({ text: '你读了三遍"有报酬"这三个字。合唱团居然能赚钱？Nico的回复是十四个感叹号和一个哭泣的emoji。Carlos回了一句"终于不用我贴钱请大家吃饭了"。' });
@@ -2775,7 +2933,7 @@ function sceneRehearsal() {
     adjustStat('mood', 12); adjustStat('social', 5); adjustStat('money', 40);
     S.npcs.aoife.affinity += 5; S.npcs.carlos.affinity += 3;
 
-  } else if (rc === 32 && S.choirPhase >= 3 && !S.choirDrama.lastRehearsal) {
+  } else if (rc === 42 && S.choirPhase >= 3 && !S.choirDrama.lastRehearsal) {
     S.choirDrama.lastRehearsal = true;
     paras.push({ text: '出发前最后一次排练。' });
     paras.push({ text: '所有人都来了。甚至比平时来得更早。你到的时候Dietrich已经站在前面了——他今天穿了一件你从没见过的衬衫。不是亚麻的。是一件有领子的白衬衫，领口别着他的深蓝色丝带。' });
@@ -2853,7 +3011,7 @@ function sceneRehearsal() {
     paras.push({ text: pick(prepTexts) });
     adjustStat('vocal', 2 + Math.floor(Math.random()*3));
     adjustStat('social', 2);
-    if (S.choirPhase === 2 && S.rehearsalCount >= 25) {
+    if (S.choirPhase === 2 && S.rehearsalCount >= 35) {
       S.choirPhase = 3;
       paras.push({ type: 'system', text: '排练强度提升了。Dietrich开始安排声部分排练——周二傍晚。' });
     }
