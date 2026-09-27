@@ -1284,11 +1284,18 @@ function getAvailableNPCVisits() {
     }
   }
   if (visits.length > 3) {
+    const tomasIdx = visits.findIndex(v => v.action === sceneCarlosNewNPC);
+    let guaranteed = null;
+    if (tomasIdx !== -1 && S.day >= 14) {
+      guaranteed = visits.splice(tomasIdx, 1)[0];
+    }
     for (let i = visits.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [visits[i], visits[j]] = [visits[j], visits[i]];
     }
-    visits.length = 3;
+    const limit = guaranteed ? 2 : 3;
+    visits.length = Math.min(visits.length, limit);
+    if (guaranteed) visits.push(guaranteed);
   }
   return visits;
 }
@@ -2234,6 +2241,12 @@ function sceneRehearsal() {
     paras.push({ text: '你愣了一下。你想说"你怎么听出来的"但你怕答案更可怕。她抬起头：「我叫Lena。本地人，在文化局上班。我不是在骂你——但你要是想进步，可以排练完来找我。」你说了声谢谢。你不确定该感激还是该害怕。可能两者都有。' });
     paras.push({ text: '你还在消化这段对话的时候，从排练室里传来了钢琴声。透过门缝你看到一个黑发的东亚面孔女生坐在旧立式琴前——弹的是肖邦，弹了几个小节就停下来，翻到另一首曲子的伴奏谱上标记什么。你不太敢进去打扰她。' });
     paras.push({ text: 'Lena说："Yuki，日本来的钢琴老师，我们的伴奏。每次排练她都是第一个到最后一个走。"你说："弹得好好。"Lena看了你一眼："她是专业级的。"你觉得Lena说话的方式就是：先让你觉得不够好，然后你发现她其实在帮你。' });
+    if (!S.metSuChi) {
+      paras.push({ text: '你走进排练室的时候注意到角落里坐着一个中国男生——黑框眼镜，低着头在笔记本上写什么。你盯了他两秒。他感觉到了，抬头看你，你们对视了一下。那种在异国看到同胞的微妙默契——你们都认出了对方脸上的「中国人」标签。' });
+      paras.push({ text: '他犹豫了一下，朝你点了点头。你走过去。"你好，"你说。你们都笑了——在一群外国人中间说中文，有一种奇妙的亲切感。' });
+      paras.push({ text: '「苏迟，」他说，「音乐学研究生，研究合唱美学。来两年了。」他说话很简洁，像在节省字数。你说你是新来的。他说："我知道，上次排练看到你了。"你问他为什么没来打招呼。他想了一下："……社交需要做心理准备。"你完全理解。' });
+      S.npcs.suchi.talked++; S.npcs.suchi.affinity += 5; S.metSuChi = true;
+    }
     S.npcs.lena.talked++; S.npcs.lena.affinity += 5;
     S.npcs.yuki.talked++; S.npcs.yuki.affinity += 3;
     S.metAtRehearsal.lena = true; S.metAtRehearsal.yuki = true;
@@ -4747,6 +4760,7 @@ function sceneCarlosNewNPC() {
       personality:'安静、观察力强、温柔', desc:'智利来的美术硕士，在Carlos的餐厅帮忙设计。画速写很厉害。',
       affinity: 8, talked: 1, events: [], romance: false };
   }
+  S.metTomás = true;
   adjustStat('social', 3); adjustStat('mood', 5);
   showNarrative([
     { type: 'stat-up', text: '社交 +3 · 心情 +5 · 认识了Tomás 🇨🇱' },
