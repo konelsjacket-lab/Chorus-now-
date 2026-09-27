@@ -302,6 +302,7 @@ const S = {
   birthdayHappened: false,
   pugCallDone: false, partnerCallDone: false,
   nicoPinkPonyDone: false, tomasInsecureDone: false, cookingCount: 0, lastCookDay: 0, witcherPhase: 0,
+  helpYukiSeen: {}, watchDietrichSeen: {}, ibrahimInjuryDay: 0, ibrahimRecoveryPhase: 0,
   competitionAnnounced: false,
   repertoire: [],
   sectionalCount: 0,
@@ -2141,40 +2142,88 @@ function sceneDailyMenu() {
     }
     if (S.choirDrama.gigDoneThisWeek && S.day - S.choirDrama.gigDoneThisWeek >= 7) S.choirDrama.gigDoneThisWeek = 0;
 
-    // Solo date (high affinity NPC)
-    if (time >= 1 && time <= 2 && isWeekend()) {
-      const dateNPCs = Object.values(S.npcs).filter(n => n.affinity >= 30 && n.talked >= 3 && !S.soloDatesDone[n.id + '_' + Math.floor(S.day/14)]);
-      if (dateNPCs.length > 0 && S.money >= 50)
-        choices.push({ text: '💌 约人单独出去', cost: '50-80€', action: sceneSoloDateMenu });
+    // Ibrahim recovery arc — block social/romance events during crisis
+    const ibRecoveryActive = S.choirDrama.ibrahimHospital && S.ibrahimRecoveryPhase < 3;
+
+    // Ibrahim recovery events (appear during crisis period)
+    if (ibRecoveryActive) {
+      if (S.ibrahimRecoveryPhase === 0 && S.day - S.ibrahimInjuryDay >= 2 && time <= 2)
+        choices.push({ text: '🏥 去医院看Ibrahim', cost: '体力-10', action: sceneIbrahimRecovery1 });
+      if (S.ibrahimRecoveryPhase === 1 && S.day - S.ibrahimInjuryDay >= 5 && time <= 2)
+        choices.push({ text: '🏥 Ibrahim出院了——去他家看看', cost: '体力-10', action: sceneIbrahimRecovery2 });
+      if (S.ibrahimRecoveryPhase === 1 && time >= 1 && time <= 2 && S.money >= 10)
+        choices.push({ text: '🍲 给Ibrahim送饭', cost: '10€ · 心情+5', action: () => {
+          adjustStat('money', -10); adjustStat('mood', 5); adjustStat('energy', -5);
+          S.npcs.ibrahim.affinity += 3; advanceTime(); renderStatus();
+          const meals = [
+            '你买了Carlos推荐的鸡汤——他说"养伤最好的东西"。Ibrahim接过去的时候说了声谢谢。他的眼神让你觉得这碗汤比你想象的重要。',
+            '你做了一锅粥——不太好吃，但是热的。Ibrahim吃了两碗。你说"好吃吗"。他说"热的就好"。你觉得这句话里有很多你听不到的东西。',
+            'Marta给了你一份波兰dumpling让你带去。Ibrahim说"Marta的dumpling能治百病"。你吃了一个——确实能治百病。',
+            '你带了水果和一盒苏迟泡的铁观音。Ibrahim不太会喝茶，但他喝完了。他说"茶很暖"。你说"苏迟说这茶专门暖胃的"。他点头："替我谢谢他。"',
+          ];
+          showNarrative([{ text: pick(meals) }, { type: 'stat-up', text: '心情 +5 · Ibrahim 好感度提升' }]);
+          showChoices([{ text: '继续', action: sceneDailyMenu }]);
+        }});
+      if (S.ibrahimRecoveryPhase >= 1 && time === 2 && !S.choirDrama.ibRecoveryFundraiser)
+        choices.push({ text: '💰 跟Lena商量怎么帮Ibrahim', cost: '社交+5', action: () => {
+          S.choirDrama.ibRecoveryFundraiser = true;
+          adjustStat('social', 5); S.npcs.lena.affinity += 3; advanceTime(); renderStatus();
+          showNarrative([
+            { text: '你在群里问Lena，帮Ibrahim凑的钱够不够。她回复："不够。六周不能上班。房租、医疗、吃饭。他不会开口要钱的——你知道他。"' },
+            { text: '你说："那我们能做什么？"Lena发了一段很长的消息。她已经在做了——她联系了一个本地的移民权益组织，他们可以帮Ibrahim申请工伤赔偿。"但需要时间。在这之前大家先凑。"' },
+            { text: '你查了一下自己的存款。不多。但你转了一笔给Lena。她回复了一个"收到"。没有谢谢——因为从Lena的角度这不是个人恩惠，是大家应该做的事。你理解她。你佩服她。' },
+            { type: 'stat-up', text: '社交 +5 · Lena 好感度提升' },
+          ]);
+          showChoices([{ text: '继续', action: sceneDailyMenu }]);
+        }});
     }
 
-    // Dynamic NPC visits
-    const npcVisits = getAvailableNPCVisits();
-    npcVisits.forEach(v => choices.push(v));
+    if (!ibRecoveryActive) {
+      // Solo date (high affinity NPC)
+      if (time >= 1 && time <= 2 && isWeekend()) {
+        const dateNPCs = Object.values(S.npcs).filter(n => n.affinity >= 30 && n.talked >= 3 && !S.soloDatesDone[n.id + '_' + Math.floor(S.day/14)]);
+        if (dateNPCs.length > 0 && S.money >= 50)
+          choices.push({ text: '💌 约人单独出去', cost: '50-80€', action: sceneSoloDateMenu });
+      }
+    }
 
-    // Side stories
-    const sideStoryOptions = getAvailableSideStories();
-    sideStoryOptions.forEach(v => choices.push(v));
+    // Dynamic NPC visits (blocked during Ibrahim crisis)
+    if (!ibRecoveryActive) {
+      const npcVisits = getAvailableNPCVisits();
+      npcVisits.forEach(v => choices.push(v));
+    }
 
-    // Tomás selling paintings storyline
-    if (S.sideStories.tomas === 1 && S.npcs.tomas && S.npcs.tomas.affinity >= 30 && time >= 1 && time <= 2)
-      choices.push({ text: '🎨 Tomás说他想卖画但不知道怎么开始', cost: 'Tomás支线', action: sceneTomasSell1 });
-    if (S.sideStories.tomas === 2 && S.npcs.tomas && S.npcs.tomas.affinity >= 40 && time >= 0 && time <= 1 && isWeekend())
-      choices.push({ text: '🎨 陪Tomás去市集摆摊卖画', cost: 'Tomás支线 · 体力-15', action: sceneTomasSell2 });
-    if (S.sideStories.tomas === 3 && S.npcs.tomas && S.npcs.tomas.affinity >= 50 && time === 0 && isWeekend() && S.money >= 60)
-      choices.push({ text: '🎨 去瓦伦西亚！Tomás的画展', cost: 'Tomás支线 · 60€', action: sceneTomasSell3 });
+    // Side stories (blocked during Ibrahim crisis)
+    if (!ibRecoveryActive) {
+      const sideStoryOptions = getAvailableSideStories();
+      sideStoryOptions.forEach(v => choices.push(v));
+    }
 
-    // Witcher 3 series
-    if (S.witcherPhase === 1 && S.npcs.marta && S.npcs.marta.affinity >= 35 && time === 2)
-      choices.push({ text: '🎮 Marta说今晚继续巫师3', cost: '全员游戏夜', action: sceneWitcher2 });
-    if (S.witcherPhase === 2 && S.npcs.marta && S.npcs.marta.affinity >= 42 && time === 2)
-      choices.push({ text: '🎮 巫师3到大结局了！', cost: '全员决战之夜', action: sceneWitcher3 });
-    if (S.witcherPhase === 3 && S.npcs.marta && S.npcs.marta.affinity >= 50 && time >= 0 && time <= 1 && isWeekend())
-      choices.push({ text: '🎮 本地漫展！巫师团出动', cost: '体力-15 · 25€', action: sceneWitcher4 });
+    // Tomás selling paintings storyline (blocked during Ibrahim crisis)
+    if (!ibRecoveryActive) {
+      if (S.sideStories.tomas === 1 && S.npcs.tomas && S.npcs.tomas.affinity >= 30 && time >= 1 && time <= 2)
+        choices.push({ text: '🎨 Tomás说他想卖画但不知道怎么开始', cost: 'Tomás支线', action: sceneTomasSell1 });
+      if (S.sideStories.tomas === 2 && S.npcs.tomas && S.npcs.tomas.affinity >= 40 && time >= 0 && time <= 1 && isWeekend())
+        choices.push({ text: '🎨 陪Tomás去市集摆摊卖画', cost: 'Tomás支线 · 体力-15', action: sceneTomasSell2 });
+      if (S.sideStories.tomas === 3 && S.npcs.tomas && S.npcs.tomas.affinity >= 50 && time === 0 && isWeekend() && S.money >= 60)
+        choices.push({ text: '🎨 去瓦伦西亚！Tomás的画展', cost: 'Tomás支线 · 60€', action: sceneTomasSell3 });
+    }
 
-    // Group friendship events
-    const groupOptions = getAvailableGroupEvents();
-    groupOptions.forEach(v => choices.push(v));
+    // Witcher 3 series (blocked during Ibrahim crisis)
+    if (!ibRecoveryActive) {
+      if (S.witcherPhase === 1 && S.npcs.marta && S.npcs.marta.affinity >= 35 && time === 2)
+        choices.push({ text: '🎮 Marta说今晚继续巫师3', cost: '全员游戏夜', action: sceneWitcher2 });
+      if (S.witcherPhase === 2 && S.npcs.marta && S.npcs.marta.affinity >= 42 && time === 2)
+        choices.push({ text: '🎮 巫师3到大结局了！', cost: '全员决战之夜', action: sceneWitcher3 });
+      if (S.witcherPhase === 3 && S.npcs.marta && S.npcs.marta.affinity >= 50 && time >= 0 && time <= 1 && isWeekend())
+        choices.push({ text: '🎮 本地漫展！巫师团出动', cost: '体力-15 · 25€', action: sceneWitcher4 });
+    }
+
+    // Group friendship events (blocked during Ibrahim crisis)
+    if (!ibRecoveryActive) {
+      const groupOptions = getAvailableGroupEvents();
+      groupOptions.forEach(v => choices.push(v));
+    }
 
     if (!S.choirJoined)
       choices.push({ text: '去广场看看公告板', action: () => {
@@ -2633,6 +2682,7 @@ function sceneRehearsal() {
 
   } else if (rc === 23 && S.choirPhase >= 2 && !S.choirDrama.ibrahimHospital) {
     S.choirDrama.ibrahimHospital = true;
+    S.ibrahimInjuryDay = S.day;
     paras.push({ text: '今天排练Ibrahim没来。' });
     paras.push({ text: '这件事本身就不正常——Ibrahim从来不缺席。下雨天来，发烧来，有一次脚崴了他也来了，坐在角落听完全程。你看了一眼他的位置——空的。谱架上还放着他上次的谱子。' });
     paras.push({ text: 'Marta的脸色不好。排练到一半她接了一个电话，出去了几分钟。回来的时候她说："Ibrahim在工地上受伤了。手臂。在医院。"' });
@@ -3057,7 +3107,7 @@ function sceneRehearsal() {
       { text: '排练后跟大家去吃东西', cost: '社交+5，心情+5', action: () => sceneRehearsalHangout() },
     ];
     if (S.vocal > 20) ch.push({ text: '跟Dietrich请教乐理', cost: '视谱+5', action: () => sceneRehearsalTheory() });
-    if (rc >= 8) ch.push({ text: '帮Yuki搬钢琴和调音', cost: 'Yuki好感度', action: () => sceneHelpYuki() });
+    if (rc >= 8 && Object.keys(S.helpYukiSeen).length < 3) ch.push({ text: '帮Yuki搬钢琴和调音', cost: 'Yuki好感度', action: () => sceneHelpYuki() });
     showChoices(ch);
   } else {
     const ch = [
@@ -3066,8 +3116,8 @@ function sceneRehearsal() {
     ];
     if (S.vocal > 25) ch.push({ text: '跟Dietrich请教乐理', cost: '视谱+5', action: () => sceneRehearsalTheory() });
     if (S.choirPhase >= 2) ch.push({ text: '排练后一起讨论曲目', cost: '社交+3，声乐+2', action: sceneRepertoireChat });
-    if (S.choirPhase >= 2) ch.push({ text: '观察Dietrich指挥然后模仿', cost: '视谱+3 · 心情+3', action: () => sceneWatchDietrich() });
-    ch.push({ text: '帮Yuki搬钢琴和调音', cost: 'Yuki好感度', action: () => sceneHelpYuki() });
+    if (S.choirPhase >= 2 && Object.keys(S.watchDietrichSeen).length < 2) ch.push({ text: '观察Dietrich指挥然后模仿', cost: '视谱+3 · 心情+3', action: () => sceneWatchDietrich() });
+    if (Object.keys(S.helpYukiSeen).length < 3) ch.push({ text: '帮Yuki搬钢琴和调音', cost: 'Yuki好感度', action: () => sceneHelpYuki() });
     showChoices(ch);
   }
 }
@@ -3659,9 +3709,110 @@ function sceneRehearsalTheory() {
   }
 }
 
+function sceneIbrahimRecovery1() {
+  adjustStat('energy', -10); advanceTime(); renderStatus();
+  showNarrative([
+    { text: '你又去了医院。这次是你一个人去的。' },
+    { text: 'Ibrahim在病床上看一本很厚的书——阿拉伯文的。你看不懂，但你看到封面上有一个oud的图案。他看到你把书合上了，像是怕你问他在看什么。' },
+    { text: '你说："你的手臂怎么样了？"他说："医生说恢复得不错。再过四周就能拆石膏。"你说："四周？巴塞罗那——"他说："来得及。"他的声音很平。你不确定他是在安慰你还是自己。' },
+    { text: '你们安静了一会儿。然后他说了一件你不知道的事："工地上的人不知道我唱歌。他们知道我是个搬砖的。在那里我是一双手。在合唱团我是一个声音。"他看着自己打着石膏的左臂："现在两个都不是了。"' },
+    { text: '你不知道说什么。你说："你还是你。有没有手臂都是你。"你说完觉得这话很空洞。但Ibrahim看了你一眼——他的眼神让你觉得这句空洞的话也许是对的。' },
+  ]);
+  showChoices([
+    { text: '问他那本书是什么', cost: 'Ibrahim好感度+5', action: () => {
+      S.npcs.ibrahim.affinity += 5; renderStatus();
+      showNarrative([
+        { text: 'Ibrahim犹豫了一下，把书翻开给你看。是一本oud的教材——阿拉伯弹拨乐器。你看到里面有手写的笔记和标注，字迹很小很工整。' },
+        { text: '他说："我爸弹oud。他教了我基础。来这里以后我没有琴了。但我一直在读这本书。"他的手指在页面上划过一段乐谱："等手好了……也许我存够钱可以买一把二手的。"' },
+        { text: '你在心里记下了这件事。你不确定你能做什么——但你记住了。' },
+        { type: 'stat-up', text: 'Ibrahim 好感度提升' },
+      ]);
+      S.ibrahimRecoveryPhase = 1;
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+    { text: '跟他说大家都在想他', cost: '心情+5', action: () => {
+      adjustStat('mood', 5); S.npcs.ibrahim.affinity += 3; renderStatus();
+      showNarrative([
+        { text: '你告诉他——排练的时候Dietrich看了他的空位子三次。Nico说"低音部分没有Ibrahim就是少了一条腿"。Carlos每天在群里发吃的照片@他，说"你出院了我天天给你做"。Marta替他浇了阳台上那盆他养的薄荷。' },
+        { text: 'Ibrahim听完没说什么。但他把没受伤的那只手放在被子上捏了一下。你看到了。你没说。' },
+        { text: '你说："苏迟让我带一句话给你。"Ibrahim抬头。你说："他说——等你回来。男中音声部没有你不行。"Ibrahim的嘴角弯了一下："他说了这么多字？"你说："他其实还说了一句「他的低音比整个声部的地基还重要」，但你不能告诉他我说了。"Ibrahim笑了。你第一次觉得他的笑没有什么保留。' },
+        { type: 'stat-up', text: '心情 +5 · Ibrahim 好感度提升' },
+      ]);
+      S.ibrahimRecoveryPhase = 1;
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  ]);
+}
+
+function sceneIbrahimRecovery2() {
+  adjustStat('energy', -10); advanceTime(); renderStatus();
+  showNarrative([
+    { text: 'Ibrahim出院了。他住在老城区一条很窄的巷子里——你之前不知道。Carlos的面包车在巷口停不下来，你们走进去的。' },
+    { text: '他的房间很小。一张床，一张桌子，一把椅子，一个小冰箱。墙上什么都没有——只有一张地图，是约旦的。地图上有几个用铅笔圈出来的地方。你不知道那些地方是什么意思，但你猜它们很重要。' },
+    { text: 'Marta已经在了——她带了两大锅汤和一周的面包。冰箱里堆满了。Ibrahim说："Marta你做的够我吃一个月。"Marta说："那就吃一个月。"' },
+    { text: '你注意到桌上有一叠信——有些是阿拉伯文的，有些看起来像官方文件。你没看。但你看到信堆旁边有一张照片——一个女人抱着一个小男孩，背景是一片麦田。照片的角已经磨破了。' },
+  ]);
+  showChoices([
+    { text: '帮他打扫房间', cost: '社交+5 · Ibrahim好感度+5', action: () => {
+      adjustStat('social', 5); S.npcs.ibrahim.affinity += 5; renderStatus();
+      showNarrative([
+        { text: '你说："Ibrahim我帮你收拾一下。"他想拒绝——但他只有一只手能用。他说了声"好"。你听到了这一声好里面有多少不习惯。' },
+        { text: '你擦了桌子，扫了地，帮他把散落的衣服叠好放到柜子里。你发现他的衣服很少——三件T恤，两条裤子，一件外套。你的行李箱比他所有的东西加起来都多。你忽然觉得很难受。不是同情——是一种更复杂的东西。是你意识到你从来不知道你身边这个人是怎么活着的。' },
+        { text: '你打扫的时候Ibrahim一直坐在椅子上看着你。他不太说话。但你快做完的时候他说了一句："你是第一个来我家的人。"你手里的抹布停了一下。你说："什么？"他说："合唱团的人。你是第一个来我家的。"' },
+        { text: '你心里一紧。你说："Carlos呢？Marta呢？"他说："Carlos在楼下等过我。Marta在门口递过东西。他们……没上来过。"他的声音没有怨。只是在说一个事实。' },
+        { text: '你把抹布放下。你说："以后我常来。"你不确定你能不能做到。但你说了。' },
+        { type: 'stat-up', text: '社交 +5 · Ibrahim 好感度提升' },
+      ]);
+      S.ibrahimRecoveryPhase = 2;
+      showChoices([{ text: '继续', action: () => sceneIbrahimRecovery2b() }]);
+    }},
+    { text: '坐下来陪他聊一会儿', cost: '心情+5 · Ibrahim好感度+5', action: () => {
+      adjustStat('mood', 5); S.npcs.ibrahim.affinity += 5; renderStatus();
+      showNarrative([
+        { text: '你在他唯一的椅子上坐下了。他坐在床边。你们之间隔了不到一米。' },
+        { text: '你说："那张照片——是你妈妈？"他看了一眼桌上的照片。"是。"停了很久。"那是最后一次回家拍的。三年前了。"' },
+        { text: '你说："你想回去吗？"他说了一句让你的心碎了一个角的话："每天都想。但回去了就出不来了。"' },
+        { text: '你们又安静了。窗外传来巷子里的声音——有人在晾衣服，布料拍打的声音。有人在煮东西，闻起来像洋葱和孜然。Ibrahim说："这条巷子有很多像我一样的人。你走过去不会知道。但他们在这里。在这些小房间里，想着另一个地方。"' },
+        { text: '你看着他。你忽然理解了Ibrahim的歌声为什么那么深——那不只是技巧。那是一个每天都在想家但选择留下来的人的声音。每个低音里都有一个没有说出口的地名。' },
+        { type: 'stat-up', text: '心情 +5 · Ibrahim 好感度提升' },
+      ]);
+      S.ibrahimRecoveryPhase = 2;
+      showChoices([{ text: '继续', action: () => sceneIbrahimRecovery2b() }]);
+    }},
+  ]);
+}
+
+function sceneIbrahimRecovery2b() {
+  showNarrative([
+    { text: '你正准备走的时候，楼下传来了一阵骚动。Carlos的声音从窗外飘上来："Ibrahim！开门！"' },
+    { text: '你推开窗户往下看——Carlos、Nico、Marta、苏迟，四个人站在巷子里。Carlos抱着一个巨大的纸箱。Nico手里拿着气球——在这条窄巷子里，气球几乎碰到了两边的墙。' },
+    { text: 'Ibrahim走到窗口。他看了一眼楼下，转过身来——你看到他的表情变了。不是那种微笑。是一种更大的东西。像是一堵墙裂开了一条缝。' },
+  ]);
+  showChoices([
+    { text: '帮他下楼开门', action: () => {
+      showNarrative([
+        { text: '你帮Ibrahim下了楼。门一打开，Nico的气球直接弹到了他脸上。Carlos把纸箱放在地上说："小心。重的。"' },
+        { text: 'Ibrahim蹲下来打开了纸箱。里面是一把oud。' },
+        { text: '不是新的——木头上有使用的痕迹，琴颈上有一小块修补过的地方。但弦是新换的，调好了。Ibrahim的手——没受伤的那只——在琴面上停了很久。他的手指在发抖。' },
+        { text: '苏迟走上前一步。"二手的。一个在线论坛找到的。本地一个退休的音乐老师在卖。"他顿了一下。"大家凑的。"' },
+        { text: 'Ibrahim没抬头。你看到有水滴落在oud的木面上。Nico在擦眼泪。Carlos在擦眼泪。你也在。苏迟没有——但他的手插在口袋里，很深，像在攥着什么。' },
+        { text: '过了很久Ibrahim说了一句话。声音沙得几乎听不到："你们不用——"Carlos打断他："闭嘴弹琴。"' },
+        { text: 'Ibrahim笑了。他用一只手——没受伤的那只——拨了一根弦。声音在窄巷子里回荡了很久。干净的、微微颤抖的，一个单音。你觉得那个音比你听过的任何合唱都好听。' },
+        { text: 'Marta在楼上喊："汤热好了你们上来吃！"Ibrahim抱着oud上了楼。他上楼梯的时候你注意到——他的脚步比下来的时候轻了。' },
+        { type: 'system', text: '大家凑钱给Ibrahim买了一把二手oud。他哭了。你也哭了。' },
+      ]);
+      adjustStat('mood', 20); adjustStat('social', 10);
+      S.npcs.ibrahim.affinity += 15; S.npcs.suchi.affinity += 5; S.npcs.carlos.affinity += 5;
+      S.ibrahimRecoveryPhase = 3;
+      renderStatus();
+      showChoices([{ text: '继续', action: sceneDailyMenu }]);
+    }},
+  ]);
+}
+
 function sceneHelpYuki() {
   S.npcs.yuki.talked++; S.npcs.yuki.affinity += 5; renderStatus();
-  const scenes = [
+  const allScenes = [
     { intro: '排练前你看到Yuki在跟那架旧立式钢琴较劲。她试了几个键，皱眉。"中间的G又偏了，"她轻声说。', choices: [
       { text: '帮她想办法修', cost: 'Yuki好感度+5 · 心情+3', action: () => {
         adjustStat('mood', 3); S.npcs.yuki.affinity += 3; renderStatus();
@@ -3732,7 +3883,10 @@ function sceneHelpYuki() {
       }},
     ]},
   ];
-  const s = pick(scenes);
+  const unseen = allScenes.filter((_, i) => !S.helpYukiSeen[i]);
+  const idx = unseen.length > 0 ? allScenes.indexOf(pick(unseen)) : Math.floor(Math.random() * allScenes.length);
+  S.helpYukiSeen[idx] = true;
+  const s = allScenes[idx];
   showNarrative([{ text: s.intro }]);
   showChoices(s.choices);
 }
@@ -3740,7 +3894,7 @@ function sceneHelpYuki() {
 function sceneWatchDietrich() {
   adjustStat('sightRead', 3); adjustStat('mood', 3);
   S.npcs.dietrich.affinity += 2; renderStatus();
-  const scenes = [
+  const allWScenes = [
     { intro: '今天排练你决定不只唱——你要看。你的目光锁定了Dietrich的手。', choices: [
       { text: '试着理解他的每个手势', cost: '视谱+3', action: () => {
         adjustStat('sightRead', 3); renderStatus();
@@ -3788,7 +3942,10 @@ function sceneWatchDietrich() {
       }},
     ]},
   ];
-  const s = pick(scenes);
+  const unseenW = allWScenes.filter((_, i) => !S.watchDietrichSeen[i]);
+  const idxW = unseenW.length > 0 ? allWScenes.indexOf(pick(unseenW)) : Math.floor(Math.random() * allWScenes.length);
+  S.watchDietrichSeen[idxW] = true;
+  const s = allWScenes[idxW];
   showNarrative([{ text: s.intro }, { type: 'stat-up', text: '视谱 +3 · 心情 +3' }]);
   showChoices(s.choices);
 }
