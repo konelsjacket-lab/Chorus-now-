@@ -389,7 +389,7 @@ function renderStatus() {
 
 function showNarrative(paragraphs) {
   const el = document.getElementById('narrative');
-  el.innerHTML = paragraphs.map(p => {
+  el.innerHTML = paragraphs.filter(Boolean).map(p => {
     if (p.type === 'system') return `<p class="system-msg">${p.text}</p>`;
     if (p.type === 'stat-up') return `<p class="stat-change stat-up">${p.text}</p>`;
     if (p.type === 'stat-down') return `<p class="stat-change stat-down">${p.text}</p>`;
@@ -5595,19 +5595,19 @@ function sceneBcnDailyMenu() {
     showChoices([{ text: '去音乐宫', action: sceneBcnOpeningDay }]);
     return;
   }
-  if (S.choirDrama.competitionDay1 && !S.choirDrama.heatsComplete && bcnDay >= 3 && time === 0) {
+  if (S.choirDrama.competitionDay1 && !S.choirDrama.heatsComplete && bcnDay >= 4 && time === 0) {
     paras.push({ type: 'system', text: '海选日到了。' });
     showNarrative(paras);
     showChoices([{ text: '去赛场', action: sceneHeats }]);
     return;
   }
-  if (S.choirDrama.heatsComplete && !S.choirDrama.groupStageComplete && bcnDay >= 5 && time === 0) {
+  if (S.choirDrama.heatsComplete && !S.choirDrama.groupStageComplete && bcnDay >= 7 && time === 0) {
     paras.push({ type: 'system', text: '小组赛日。' });
     showNarrative(paras);
     showChoices([{ text: '去赛场', action: sceneGroupStage }]);
     return;
   }
-  if (S.choirDrama.groupStageComplete && !S.choirDrama.finalsComplete && bcnDay >= 7 && time === 0) {
+  if (S.choirDrama.groupStageComplete && !S.choirDrama.finalsComplete && bcnDay >= 10 && time === 0) {
     paras.push({ type: 'system', text: '决赛准备日。' });
     showNarrative(paras);
     showChoices([{ text: '开始决赛准备', action: sceneFinalPrep }]);
@@ -5650,6 +5650,14 @@ function sceneBcnDailyMenu() {
       choices.push({ text: '📚 跟苏迟去逛旧书店', action: sceneBcnSuchiBookshop });
     if (S.choirDrama.competitionDay1 && !S.bcnFriendEvents.ibrahimMosque && time === 0)
       choices.push({ text: '🕌 Ibrahim邀你去看清真寺', action: sceneBcnIbrahimMosque });
+
+    // Barcelona special events
+    if (S.choirDrama.heatsComplete && !S.bcnFriendEvents.dietrichWeidmann && time === 2)
+      choices.push({ text: '🎭 Dietrich一个人出去了……', cost: '跟上去看看', action: sceneBcnDietrichWeidmann });
+    if (S.choirDrama.groupStageComplete && !S.bcnFriendEvents.suchiFather && time <= 1 && S.metSuChi)
+      choices.push({ text: '👔 苏迟收到一条消息后脸色变了', cost: '苏迟事件', action: sceneBcnSuchiFather });
+    if (S.choirDrama.heatsComplete && !S.bcnFriendEvents.zenoPotion && time === 0 && S.antiqueShopUnlocked)
+      choices.push({ text: '📦 旅舍前台说有你的包裹', cost: '谁寄的？', action: sceneBcnZenoPotion });
 
     // Phone
     if (time <= 2 && (S.day - S.lastParentCall >= 2 || !S.calledParents))
@@ -5992,35 +6000,44 @@ function sceneBcnMeetChoir(choirId) {
       { text: 'Carlos带你去见Marco。Marco比Carlos高一个头，笑起来声音更大。他一见你就用力握手：「Carlos的朋友就是我的朋友！」他的英语带着浓重的葡萄牙口音。' },
       { text: '他带你们去了圣保罗团的排练。你被震撼了——他们的节奏感不是练出来的，是长在骨头里的。身体打击的段落比你们的整齐十倍。一个叫Rafael的男低音独唱的时候你觉得地板在震。' },
       { text: 'Marco和Carlos坐在角落里聊了很久。你听到了一些碎片——里约的贫民区、教堂唱诗班、一个叫Paulo的人。Carlos的眼眶红了。Marco拍了拍他的肩。你走开了——有些对话不需要第三个人。' },
+      { text: '排练结束后Marco拉你们一起去喝啤酒。他讲了一个故事——他和Carlos十三岁的时候在里约的教堂唱诗班认识的。Paulo是他们的老师。后来Paulo去世了。Marco说：「Paulo说过一句话——音乐不是你做的东西，是你变成的东西。我十三岁听不懂。二十八岁才懂。」Carlos用葡萄牙语骂了一句，意思大概是「你怎么现在才告诉我他说过这句话」。Marco说：「因为你二十八岁了。」' },
       { text: '走的时候Marco叫住你。他递给你一条巴西国旗配色的手编手链：「给你的合唱团每人一条。我们巴西人相信——如果你在比赛前跟对手交换信物，不管谁赢了，那个友谊都是金奖。」' },
-      { type: 'stat-up', text: '社交 +5 · Carlos好感度 +3' },
+      { type: 'stat-up', text: '社交 +5 · Carlos好感度 +5' },
     ],
     korea: [
-      { text: '首尔青年合唱团的成员大多是音乐学院的学生。他们的平均年龄比你们小五岁，但专业程度让你心里发慌。你在走廊上跟他们的一个女高音聊了几句——她叫Jihye，英语很好。' },
+      { text: '首尔青年合唱团的成员大多是音乐学院的学生。他们的平均年龄比你们小五岁，但专业程度让你心里发慌。你在走廊上跟他们的一个女高音聊了几句——她叫Jihye，英语很好，笑起来会露出两颗虎牙。' },
       { text: '「你们的Singularity编曲很有趣，」Jihye说。你问她怎么知道你们的曲目的。她笑了：「我们的指挥Kim老师会研究每一个对手。她说你们是最不可预测的团。」' },
       { text: '你说：「这是夸我们还是骂我们？」Jihye想了想：「Kim老师的原话是——这些人不按牌理出牌，这很危险。」你不知道该高兴还是紧张。' },
+      { text: 'Jihye带你去看了她们的热身。Kim老师的训练方式像外科手术——精确到每一个辅音的咬合角度。你看到Jihye在练一段装饰音，反复了十七遍，每一遍只改变一个微小的细节。你问她不累吗。她说：「Kim老师说过——完美不是没有错误，是错误小到只有你自己知道。」' },
+      { text: '你们交换了联系方式。Jihye说：「不管谁赢了，比赛结束后我请你喝烧酒。你喝过烧酒吗？」你说没有。她说：「那你要小心了。它看起来像水，喝起来也像水，然后你就躺在地板上了。」' },
       { text: 'Kim老师路过，看了你一眼。她的眼神像X光——你觉得她在三秒内评估了你的音域、气息和心理状态。她用韩语对Jihye说了一句话。Jihye翻译：「她说你的眼神不像业余的。」你不确定这是什么意思，但你觉得这可能是Kim老师能给的最高评价了。' },
-      { type: 'stat-up', text: '社交 +5' },
+      { type: 'stat-up', text: '社交 +5 · 声乐 +2' },
     ],
     china: [
       { text: '你去找了大学教师合唱团。那些叔叔阿姨一看到你就高兴得不行。「来来来，我们这有茶！」一个叔叔从行李箱里掏出了一罐铁观音——他从国内背过来的。你接过纸杯的时候闻到了那个味道——那个属于家的味道。' },
       { text: '一个阿姨拉着你问东问西。她说你妈妈给她看了你的照片。「你妈可骄傲了。在朋友圈发了好几条。」你说：「发了什么？」阿姨给你看了手机——你妈发的朋友圈：「我家孩子在欧洲唱歌！」配了三个大拇指emoji和五个爱心。你的鼻子酸了。' },
       { text: '教师合唱团的指挥是个退休的音乐老师，姓王。王老师听说你才学了一年就参加Europa Cantat，沉默了三秒，然后说了一句让你记了很久的话：「一年的热爱比十年的习惯更值钱。你记住。」' },
+      { text: '王老师请你坐下来，倒了一杯茶，慢慢跟你聊。他教了三十二年高中音乐。他说：「你知道高中音乐课是什么待遇吗？体育老师生病了——上音乐课。数学考试要复习——上音乐课。全校最不重要的课。」他喝了口茶。「但每一届都有那么一两个孩子，毕业典礼的时候跑来跟我说——老师，我还记得你教的那首歌。就这一两个。够了。」' },
       { text: '走的时候叔叔阿姨们塞了一堆零食给你——老干妈、旺旺仙贝、一包话梅。你拎着这袋来自家乡的零食走回旅舍的时候，眼眶热热的。苏迟在大厅看到你手里的东西，表情裂开了：「……那是旺旺仙贝吗？」你从来没见过苏迟这么激动。你分了他半包。他吃的时候一句话没说。但你看到他低着头笑了。' },
-      { type: 'stat-up', text: '社交 +5 · 心情 +5 · 苏迟好感度 +3' },
+      { type: 'stat-up', text: '社交 +5 · 心情 +5 · 苏迟好感度 +5' },
     ],
     estonia: [
       { text: '爱沙尼亚的塔林室内合唱团只有十二个人。没有指挥。他们在旅舍的楼梯间里排练——因为楼梯间的回声最好。你经过的时候被声音钉在了原地。' },
       { text: '那个声音——你没有办法用语言描述。十二个人站成半圆，互相看着，唱一首你不认识的歌。但那个和声——不是十二个声部，是更多。回声从墙壁上折回来，跟原声叠在一起，产生了不存在的声部。像幽灵在跟他们一起唱。' },
-      { text: '你听完了整首歌。他们的一个团员看到你了——一个金发男生，很瘦，眼睛很蓝。他用英语说：「你是那个来自地中海小城的合唱团的？」你说是。他说：「我们听过你们排练。你们的Singularity很有趣。那个身体打击的段落——很大胆。」' },
-      { text: '你问他们怎么做到没有指挥。他笑了：「我们在一起唱了十五年了。每个人知道其他十一个人的呼吸。」他顿了一下。「你们在一起多久了？」你说：「不到一年。」他愣了一下。然后他说了一句你没有预料到的话：「那更了不起。」' },
-      { type: 'stat-up', text: '社交 +5 · 声乐 +2' },
+      { text: '你听完了整首歌。然后你注意到了他们中间的一个人——一个男孩。你说男孩，因为他看起来最多十七八岁。很瘦，金色的头发长到肩膀，皮肤白得几乎透明。他的眼睛是一种你从没见过的颜色——不是蓝，不是灰，像是冬天湖面上的冰。他站在半圆的最边上，比其他人矮半个头，但你刚才听到的那些不存在的泛音——你现在确定——大部分是从他嘴里出来的。' },
+      { text: '他看到你了。他歪了一下头——像一只好奇的鸟——然后用英语说：「你站在那里听了整首歌。」不是问句。你说：「对不起，我不该——」他打断你：「不。那很好。音乐需要有人站着不走。」' },
+      { text: '他叫Taavi。你们坐在楼梯上聊了起来。他说他七岁开始唱歌——「在爱沙尼亚，每个人都唱歌。我们有歌唱革命——你知道吗？三十万人站在广场上唱歌，唱到国家独立了。」他说这话的时候语气很平，像在说一个常识。' },
+      { text: '你问他泛音是怎么做到的。他想了一下，然后做了一个示范——他唱了一个音，然后你听到第二个音从同一个喉咙里浮出来，像一个幽灵从他的声音里走出来。你起了一身鸡皮疙瘩。他说：「每个音里面都住着很多声音。大部分人只听到最大的那个。但它们都在那里。你只需要——」他比了一个手势，像是在打开一扇很小的门，「让它们出来。」' },
+      { text: '你问他多大了。他说二十三。你吓了一跳——他看起来真的像十七岁。他笑了，笑起来眼睛弯成两道月牙，整个人变得更不真实了：「所有人都这么说。我妈说我是精灵生的。在爱沙尼亚这不完全是开玩笑——我们的森林里真的有精灵。」' },
+      { text: '走的时候Taavi忽然叫住你。他从口袋里掏出一个东西——一小块桦树皮，上面用铅笔画了一个符号。「这是保护符。我奶奶教我的。」你接过来，树皮很轻很薄，上面的符号像一棵没有叶子的树。你说谢谢。他说：「比赛的时候放在口袋里。不一定有用。但——也不一定没用。」他又歪了一下头，笑了。你心想：他真的像精灵。' },
+      { type: 'stat-up', text: '社交 +5 · 声乐 +3 · 心情 +5' },
     ],
   };
   showNarrative(scenes[choirId]);
-  if (choirId === 'brazil') S.npcs.carlos.affinity += 3;
-  if (choirId === 'china' && S.npcs.suchi) S.npcs.suchi.affinity += 3;
-  if (choirId === 'estonia') adjustStat('vocal', 2);
+  if (choirId === 'brazil') S.npcs.carlos.affinity += 5;
+  if (choirId === 'korea') adjustStat('vocal', 2);
+  if (choirId === 'china' && S.npcs.suchi) S.npcs.suchi.affinity += 5;
+  if (choirId === 'estonia') { adjustStat('vocal', 3); adjustStat('mood', 5); }
   showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
 }
 
@@ -6101,6 +6118,79 @@ function sceneBcnRooftop() {
     { type: 'stat-up', text: '心情 +5 · Yuki好感度 +5' },
   ]);
   S.npcs.yuki.affinity += 5;
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+// --- Barcelona Special Events ---
+function sceneBcnDietrichWeidmann() {
+  S.bcnFriendEvents.dietrichWeidmann = true;
+  adjustStat('energy', -5); advanceTime(); renderStatus();
+  showNarrative([
+    { text: '傍晚的时候你看到Dietrich一个人出了旅舍。他没叫任何人。他穿了一件你没见过的深色西装外套——不是排练时穿的那件。' },
+    { text: '你犹豫了三秒。然后你跟了上去。' },
+    { text: '他走得很快。穿过兰布拉大道，拐进哥特区的小巷。你保持着二十米的距离。你知道这不太对——但你的直觉说Dietrich今天不太对劲。他走路的方式变了——更僵硬，肩膀更高，像一个正在给自己打气的人。' },
+    { text: '他走进了一家很小的咖啡馆。玻璃门上写着「Cafè de l’Òpera」。你在对面的柱子后面站了一会儿，然后——你看到了里面靠窗的桌子。' },
+    { text: 'Weidmann已经在那里了。' },
+    { text: '他们面对面坐着。两杯咖啡。Weidmann的姿势和在赛场上一样挺拔——脊背笔直，双手交叠在桌上。Dietrich坐下以后沉默了至少十秒。你看到Weidmann先开了口。' },
+    { text: '你听不到他们在说什么。玻璃隔着声音，人行道上又有游客经过。但你看得到。你看到Weidmann说了很长一段话，Dietrich一直没有打断。Weidmann的手在空中比划了一个手势——像是在指挥一首看不见的曲子。' },
+    { text: '然后Dietrich说话了。你只看到他的嘴唇在动。但你看到了一件事——他说到某个地方的时候，Weidmann的手停了。银色短发的老人低下了头。只低了一秒。但那一秒足够你看到——他的表情不再是那个在赛场上俯视一切的Professor Weidmann了。那一秒他像一个失去了什么东西的人。' },
+    { text: 'Dietrich从口袋里拿出了一张照片放在桌上。你看不清照片上是什么。Weidmann拿起来看了很久。然后他把照片放回桌上，用手指轻轻碰了一下照片的边缘。' },
+    { text: '他们又坐了五分钟。没有握手。Dietrich先站起来了。走到门口的时候他停了一下——没有回头。Weidmann坐在窗边，看着他的背影走出去。' },
+    { text: '你赶紧躲到另一条巷子里。Dietrich经过你藏身的巷口的时候，你看到他的脸——你从来没有见过那个表情。不是愤怒，不是悲伤。是一种释放。像一个人终于把一块石头从胸口搬开了。' },
+    { text: '你没有问他。你永远不会问。但你觉得你大概明白了——有些对话等了二十年才发生。等了二十年，也只需要十五分钟。' },
+    { text: '第二天排练的时候Dietrich没有任何变化。一样的严厉，一样的精确。但你隐约觉得——他的手势松了一点。像一根拉了太久的弦，终于被调回了它应该在的音。' },
+    { type: 'stat-up', text: '心情 +8 · 解锁回忆：Cafè de l’Òpera' },
+  ]);
+  adjustStat('mood', 8);
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+function sceneBcnSuchiFather() {
+  S.bcnFriendEvents.suchiFather = true;
+  adjustStat('energy', -5); advanceTime(); renderStatus();
+  showNarrative([
+    { text: '你在旅舍大厅看到苏迟盯着手机，脸色一点一点变白。' },
+    { text: '你走过去。他把手机翻了过去——但你已经看到了屏幕上的消息。中文。你只看到了几个字：「我到巴塞罗那了」。发信人备注是「爸」。' },
+    { text: '苏迟把手机塞进口袋。他的手在抖。他说：「我出去走走。」你说：「我陪你。」他看了你一眼。没有拒绝。' },
+    { text: '你们在哥特区的巷子里走了很久。苏迟一句话没说。你也没说。你们的脚步声在石板路上回响。走到一个小广场的时候苏迟停了下来——广场上有一棵橘子树。他看着那棵树看了很久。' },
+    { text: '「他怎么知道我在这里的，」苏迟终于开口了。不是问你——是问那棵橘子树。「我没告诉他。我妈也答应不说的。」' },
+    { text: '你说：「大学教师合唱团。」苏迟愣了一下。然后他闭上了眼睛：「那些阿姨……朋友圈……」你说：「你爸的朋友可能看到了。」苏迟把脸埋进手掌里。你听到他从手指缝里说了一句：「我逃了一年。一条朋友圈就把我卖了。」' },
+    { text: '你问：「你要见他吗？」' },
+    { text: '苏迟沉默了很久。广场上有鸽子在啄面包屑。远处有人在弹吉他。' },
+    { text: '「他……一个人来的？」苏迟问。你说你不知道。苏迟又沉默了。然后他说了一句让你没有预料到的话：「他恐高。他连国内的飞机都不坐。他坐十几个小时的飞机来巴塞罗那？」' },
+    { text: '你看到苏迟的眼眶红了。他转过头不让你看。' },
+    { text: '下午你陪苏迟去了他爸订的酒店。一家很普通的三星酒店，在Eixample区。苏迟在酒店门口站了五分钟。你说：「要我一起进去吗？」他摇了摇头：「不。这个我得自己来。」' },
+    { text: '他进去了。你在酒店对面的长椅上等了四十分钟。' },
+    { text: '苏迟出来的时候眼睛是肿的。但他走路的方式变了——不是更轻松，是更沉。像一个人终于把一件一直背着的东西放下了，但放下以后才发现它有多重。' },
+    { text: '你没问他们聊了什么。苏迟走到你面前，站了三秒，然后说：「他说他听了我排练的录音。大学教师合唱团的阿姨录的。」他停了一下。「他说——唱得不错。」' },
+    { text: '你知道这三个字有多重。从一个希望儿子学经济、把音乐书锁起来的父亲嘴里说出「唱得不错」——这三个字走了一年、一万公里、一次恐高症发作的长途飞行。' },
+    { text: '苏迟说：「他说他想看决赛。」你说：「那就让他看。」苏迟低着头走了一会儿。然后他很轻很轻地说了一句：「他老了好多。」' },
+    { text: '你伸手拍了一下苏迟的肩。他没有躲开。' },
+    { type: 'stat-up', text: '苏迟好感度 +10 · 心情 +5 · 解锁回忆：唱得不错' },
+  ]);
+  if (S.npcs.suchi) S.npcs.suchi.affinity += 10;
+  adjustStat('mood', 5);
+  showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
+}
+
+function sceneBcnZenoPotion() {
+  S.bcnFriendEvents.zenoPotion = true;
+  adjustStat('mood', 10); advanceTime(); renderStatus();
+  showNarrative([
+    { text: '旅舍前台的小哥叫住你：「有你的包裹。」' },
+    { text: '你说不可能。没人知道你住在这家旅舍。小哥耸耸肩：「上面写了你的名字。还有你的房间号。」' },
+    { text: '包裹很小。一个牛皮纸包的方块，用麻绳系着。没有邮戳，没有回邮地址。上面的字——你愣了——是用蘸水笔写的。你认识那个笔迹。你在古董店的价签上见过。' },
+    { text: '你把包裹带回房间。Nico趴在上铺探头：「谁寄的？」你说：「一个……朋友。」你拆开牛皮纸——' },
+    { text: '里面是一个小玻璃瓶。巴掌大小。瓶身是深蓝色的，像夜空。瓶口用蜡封着，蜡的颜色是琥珀色——和你们合唱团丝带的颜色一模一样。你不知道Zeno怎么知道这个颜色的。' },
+    { text: '瓶子里是液体。你晃了一下——液体在瓶中流动的方式不太对，太慢了，像蜂蜜，但颜色是透明的金色，里面有一些细小的东西在浮动——像金粉，又像星尘。' },
+    { text: '瓶子旁边有一张折起来的纸条。纸条很旧，边缘发黄。上面只有一行字：' },
+    { text: '「不保证运气，但保证勇气。——Z」' },
+    { text: '你笑了。你把瓶子举起来对着窗户——巴塞罗那早晨的阳光穿过瓶身，在你手上投下蓝色和金色的光斑。瓶子里的金色粉末在光线中旋转，像一个微型的星系。' },
+    { text: 'Nico从上铺翻下来：「那是什么？」你说：「幸运药水。」她说：「你喝了吗？」你说：「我觉得不用喝。放在口袋里就行。」Nico想了想：「这比旺旺仙贝管用吗？」你说：「不一样的管用。」' },
+    { text: '你把瓶子放在床头柜上。蓝色的玻璃在旅舍白色的桌面上像一滴掉落的夜空。你想：Zeno是怎么知道你在巴塞罗那的？你想：那个包裹是怎么找到你的？你想：算了。有些问题的答案没有问题本身有趣。' },
+    { text: '比赛的时候你会把它放在口袋里。和Taavi给你的桦树皮保护符一起。一个来自爱沙尼亚森林的精灵祝福，一瓶来自地中海古董店的液态勇气。你觉得这大概就够了。' },
+    { type: 'stat-up', text: '心情 +10 · 解锁物品：Zeno的幸运药水' },
+  ]);
   showChoices([{ text: '继续', action: sceneBcnDailyMenu }]);
 }
 
@@ -6262,7 +6352,7 @@ function sceneFinalsDay() {
     { text: '圣保罗合唱团。Marco的指挥风格和Weidmann相反——他整个人在动，像在跳舞。他们唱了一首改编的Villa-Lobos，然后是一首你从来没听过的巴西流行曲改编。节奏——天哪，那个节奏。你的身体不自觉地跟着动了。Carlos站在你旁边，脸上的表情很复杂——骄傲，紧张，还有一种"这就是我长大的地方"的东西。' },
     { text: '爱沙尼亚合唱团。他们没有指挥。十二个人站成半圆，互相看着，然后开始唱。声音从教堂的石头墙壁上反弹回来，产生了不可思议的泛音效果——你听到了不存在的第五个声部，那是回声和和声共振出来的幽灵声部。Nico在你旁边说了一句"我恨他们"，意思是"我爱他们"。' },
     { text: '然后轮到你们了。' },
-    { text: '后台。你穿着白衬衫，领口别着琥珀色的丝带。你的手在抖。你看了看镜子里的自己——你想起Tomás画的那幅画。画里的你比你以为的好看。' },
+    { text: '后台。你穿着白衬衫，领口别着琥珀色的丝带。你的手在抖。你摸了摸口袋——' + (S.bcnFriendEvents.zenoPotion && S.bcnChoirs.estonia ? 'Zeno的蓝色小瓶和Taavi的桦树皮保护符都在。一瓶液态勇气，一片森林精灵的祝福。你觉得口袋里暖暖的。' : S.bcnFriendEvents.zenoPotion ? 'Zeno的蓝色小瓶在。你感觉到它透过布料传来的一点凉意。' : S.bcnChoirs.estonia ? 'Taavi的桦树皮保护符在。上面那个像树一样的符号。不一定有用——但也不一定没用。' : '什么也没有。但你握了握拳。你自己就是自己的护身符。') + ' 你看了看镜子里的自己——你想起Tomás画的那幅画。画里的你比你以为的好看。' },
     { text: 'Dietrich叫大家围成一个圈。他很少做这种事——他不是那种喊口号的人。但今天他把所有人叫到一起，站成一个圈，手拉着手。你左手是苏迟的手——凉的，细的，指尖有茧。右手是Nico的手——热的，在微微发抖。' },
     { text: 'Dietrich说："我不会说什么鼓励的话，因为你们不需要鼓励。你们已经在这里了。你们从一个地中海小城坐了四个小时的火车来到这里，带着你们的声音和你们的故事。去唱。不是为了评委，不是为了奖，是为了你们自己。是因为你们选择了在一起唱歌，而这就是世界上最勇敢的事情之一。"' },
     { text: '他停了一下。然后他笑了——你第一次在正式场合看到他笑。"还有一件事。不管等一下发生什么——不要停。唱错了不要停。忘词了不要停。出了任何问题都不要停。因为合唱不是一个人的事。你停了，旁边的人会接住你。"' },
@@ -6337,20 +6427,24 @@ function sceneFinalsPerformance3() {
 }
 
 function sceneFinalsPerformance4() {
-  showNarrative([
+  const paras = [
     { text: '安静。' },
     { text: '一秒。两秒。三秒。' },
     { text: '你以为出了什么问题。为什么没人鼓掌？你紧张地看了一眼Dietrich——他站在指挥台上，一动不动，低着头。然后你看到他的肩膀在抖。他在哭。Dietrich——那个永远镇定、永远精确、永远不加糖的Dietrich——在哭。' },
     { text: '然后掌声来了。' },
     { text: '像潮水。像一面墙倒下来。你终于看到了观众——他们站起来了。所有人都站起来了。你看到第一排的一个女人在用手帕擦眼睛。你看到后排有人举着手机在录。你看到评委席上的一个老人——头发全白了——在鼓掌，在笑，在摇头，像是在说「这怎么可能」。' },
     { text: '你看到了Weidmann。他也站起来了。他的表情——你说不清那是什么表情。不是不服气。是另一种东西。也许是在看一个他以为走错了路的人站在了正确的地方。' },
+  ];
+  if (S.bcnFriendEvents.suchiFather) paras.push({ text: '你的目光扫过观众席——然后你看到了一个中年男人坐在侧面的位置。西装，头发花白，坐得很直。他的手放在膝盖上，没有鼓掌——不是不想，是忘了。他在看着舞台上的某个方向。你顺着他的目光看过去——他在看苏迟。苏迟没有看他。但你觉得苏迟知道他在那里。' });
+  paras.push(
     { text: '你不知道该做什么。你站在舞台上，灯光照着你，眼泪还挂在脸上，耳朵里全是掌声和你自己的心跳。' },
     { text: 'Ibrahim走回到队伍里，Marta一把抱住了他。Nico在笑，那种很大声的笑，像是所有压力一下子都释放了。Aoife在蹦——她的烧昨天才退，但现在她在蹦。Sofia在鼓掌——给你们自己鼓掌。Carlos在偷偷比一个V。Yuki从口袋里掏出一面很小的旗——上面写着"合唱团万岁"，你不知道他什么时候做的。Lena安安静静地笑着，眼睛亮得像星星。' },
     { text: 'Dietrich转过身面对你们。他的眼睛还是红的。他没有说话。他只是深深地鞠了一躬。' },
     { text: '你在这一刻想：我来到这座城市的时候，我以为我是一个人。我错了。' },
     { type: 'system', text: '你们完成了Europa Cantat决赛的演出。' },
     { type: 'stat-up', text: '心情大幅提升 · 声乐技巧 +5' },
-  ]);
+  );
+  showNarrative(paras);
   adjustStat('mood', 25); adjustStat('vocal', 5); adjustStat('social', 10);
   showChoices([{ text: '等待结果', action: sceneVictory }]);
 }
@@ -6389,6 +6483,7 @@ function sceneVictory2() {
     { text: '你说："你知道我什么意思。"' },
     { text: '他知道你什么意思。' },
     { text: 'Marco走过来了。他看着Carlos，然后张开双臂。Carlos拥抱了他。Marco在他耳边说了什么——你听不清。Carlos回来的时候对你们说："他说我们当之无愧。然后他说下次他要赢回去。"你看到Marco的眼眶也是红的。' },
+    S.bcnFriendEvents.suchiFather ? { text: '你看到苏迟站在台阶边上。他面朝着广场的方向。你走过去——看到了他的父亲站在广场另一头。两个人隔着二十米，对视了很久。然后他父亲缓慢地、郑重地鼓了三下掌。苏迟低下了头。你转身走开了。有些掌声不需要第三个人听。' } : null,
     { text: '然后——一个你没有预料到的人走了过来。' },
     { text: 'Weidmann。' },
     { text: '他直直走向Dietrich。所有人都安静了。你看到Dietrich的脊背绷直了。' },
